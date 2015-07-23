@@ -1,12 +1,10 @@
 #pragma once
 
-class SceneEntity;
-class RenderEntity;
-class RendererImpl : public Renderer
+class Renderer : public IRenderer
 {
 public:
-	RendererImpl(SceneEntity& owner);
-	virtual ~RendererImpl();
+	Renderer(SceneEntity& owner);
+	virtual ~Renderer();
 public:
 	virtual void ClearEntities();
 	virtual Entity* CreateEntity();

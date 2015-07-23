@@ -2,7 +2,6 @@
 
 namespace SECore
 {
-	/*
 	struct Vector3
 	{
 		float x, y, z;
@@ -47,7 +46,7 @@ namespace SECore
 		float r, g, b, a;
 		Color() : r(1), g(1), b(1), a(1) {}
 		Color(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) {}
-	};*/
+	};
 
 	struct Matrix
 	{
@@ -98,15 +97,16 @@ namespace SECore
 	{
 	};
 
-	struct Material : RefObject
+	struct Material
 	{
-
+		virtual void SetFloat(const char* name, float value) = 0;
+		virtual void SetColor(const char* name, const Color& value) = 0;
+		virtual void SetTexture(const char* name, Texture* value) = 0;
 	};
 
 	struct Animation
 	{
 		virtual void Play(const char* clipname) = 0;
-		virtual bool GetMatrix(Matrix* dst, size_t count) const = 0;
 	};
 
 	struct Renderer
@@ -116,7 +116,6 @@ namespace SECore
 			virtual Mesh* GetMesh() = 0;
 			virtual Material* GetMaterial() = 0;
 			virtual void SetMesh(Mesh* mesh) = 0;
-			virtual void SetMaterial(Material* material) = 0;
 			virtual const Matrix& GetWorld() const = 0;
 			virtual void SetWorld(const Matrix& m) = 0;
 		};
@@ -151,5 +150,14 @@ namespace SECore
 		virtual void ClearEntities() = 0;
 		virtual Entity* CreateEntity() = 0;
 		virtual void RemoveEntity(Entity* entity) = 0;
+	};
+
+	struct RenderTarget : Object
+	{
+		virtual bool Begin() = 0;
+		virtual void End() = 0;
+		virtual float GetWidth() const = 0;
+		virtual float GetHeight() const = 0;
+		virtual void ClearDepth() = 0;
 	};
 }

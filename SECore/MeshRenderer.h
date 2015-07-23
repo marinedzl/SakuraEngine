@@ -9,7 +9,7 @@ public:
 	bool Init();
 	void Begin();
 	void End();
-	void Draw(Renderer::Entity* entity);
+	void Draw(IRenderer::Entity* entity);
 private:
 };
 

@@ -3,33 +3,33 @@
 #include "RenderEntity.h"
 #include "Renderer.h"
 
-RendererImpl::RendererImpl(SceneEntity& owner)
+Renderer::Renderer(SceneEntity& owner)
 	: mOwner(owner)
 {
 }
 
-RendererImpl::~RendererImpl()
+Renderer::~Renderer()
 {
 }
 
-void RendererImpl::ClearEntities()
+void Renderer::ClearEntities()
 {
 	DeleteList(mEntities);
 }
 
-Renderer::Entity* RendererImpl::CreateEntity()
+Renderer::Entity* Renderer::CreateEntity()
 {
 	RenderEntity* entity = new RenderEntity(mOwner);
 	mEntities.push_back(entity);
 	return entity;
 }
 
-size_t RendererImpl::GetEntityCount()
+size_t Renderer::GetEntityCount()
 {
 	return mEntities.size();
 }
 
-Renderer::Entity* RendererImpl::GetEntity(size_t index)
+Renderer::Entity* Renderer::GetEntity(size_t index)
 {
 	return mEntities[index];
 }

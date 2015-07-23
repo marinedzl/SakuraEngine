@@ -30,6 +30,6 @@ void MeshRenderer::End()
 
 }
 
-void MeshRenderer::Draw(Renderer::Entity* entity)
+void MeshRenderer::Draw(IRenderer::Entity* entity)
 {
 }

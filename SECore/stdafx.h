@@ -20,16 +20,32 @@
 #include <d3d11.h>
 
 typedef SECore::Matrix Matrix;
+typedef SECore::Color Color;
+typedef SECore::Vector3 Vector3;
 
-typedef SECore::Mesh Mesh;
-typedef SECore::Texture Texture;
-typedef SECore::Shader IShader;
-typedef SECore::Material Material;
-typedef SECore::Renderer Renderer;
-typedef SECore::Animation Animation;
+typedef SECore::Object Object;
 
 typedef SECore::Scene IScene;
+typedef SECore::RenderTarget IRenderTarget;
 
+typedef SECore::Mesh IMesh;
+typedef SECore::Shader IShader;
+typedef SECore::Texture ITexture;
+typedef SECore::Material IMaterial;
+typedef SECore::Renderer IRenderer;
+typedef SECore::Animation IAnimation;
+
+class Scene;
+
+class Mesh;
+class Shader;
+class Texture;
+class Material;
+class Renderer;
+class Animation;
+
+class SceneEntity;
+class RenderEntity;
 
 template<class T>
 class RefObject : public T
@@ -42,3 +58,40 @@ public:
 private:
 	int mRefCount;
 };
+
+
+enum AlphaTestMode
+{
+	AlphaTestLess,
+	AlphaTestGreater,
+	AlphaTestLEqual,
+	AlphaTestGEqual,
+	AlphaTestEqual,
+	AlphaTestNotEqual,
+	AlphaTestAlways,
+};
+
+enum CBSlot
+{
+	eCBGlobal,
+	eCBModel,
+	eCBProperty,
+	eCBCount,
+};
+
+struct CBGlobal
+{
+	enum { slot = eCBGlobal };
+	Matrix MATRIX_VP;
+};
+
+#define MAX_BONE 256
+
+struct CBModel
+{
+	enum { slot = eCBModel };
+	Matrix MATRIX_M;
+	Matrix MATRIX_M_SKIN[MAX_BONE];
+};
+
+#define texture_slot_reserve 2

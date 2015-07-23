@@ -1,8 +1,8 @@
 #pragma once
 
-class MeshImpl : public Mesh
+class Mesh : public RefObject<IMesh>
 {
 public:
-	MeshImpl();
-	virtual ~MeshImpl();
+	Mesh();
+	virtual ~Mesh();
 };

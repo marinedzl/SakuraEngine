@@ -2,26 +2,26 @@
 #include "SceneEntity.h"
 #include "Animation.h"
 
-AnimationImpl::AnimationImpl(SceneEntity& owner)
+Animation::Animation(SceneEntity& owner)
 	: mOwner(owner)
 {
 }
 
-AnimationImpl::~AnimationImpl()
+Animation::~Animation()
 {
 }
 
-void AnimationImpl::Play(const char* clipname)
+void Animation::Play(const char* clipname)
 {
 
 }
 
-bool AnimationImpl::GetMatrix(Matrix* dst, size_t count) const
+bool Animation::GetMatrix(Matrix* dst, size_t count) const
 {
 	return false;
 }
 
-void AnimationImpl::Update(float deltaTime)
+void Animation::Update(float deltaTime)
 {
 
 }

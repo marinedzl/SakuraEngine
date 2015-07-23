@@ -75,6 +75,26 @@ void ReleaseMap(T& v)
 }
 
 template<typename T>
+void DeleteArray(T& v)
+{
+	for (size_t i = 0; i < v.size(); i++)
+	{
+		SAFE_DELETE(v[i]);
+	}
+	v.clear();
+}
+
+template<typename T>
+void ReleaseArray(T& v)
+{
+	for (size_t i = 0; i < v.size(); i++)
+	{
+		SAFE_RELEASE(v[i]);
+	}
+	v.clear();
+}
+
+template<typename T>
 void DeleteList(T& v)
 {
 	if (!v.empty())
@@ -103,3 +123,22 @@ void DeleteMap(T& v)
 		v.clear();
 	}
 }
+
+template<typename T>
+class array
+{
+public:
+	array() {}
+	~array() { clear(); }
+	size_t size() const { return _count; }
+	T& at(size_t index) const { return _elements[index]; }
+	void clear() { delete _elements; }
+	void resize(size_t count) { clear(); this->_count = count; _elements = new T[count]; }
+	T& operator [](size_t index) { return _elements[index]; }
+	const T& operator [](size_t index) const { return _elements[index]; }
+	T* ptr() { return _elements; }
+	const T* ptr() const { return _elements; }
+private:
+	size_t _count;
+	T* _elements;
+};

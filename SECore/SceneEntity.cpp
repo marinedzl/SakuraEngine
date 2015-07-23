@@ -29,15 +29,15 @@ void SceneEntity::DestroyRenderer()
 	SAFE_DELETE(mRenderer);
 }
 
-Renderer* SceneEntity::GetRenderer()
+IRenderer* SceneEntity::GetRenderer()
 {
 	return mRenderer;
 }
 
-Renderer* SceneEntity::CreateRenderer()
+IRenderer* SceneEntity::CreateRenderer()
 {
 	CHECK(!mRenderer);
-	mRenderer = new RendererImpl(*this);
+	mRenderer = new Renderer(*this);
 Exit0:
 	return mRenderer;
 }
@@ -47,15 +47,15 @@ void SceneEntity::DestroyAnimation()
 	SAFE_DELETE(mAnimation);
 }
 
-Animation* SceneEntity::GetAnimation()
+IAnimation* SceneEntity::GetAnimation()
 {
 	return mAnimation;
 }
 
-Animation* SceneEntity::CreateAnimation()
+IAnimation* SceneEntity::CreateAnimation()
 {
 	CHECK(!mAnimation);
-	mAnimation = new AnimationImpl(*this);
+	mAnimation = new Animation(*this);
 Exit0:
 	return mAnimation;
 }

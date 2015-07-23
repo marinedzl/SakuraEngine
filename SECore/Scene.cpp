@@ -52,14 +52,14 @@ void Scene::Draw()
 			if (!entity)
 				continue;
 
-			Renderer* renderer = entity->GetRenderer();
+			IRenderer* renderer = entity->GetRenderer();
 			if (!renderer)
 				continue;
 
 			size_t count = renderer->GetEntityCount();
 			for (size_t i = 0; i < count; ++i)
 			{
-				if (Renderer::Entity* renderEntity = renderer->GetEntity(i))
+				if (IRenderer::Entity* renderEntity = renderer->GetEntity(i))
 				{
 					gMeshRenderer.Draw(renderEntity);
 				}

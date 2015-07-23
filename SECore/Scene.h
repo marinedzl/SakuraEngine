@@ -1,6 +1,5 @@
 #pragma once
 
-class SceneEntity;
 class Scene : public IScene
 {
 public:

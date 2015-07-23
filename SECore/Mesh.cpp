@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "Mesh.h"
 
-MeshImpl::MeshImpl()
+Mesh::Mesh()
 {
 }
 
-MeshImpl::~MeshImpl()
+Mesh::~Mesh()
 {
 }

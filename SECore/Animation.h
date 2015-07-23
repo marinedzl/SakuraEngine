@@ -1,11 +1,10 @@
 #pragma once
 
-class SceneEntity;
-class AnimationImpl : public Animation
+class Animation : public IAnimation
 {
 public:
-	AnimationImpl(SceneEntity& owner);
-	virtual ~AnimationImpl();
+	Animation(SceneEntity& owner);
+	virtual ~Animation();
 public:
 	void Update(float deltaTime);
 public:

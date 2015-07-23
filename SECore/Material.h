@@ -1,8 +1,20 @@
 #pragma once
 
-class MaterialImpl : public RefObject<Material>
+class Material : public IMaterial
 {
 public:
-	MaterialImpl();
-	virtual ~MaterialImpl();
+	Material();
+	virtual ~Material();
+	virtual void Setup(size_t pass);
+	virtual size_t GetPassCount() const { return mPasses.size(); }
+	virtual void SetFloat(const char* name, float value);
+	virtual void SetColor(const char* name, const Color& value);
+	virtual void SetTexture(const char* name, ITexture* value);
+private:
+	void SetValue(const char* name, const char* data, int type, size_t size);
+private:
+	class Pass;
+private:
+	Shader* mShader;
+	array<Pass*> mPasses;
 };

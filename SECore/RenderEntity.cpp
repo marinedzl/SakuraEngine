@@ -1,32 +1,30 @@
 #include "stdafx.h"
+#include "Material.h"
 #include "SceneEntity.h"
 #include "RenderEntity.h"
 
 RenderEntity::RenderEntity(SceneEntity& owner)
 	: mOwner(owner)
 {
+	mMaterial = new Material();
 }
 
 RenderEntity::~RenderEntity()
 {
+	SAFE_DELETE(mMaterial);
 }
 
-Mesh* RenderEntity::GetMesh()
+IMesh* RenderEntity::GetMesh()
 {
 	return nullptr;
 }
 
-Material* RenderEntity::GetMaterial()
+IMaterial* RenderEntity::GetMaterial()
 {
-	return nullptr;
+	return mMaterial;
 }
 
-void RenderEntity::SetMesh(Mesh* mesh)
-{
-
-}
-
-void RenderEntity::SetMaterial(Material* material)
+void RenderEntity::SetMesh(IMesh* mesh)
 {
 
 }

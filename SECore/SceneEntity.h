@@ -1,7 +1,5 @@
 #pragma once
 
-class AnimationImpl;
-class RendererImpl;
 class SceneEntity : public IScene::Entity
 {
 public:
@@ -14,14 +12,14 @@ public:
 	virtual void Update(float deltaTime);
 public:
 	virtual void DestroyRenderer();
-	virtual Renderer* GetRenderer();
-	virtual Renderer* CreateRenderer();
+	virtual IRenderer* GetRenderer();
+	virtual IRenderer* CreateRenderer();
 public:
 	virtual void DestroyAnimation();
-	virtual Animation* GetAnimation();
-	virtual Animation* CreateAnimation();
+	virtual IAnimation* GetAnimation();
+	virtual IAnimation* CreateAnimation();
 private:
 	Matrix mWorld;
-	RendererImpl* mRenderer;
-	AnimationImpl* mAnimation;
+	Renderer* mRenderer;
+	Animation* mAnimation;
 };

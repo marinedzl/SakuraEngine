@@ -1,18 +1,17 @@
 #pragma once
 
-class SceneEntity;
-class RenderEntity : public Renderer::Entity
+class RenderEntity : public IRenderer::Entity
 {
 public:
 	RenderEntity(SceneEntity& owner);
 	virtual ~RenderEntity();
 public:
-	virtual Mesh* GetMesh();
-	virtual Material* GetMaterial();
-	virtual void SetMesh(Mesh* mesh);
-	virtual void SetMaterial(Material* material);
+	virtual IMesh* GetMesh();
+	virtual IMaterial* GetMaterial();
+	virtual void SetMesh(IMesh* mesh);
 	virtual const Matrix& GetWorld() const;
 	virtual void SetWorld(const Matrix& m);
 private:
 	SceneEntity& mOwner;
+	Material* mMaterial;
 };

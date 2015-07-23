@@ -30,9 +30,6 @@
     <ClInclude Include="Animation.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Base.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Core.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -61,6 +58,21 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderStateManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderWindow.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -102,6 +114,21 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBufferManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderStateManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderWindow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

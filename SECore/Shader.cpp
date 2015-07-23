@@ -7,8 +7,6 @@ Shader::Pass::Pass()
 	, BlendState(nullptr)
 	, CullMode(D3D11_CULL_BACK)
 	, DepthStencilState(nullptr)
-	, propertyCount(0)
-	, properties(nullptr)
 {
 
 }
@@ -17,7 +15,12 @@ Shader::Pass::~Pass()
 {
 	SAFE_RELEASE(VS);
 	SAFE_RELEASE(PS);
-	SAFE_DELETE(properties);
+}
+
+const Shader::Property* Shader::Pass::GetProperty(const char* name) const
+{
+	Properties::const_iterator iter = mProperties.find(name);
+	return iter == mProperties.end() ? nullptr : &iter->second;
 }
 
 Shader::Shader()
