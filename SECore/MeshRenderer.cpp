@@ -13,12 +13,11 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Release()
 {
-	delete this;
 }
 
 bool MeshRenderer::Init()
 {
-	return false;
+	return true;
 }
 
 void MeshRenderer::Begin()
