@@ -11,6 +11,32 @@
 #include "IGameError.h"
 #include "3dsmaxport.h"
 
+#include "Model.h"
+
+// Dummy function for progress bar
+DWORD WINAPI fnProgressBar(LPVOID arg)
+{
+	return(0);
+}
+
+// Replace some characters we don't care for.
+TCHAR* FixupName(TCHAR *buf)
+{
+	static TCHAR buffer[256];
+	TCHAR* cPtr;
+
+	_tcscpy_s(buffer, buf);
+	cPtr = buffer;
+
+	while (*cPtr) {
+		if (*cPtr == _T('"')) *cPtr = 39;	// Replace double-quote with single quote.
+		else if (*cPtr <= 31) *cPtr = _T('_');	// Replace control characters with underscore
+		cPtr++;
+	}
+
+	return buffer;
+}
+
 #define SEExporter_CLASS_ID Class_ID(0x79d613a4, 0x4f21c3ae)
 
 class SEExporter : public SceneExport
@@ -30,6 +56,10 @@ public:
 	BOOL SupportsOptions(int ext, DWORD options);
 	int DoExport(const TCHAR *name, ExpInterface *ei, Interface *i, BOOL suppressPrompts = FALSE, DWORD options = 0);
 
+	void ExportChildNode(IGameNode * child);
+
+	void DumpMesh(IGameNode* gn);
+
 	SEExporter();
 	~SEExporter();
 
@@ -40,13 +70,30 @@ public:
 	float exporterVersion;
 	bool showPrompts;
 	bool exportSelected;
-	int curNode;
 	int cS;
 	int staticFrame;
+	Model mModel;
 };
+
+class SEExporterClassDesc :public ClassDesc2 {
+public:
+	int IsPublic() { return TRUE; }
+	void * Create(BOOL loading = FALSE) { return new SEExporter(); }
+	const TCHAR *	ClassName() { return GetString(IDS_CLASS_NAME); }
+	SClass_ID SuperClassID() { return SCENE_EXPORT_CLASS_ID; }
+	Class_ID ClassID() { return SEExporter_CLASS_ID; }
+	const TCHAR* Category() { return GetString(IDS_CATEGORY); }
+	const TCHAR* InternalName() { return _T("SEExporter"); }	// returns fixed parsable name (scripter-visible name)
+	HINSTANCE HInstance() { return hInstance; }				// returns owning module handle
+};
+
+static SEExporterClassDesc SEExporterDesc;
+ClassDesc2* GetSEExporterClassDesc() { return &SEExporterDesc; }
 
 SEExporter::SEExporter()
 {
+	staticFrame = 0;
+	cS = IGameConversionManager::IGAME_D3D;
 	exporterVersion = 1.0f;
 }
 
@@ -132,13 +179,6 @@ public:
 	}
 };
 
-// Dummy function for progress bar
-DWORD WINAPI fnProgressBar(LPVOID arg)
-{
-	return(0);
-}
-
-
 INT_PTR CALLBACK ISEExporterOptionsDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	SEExporter *exp = DLGetWindowLongPtr<SEExporter*>(hWnd);
@@ -212,7 +252,6 @@ int SEExporter::DoExport(const TCHAR * name, ExpInterface * ei, Interface * i, B
 		}
 	}
 
-	curNode = 0;
 	ip->ProgressStart(_T("Exporting Using IGame.."), TRUE, fnProgressBar, NULL);
 
 	pIgame = GetIGameInterface();
@@ -222,7 +261,21 @@ int SEExporter::DoExport(const TCHAR * name, ExpInterface * ei, Interface * i, B
 	pIgame->InitialiseIGame(exportSelected);
 	pIgame->SetStaticFrame(staticFrame);
 
-	// TODO export
+	TSTR buf;
+	int topLevelCount = pIgame->GetTopLevelNodeCount();
+	for (int loop = 0; loop < topLevelCount; loop++)
+	{
+		IGameNode* pGameNode = pIgame->GetTopLevelNode(loop);
+
+		//check for selected state - we deal with targets in the light/camera section
+		if (pGameNode->IsTarget())
+			continue;
+
+		buf.printf(_T("Processing: %s"), pGameNode->GetName());
+		GetCOREInterface()->ProgressUpdate((int)((float)loop / pIgame->GetTotalNodeCount() * 100.0f), FALSE, buf.data());
+
+		ExportChildNode(pGameNode);
+	}
 
 	pIgame->ReleaseIGame();
 
@@ -230,19 +283,144 @@ int SEExporter::DoExport(const TCHAR * name, ExpInterface * ei, Interface * i, B
 	return TRUE;
 }
 
-class SEExporterClassDesc :public ClassDesc2 {
-public:
-	int 			IsPublic() { return TRUE; }
-	void *			Create(BOOL loading = FALSE) { return new SEExporter(); }
-	const TCHAR *	ClassName() { return GetString(IDS_CLASS_NAME); }
-	SClass_ID		SuperClassID() { return SCENE_EXPORT_CLASS_ID; }
-	Class_ID		ClassID() { return SEExporter_CLASS_ID; }
-	const TCHAR* 	Category() { return GetString(IDS_CATEGORY); }
+void SEExporter::ExportChildNode(IGameNode* child)
+{
+	IGameObject* obj = child->GetIGameObject();
+	IGameObject::MaxType T = obj->GetMaxType();
+	IGameObject::ObjectTypes igameType = obj->GetIGameType();
 
-	const TCHAR*	InternalName() { return _T("IGameExporter"); }	// returns fixed parsable name (scripter-visible name)
-	HINSTANCE		HInstance() { return hInstance; }				// returns owning module handle
+	switch (igameType)
+	{
+	case IGameObject::IGAME_MESH:
+	{
+		DumpMesh(child);
+	}
+	break;
+	case IGameObject::IGAME_BONE:
+	{
+	}
+	break;
+	}
+}
 
-};
+void ConvertVertex(Vector3& dst, const Point3& src)
+{
+	dst.x = src.x;
+	dst.y = src.y;
+	dst.z = src.z;
+}
 
-static SEExporterClassDesc SEExporterDesc;
-ClassDesc2* GetSEExporterClassDesc() { return &SEExporterDesc; }
+void ConvertVector3(Vector3& dst, const Point3& src)
+{
+	dst.x = src.x;
+	dst.y = src.y;
+	dst.z = src.z;
+}
+
+void SEExporter::DumpMesh(IGameNode* gn)
+{
+	CHECK(gn);
+
+	IGameMesh* gm = dynamic_cast<IGameMesh*>(gn->GetIGameObject());
+	CHECK(gm);
+
+	gm->SetCreateOptimizedNormalList();
+	CHECK(gm->InitializeData());
+
+	Model::Mesh* mesh = mModel.AddMesh(gn->GetName());
+
+	// dump Vertices
+	if (gm->GetNumberOfVerts() > 0)
+	{
+		int count = gm->GetNumberOfVerts();
+		mesh->CreateVertices(count);
+		for (int i = 0; i < count; ++i)
+		{
+			Point3 v;
+			gm->GetVertex(i, v);
+			ConvertVertex(mesh->GetVertex(i), v);
+		}
+	}
+
+	// dump Normals
+	if (gm->GetNumberOfNormals() > 0)
+	{
+		int count = gm->GetNumberOfVerts();
+		mesh->CreateNormals(count);
+		for (int i = 0; i < count; ++i)
+		{
+			Point3 v;
+			gm->GetNormal(i, v);
+			ConvertVector3(mesh->GetNormal(i), v);
+		}
+	}
+
+	{
+		Tab<int> matidTab = gm->GetActiveMatIDs();
+		if (matidTab.Count() > 0)
+		{
+
+		}
+	}
+
+	{
+		Tab <DWORD> smgrps = gm->GetActiveSmgrps();
+		if (smgrps.Count() > 0)
+		{
+
+		}
+	}
+
+	// dump Face data
+	if (gm->GetNumberOfFaces() > 0)
+	{
+		int count = gm->GetNumberOfFaces();
+		mesh->CreateFaces(count);
+		for (int i = 0; i < count; ++i)
+		{
+			Model::Face& face = mesh->GetFace(i);
+			FaceEx* f = gm->GetFace(i);
+			face.matID = f->matID;
+			face.smGrp = f->smGrp;
+			for (size_t i = 0; i < 3; i++)
+			{
+				face.vert[i] = f->vert[i];
+				face.norm[i] = f->norm[i];
+				face.edgeVis[i] = f->edgeVis[i];
+			}
+		}
+	}
+
+	{
+		Tab<int> mapNums = gm->GetActiveMapChannelNum();
+		if (mapNums.Count() > 0)
+		{
+			int count = mapNums.Count();
+			for (int i = 0; i < count; ++i)
+			{
+				int mapID = mapNums[i];
+
+				int vCount = gm->GetNumberOfMapVerts(mapID);
+				for (int j = 0; j < vCount; ++j)
+				{
+					Point3 v;
+					if (gm->GetMapVertex(mapID, j, v))
+					{
+					}
+				}
+
+				int fCount = gm->GetNumberOfFaces();
+				for (int k = 0; k < fCount; ++k)
+				{
+					DWORD v[3];
+					if (gm->GetMapFaceIndex(mapID, k, v))
+					{
+
+					}
+				}
+			}
+		}
+	}
+Exit0:
+	;
+}
