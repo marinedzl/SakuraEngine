@@ -1,56 +1,77 @@
 #pragma once
 
+struct Vector2
+{
+	float x, y;
+};
+
 struct Vector3
 {
 	float x, y, z;
 };
 
-class Model
+namespace ModelFile
 {
-public:
-	struct Face;
-	class Mesh;
-public:
-	Model();
-	virtual ~Model();
-	Mesh* AddMesh(const TCHAR* name);
-private:
-	std::vector<Mesh*> mMeshes;
-};
+	namespace VertexChannel
+	{
+		enum Type
+		{
+			Position = 0x1,
+			Normal = 0x2,
+			Tangent = 0x4,
+			TexCoords0 = 0x8,
+			TexCoords1 = 0x10,
+			TexCoords2 = 0x20,
+		};
+	};
 
-struct Model::Face
-{
-	UINT vert[3];
-	UINT norm[3];
-	UINT matID;
-	UINT smGrp;
-	UINT edgeVis[3];
-};
+	struct Vertex
+	{
+		Vector3 pos;
+		Vector3 norm;
+		Vector3 tan;
+		Vector2 uv0;
+		Vector2 uv1;
+		Vector2 uv2;
+	};
 
-class Model::Mesh
-{
-public:
-	Mesh(const TCHAR* name);
-	virtual ~Mesh();
+	class Mesh
+	{
+	public:
+		TString name;
+		TString mtlName;
+		UINT vertexChannels;
+		std::vector<Vertex> vertices;
+	};
 
-	void CreateFaces(int count);
-	void CreateVertices(int count);
-	void CreateNormals(int count);
+	class Material
+	{
+	public:
+		TString name;
+		Vector3 ambient;
+		Vector3 diffuse;
+		Vector3 specular;
+		Vector3 emissive;
+		float opacity;
+		float glossiness;
+		float specularLevel;
+		float emissiveAmount;
+		std::map<std::string, TString> textures;
+	};
 
-	int GetFaceCount() const { return mFaceCount; }
-	int GetVertexCount() const { return mNormalCount; }
-	int GetNormalCount() const { return mVertexCount; }
-
-	Face& GetFace(int index) { return mFaces[index]; }
-	Vector3& GetVertex(int index) { return mVertices[index]; }
-	Vector3& GetNormal(int index) { return mNormals[index]; }
-
-private:
-	TString mName;
-	int mFaceCount;
-	int mVertexCount;
-	int mNormalCount;
-	Face* mFaces;
-	Vector3* mVertices;
-	Vector3* mNormals;
-};
+	class Model
+	{
+	public:
+		Model();
+		virtual ~Model();
+		Mesh* AddMesh(const TCHAR* name);
+		Material* AddMaterial(const TCHAR* name);
+		Material* GetMaterial(const TCHAR* name);
+		void WriteFile(const TCHAR* path, const TCHAR* name);
+	private:
+		typedef std::map<TString, Material*> Materials;
+	private:
+		std::vector<Mesh*> mMeshes;
+		Materials mMaterials;
+	};
+}
