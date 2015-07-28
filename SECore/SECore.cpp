@@ -6,9 +6,9 @@
 
 namespace SECore
 {
-	SECORE_API bool InitCore()
+	SECORE_API bool InitCore(const char* resourePath)
 	{
-		return gCore.Init();
+		return gCore.Init(resourePath);
 	}
 
 	SECORE_API void ReleaseCore()

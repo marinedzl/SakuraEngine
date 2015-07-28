@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Core.h"
+#include "ImageData.h"
 #include "Texture.h"
 
 Texture::Texture()
@@ -73,6 +74,24 @@ bool Texture::Create(UINT w, UINT h, const void* bits)
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	CHECK(SUCCEEDED(device->CreateSamplerState(&samplerDesc, &mSampler)));
+
+	ret = true;
+Exit0:
+	return ret;
+}
+
+bool Texture::LoadFromFile(const char* filename)
+{
+	bool ret = false;
+	ImageData imageData;
+
+	CHECK(filename);
+	CHECK(imageData.LoadFromFile(filename));
+
+	mWidth = imageData.GetWidth();
+	mHeight = imageData.GetHegiht();
+
+	ret = Create(mWidth, mHeight, imageData.GetBits());
 
 	ret = true;
 Exit0:

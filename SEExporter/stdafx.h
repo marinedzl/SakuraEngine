@@ -16,7 +16,9 @@
 // TODO:  在此处引用程序需要的其他头文件
 #include "Base.h"
 #include <tchar.h>
+#include <json\json.h>
 typedef std::wstring TString;
 void log(const TCHAR* fmt, ...);
 
 std::string WStr2MStr(const std::wstring& src);
+bool CreateMultiDir(const TCHAR* lpDir);

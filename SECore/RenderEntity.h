@@ -14,4 +14,5 @@ public:
 private:
 	SceneEntity& mOwner;
 	Material* mMaterial;
+	Mesh* mMesh;
 };

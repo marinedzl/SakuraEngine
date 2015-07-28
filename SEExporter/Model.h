@@ -41,6 +41,7 @@ namespace ModelFile
 		TString name;
 		TString mtlName;
 		UINT vertexChannels;
+		std::vector<USHORT> indices;
 		std::vector<Vertex> vertices;
 	};
 
@@ -68,6 +69,7 @@ namespace ModelFile
 		Material* AddMaterial(const TCHAR* name);
 		Material* GetMaterial(const TCHAR* name);
 		void WriteFile(const TCHAR* path, const TCHAR* name);
+		void OptMesh();
 	private:
 		typedef std::map<TString, Material*> Materials;
 	private:

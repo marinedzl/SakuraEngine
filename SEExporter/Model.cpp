@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <json\json.h>
+#include "SECore/FileFormat.h"
 #include "Model.h"
 
 namespace ModelFile
@@ -38,22 +38,9 @@ namespace ModelFile
 
 	void WriteMesh(const TCHAR* path, const Mesh* mesh)
 	{
-		struct Head
-		{
-			UINT vertexChannels;
-			UINT vertexCount;
-			UINT blockCount;
-		};
-
-		struct Block
-		{
-			UINT type;
-			UINT size;
-		};
-
-		Head head;
-		Block block;
-		std::vector<Block> blocks;
+		MeshFile::Head head;
+		MeshFile::Block block;
+		std::vector<MeshFile::Block> blocks;
 		TString filename;
 		FILE* file = nullptr;
 		
@@ -63,59 +50,66 @@ namespace ModelFile
 		_wfopen_s(&file, filename.c_str(), _T("wb"));
 		CHECK(file);
 
-		head.vertexChannels = (UINT)mesh->vertexChannels;
+		head.version = 100;
+		head.indexCount = (UINT)mesh->indices.size();
 		head.vertexCount = (UINT)mesh->vertices.size();
 
-		if (head.vertexChannels & VertexChannel::Position)
+		block.type = MeshFile::Block::Face;
+		block.size = sizeof(USHORT) * head.indexCount;
+		blocks.push_back(block);
+
+		if (mesh->vertexChannels & VertexChannel::Position)
 		{
-			block.type = VertexChannel::Position;
+			block.type = MeshFile::Block::Position;
 			block.size = sizeof(Vector3) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
-		if (head.vertexChannels & VertexChannel::Normal)
+		if (mesh->vertexChannels & VertexChannel::Normal)
 		{
-			block.type = VertexChannel::Normal;
+			block.type = MeshFile::Block::Normal;
 			block.size = sizeof(Vector3) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
-		if (head.vertexChannels & VertexChannel::Tangent)
+		if (mesh->vertexChannels & VertexChannel::Tangent)
 		{
-			block.type = VertexChannel::Tangent;
+			block.type = MeshFile::Block::Tangent;
 			block.size = sizeof(Vector3) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
-		if (head.vertexChannels & VertexChannel::TexCoords0)
+		if (mesh->vertexChannels & VertexChannel::TexCoords0)
 		{
-			block.type = VertexChannel::TexCoords0;
+			block.type = MeshFile::Block::TexCoords0;
 			block.size = sizeof(Vector2) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
-		if (head.vertexChannels & VertexChannel::TexCoords1)
+		if (mesh->vertexChannels & VertexChannel::TexCoords1)
 		{
-			block.type = VertexChannel::TexCoords1;
+			block.type = MeshFile::Block::TexCoords1;
 			block.size = sizeof(Vector2) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
-		if (head.vertexChannels & VertexChannel::TexCoords2)
+		if (mesh->vertexChannels & VertexChannel::TexCoords2)
 		{
-			block.type = VertexChannel::TexCoords2;
+			block.type = MeshFile::Block::TexCoords2;
 			block.size = sizeof(Vector2) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
 		head.blockCount = (UINT)blocks.size();
 
-		fwrite(&head, sizeof(Head), 1, file);
-		fwrite(&blocks[0], sizeof(Block), head.blockCount, file);
+		fwrite(&head, sizeof(MeshFile::Head), 1, file);
+		fwrite(&blocks[0], sizeof(MeshFile::Block), head.blockCount, file);
+
+		fwrite(&mesh->indices[0], sizeof(USHORT), head.indexCount, file);
 
 		for (size_t i = 0; i < head.blockCount; ++i)
 		{
-			switch (block.type)
+			switch (blocks[i].type)
 			{
 			case VertexChannel::Position:
 			{
@@ -181,16 +175,6 @@ namespace ModelFile
 		int b = (int)(color.z * factor);
 		return r << 16 | g << 8 | b;
 	}
-	/*
-	Color ConvertDwordToColor(DWORD dw)
-	{
-		static const float factor = 1 / 255.0f;
-		int a = dw & 255;
-		int b = dw >> 8 & 255;
-		int g = dw >> 16 & 255;
-		int r = dw >> 24 & 255;
-		return Color(r * factor, g * factor, b * factor, a * factor);
-	}*/
 
 	void AddColorNode(Json::Value& mtlNode, const char* name, const Vector3& src)
 	{
@@ -207,15 +191,16 @@ namespace ModelFile
 		mtlNode[name] = d;
 	}
 
-	void WriteMaterial(Json::Value& mtlNode, const Material* material)
+	void WriteMaterial(Json::Value& mtlNode, const Material* material, const TString& path)
 	{
+		mtlNode["Shader"] = "Normal-Diffuse";
 		for (size_t i = 0; i < material->textures.size(); i++)
 		{
 			std::map<std::string, TString>::const_iterator iter = material->textures.begin();
 			std::map<std::string, TString>::const_iterator iterEnd = material->textures.end();
 			for (; iter != iterEnd; ++iter)
 			{
-				mtlNode["Textures"][iter->first] = WStr2MStr(iter->second);
+				mtlNode["Textures"][iter->first] = WStr2MStr(path + iter->second);
 				AddColorNode(mtlNode, "Ambient", material->ambient);
 				AddColorNode(mtlNode, "Diffuse", material->diffuse);
 				AddColorNode(mtlNode, "Specular", material->specular);
@@ -231,27 +216,55 @@ namespace ModelFile
 	void Model::WriteFile(const TCHAR* path, const TCHAR* name)
 	{
 		Json::Value root;
-		TString filename = path;
+		Json::Value entity;
+		TString strFullPath = path;
+		TString strPath = name;
 
-		filename += _T("\\");
+		strPath += _T("\\");
+		strFullPath += _T("\\");
+
+		strFullPath += name;
+		CreateMultiDir(strFullPath.c_str());
+		strFullPath += _T("\\");
+
+		entity["Name"] = WStr2MStr(name);
 
 		for (size_t i = 0; i < mMeshes.size(); i++)
 		{
 			Mesh* mesh = mMeshes[i];
 			Json::Value value;
-			value["Mesh"] = WStr2MStr(mesh->name);
+			value["Mesh"] = WStr2MStr(strPath + mesh->name + _T(".mesh"));
 			if (Material* material = GetMaterial(mesh->mtlName.c_str()))
 			{
 				Json::Value mtl;
-				WriteMaterial(mtl, material);
+				WriteMaterial(mtl, material, strPath);
 				value["Material"] = mtl;
 			}
-			root.append(value);
-			WriteMesh(filename.c_str(), mMeshes[i]);
+			entity["Renderer"].append(value);
+			WriteMesh(strFullPath.c_str(), mMeshes[i]);
 		}
 
-		filename += name;
-		filename += _T(".mdl");
-		WriteJsonToFile(root, filename.c_str());
+		root["Entities"].append(entity);
+
+		strFullPath = path;
+		strFullPath += _T("\\");
+		strFullPath += name;
+		strFullPath += _T(".mdl");
+		WriteJsonToFile(root, strFullPath.c_str());
+	}
+
+	void Model::OptMesh()
+	{
+		size_t meshCount = mMeshes.size();
+		for (size_t i = 0; i < meshCount; i++)
+		{
+			Mesh* mesh = mMeshes[i];
+			size_t vertexCount = mesh->vertices.size();
+			mesh->indices.reserve(vertexCount);
+			for (size_t j = 0; j < vertexCount; j++)
+			{
+				mesh->indices.push_back(j);
+			}
+		}
 	}
 }

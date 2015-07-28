@@ -2,6 +2,8 @@
 #include "ConstantBufferManager.h"
 #include "RenderStateManager.h"
 #include "MeshRenderer.h"
+#include "ShaderCompiler.h"
+#include "ResourceManager.h"
 #include "Core.h"
 
 Core gCore;
@@ -14,13 +16,17 @@ Core::~Core()
 {
 }
 
-bool Core::Init()
+bool Core::Init(const char* resourePath)
 {
 	bool ret = false;
 
+	mWorkpath = resourePath;
+
 	CHECK(CreateDevice());
+	CHECK(gResourceManager.Init());
 	CHECK(gConstantBufferManager.Init());
 	CHECK(gRenderStateManager.Init());
+	CHECK(gShaderCompiler.Init());
 	CHECK(gMeshRenderer.Init());
 
 	ret = true;
@@ -31,8 +37,10 @@ Exit0:
 void Core::Release()
 {
 	gMeshRenderer.Release();
+	gShaderCompiler.Release();
 	gRenderStateManager.Release();
 	gConstantBufferManager.Release();
+	gResourceManager.Release();
 
 	SAFE_RELEASE(mDxgiFactory);
 	SAFE_RELEASE(mContext);

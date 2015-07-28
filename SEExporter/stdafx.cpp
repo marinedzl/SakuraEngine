@@ -3,6 +3,8 @@
 // stdafx.obj 将包含预编译类型信息
 
 #include "stdafx.h"
+#include <io.h>
+#include <tchar.h>
 
 // TODO: 在 STDAFX.H 中引用任何所需的附加头文件，
 //而不是在此文件中引用
@@ -49,4 +51,51 @@ std::string WStr2MStr(const std::wstring& src)
 	ret = buff;
 	delete buff;
 	return ret;
+}
+
+bool IsPathExist(const TCHAR* path)
+{
+	return _taccess(path, 0) != -1;
+}
+
+inline TCHAR* strrchrm(TCHAR* _str, const TCHAR* _cmp)
+{
+	TCHAR* _end = _str + _tcslen(_str) - 1;
+	while (_end != _str)
+	{
+		const TCHAR* _ch = _cmp;
+		while (*_ch != _T('\0'))
+		{
+			if (*_ch == *_end)
+			{
+				return _end;
+			}
+			++_ch;
+		}
+		--_end;
+	}
+	return NULL;
+}
+
+bool CreateMultiDir(const TCHAR* lpDir)
+{
+	if (!lpDir || *lpDir == '\0')
+		return false;
+
+	if (IsPathExist(lpDir))
+		return true;
+
+	if (!CreateDirectory(lpDir, NULL))
+	{
+		WCHAR szParentDir[MAX_PATH] = { 0 };
+		_tcscpy_s(szParentDir, MAX_PATH, lpDir);
+		TCHAR * pEnd = strrchrm(szParentDir, _T("/\\"));
+		if (!pEnd)
+			return false;
+		*pEnd = _T('\0');
+		CreateMultiDir(szParentDir);
+		CreateDirectory(lpDir, NULL);
+	}
+
+	return true;
 }

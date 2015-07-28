@@ -313,6 +313,7 @@ int SEExporter::DoExport(const TCHAR * name, ExpInterface* ei, Interface* i, BOO
 	TSTR path, file, ext;
 	SplitFilename(TSTR(name), &path, &file, &ext);
 
+	mModel.OptMesh();
 	mModel.WriteFile(path, file);
 
 	ip->ProgressEnd();

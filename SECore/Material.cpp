@@ -11,6 +11,20 @@ class Material::Pass
 public:
 	Pass() {}
 	virtual ~Pass() { ReleaseArray(mTextures); }
+	bool Init(size_t buffSize, size_t textureCount)
+	{
+		if (buffSize > 0)
+		{
+			mBuffer.resize(buffSize);
+		}
+		if (textureCount > 0)
+		{
+			mTextures.resize(textureCount);
+			for (size_t i = 0; i < textureCount; i++)
+				mTextures[i] = nullptr;
+		}
+		return true;
+	}
 	size_t GetBufferSize() const { return mBuffer.size(); }
 	const char* GetBuffer() const { return mBuffer.ptr(); }
 	void SetData(const char* data, size_t offset, size_t size)
@@ -21,11 +35,16 @@ public:
 	Texture* GetTexture(size_t index) const { return mTextures[index]; }
 	void SetTexture(Texture* texture, size_t index)
 	{
-
+		CHECK(index < mTextures.size());
+		SAFE_RELEASE(mTextures[index]);
+		mTextures[index] = texture;
+		texture->AddRef();
+	Exit0:
+		;
 	}
 private:
 	array<Texture*> mTextures;
-	array<char> mBuffer;
+	buffer mBuffer;
 };
 
 Material::Material()
@@ -34,8 +53,41 @@ Material::Material()
 
 Material::~Material()
 {
+	Clear();
+}
+
+void Material::Clear()
+{
 	SAFE_RELEASE(mShader);
 	DeleteArray(mPasses);
+}
+
+void Material::SetShader(IShader* shader)
+{
+	Clear();
+	if (Shader* s = dynamic_cast<Shader*>(shader))
+	{
+		mShader = s;
+		mShader->AddRef();
+	}
+	Reload();
+}
+
+void Material::Reload()
+{
+	if (!mShader)
+		return;
+
+	size_t count = mShader->GetPassCount();
+	mPasses.resize(count);
+
+	for (size_t i = 0; i < count; i++)
+	{
+		const Shader::Pass* spass = mShader->GetPass(i);
+		Pass* pass = new Pass();
+		pass->Init(spass->buffSize, spass->textureCount);
+		mPasses[i] = pass;
+	}
 }
 
 void Material::Setup(size_t passIndex)
@@ -111,7 +163,7 @@ void Material::SetTexture(const char* name, ITexture* value)
 		const Shader::Pass* spass = mShader->GetPass(i);
 		if (const Shader::Property* sprop = spass->GetProperty(name))
 		{
-			CHECK(sprop->type == Shader::Property::Texture);
+			CHECK(sprop->type == Shader::Property::Texture2D);
 			Pass* pass = mPasses[i];
 			CHECK(pass);
 			CHECK(sprop->offset < pass->GetTextureCount());

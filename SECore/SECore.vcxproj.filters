@@ -75,6 +75,21 @@
     <ClInclude Include="RenderWindow.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCompiler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\SECore\FileFormat.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -131,5 +146,28 @@
     <ClCompile Include="RenderWindow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderCompiler.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shader\AlphaTest-Diffuse.hlsl" />
+    <FxCompile Include="shader\HighlightPS.hlsl" />
+    <FxCompile Include="shader\HighlightVS.hlsl" />
+    <FxCompile Include="shader\Mesh.hlsl" />
+    <FxCompile Include="shader\Normal-Diffuse.hlsl" />
+    <FxCompile Include="shader\SkinnedMesh.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\common.hlsli" />
   </ItemGroup>
 </Project>

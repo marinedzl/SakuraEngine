@@ -8,7 +8,7 @@
 
 namespace SECore
 {
-	SECORE_API bool InitCore();
+	SECORE_API bool InitCore(const char* resourePath);
 	SECORE_API void ReleaseCore();
 	SECORE_API Scene* CreateScene(void);
 	SECORE_API RenderTarget* CreateRenderTarget(HWND hWnd);

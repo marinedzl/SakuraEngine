@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Mesh.h"
 #include "Material.h"
 #include "SceneEntity.h"
 #include "RenderEntity.h"
@@ -12,11 +13,12 @@ RenderEntity::RenderEntity(SceneEntity& owner)
 RenderEntity::~RenderEntity()
 {
 	SAFE_DELETE(mMaterial);
+	SAFE_RELEASE(mMesh);
 }
 
 IMesh* RenderEntity::GetMesh()
 {
-	return nullptr;
+	return mMesh;
 }
 
 IMaterial* RenderEntity::GetMaterial()
@@ -26,7 +28,12 @@ IMaterial* RenderEntity::GetMaterial()
 
 void RenderEntity::SetMesh(IMesh* mesh)
 {
-
+	SAFE_RELEASE(mMesh);
+	if (Mesh* m = dynamic_cast<Mesh*>(mesh))
+	{
+		mMesh = m;
+		mMesh->AddRef();
+	}
 }
 
 const Matrix& RenderEntity::GetWorld() const

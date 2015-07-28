@@ -22,7 +22,16 @@ void TestMan::Release()
 
 void TestMan::Init()
 {
-	CHECK(SECore::InitCore());
+	char buff[MAX_PATH];
+	GetCurrentDirectoryA(MAX_PATH, buff);
+
+	std::string workpath = buff;
+	workpath += "\\";
+
+	CHECK(SECore::InitCore(workpath.c_str()));
+	mScene = SECore::CreateScene();
+	CHECK(mScene);
+	CHECK(mScene->LoadAdditive("scene.json"));
 Exit0:
 	;
 }
@@ -34,9 +43,18 @@ void TestMan::CreateWnd(HWND hWnd)
 
 void TestMan::Process()
 {
+	if (mScene)
+	{
+		mScene->Update(0);
+	}
+
 	if (mRT)
 	{
 		mRT->Begin();
+		if (mScene)
+		{
+			mScene->Draw();
+		}
 		mRT->End();
 	}
 }

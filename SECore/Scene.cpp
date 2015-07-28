@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MeshRenderer.h"
 #include "SceneEntity.h"
+#include "SceneLoader.h"
 #include "Scene.h"
 
 Scene::Scene()
@@ -36,6 +37,11 @@ void Scene::RemoveEntity(Entity* entity)
 void Scene::ClearEntities()
 {
 	DeleteList(mEntities);
+}
+
+bool Scene::LoadAdditive(const char * filename)
+{
+	return SceneLoader::Load(this, filename);
 }
 
 void Scene::Draw()

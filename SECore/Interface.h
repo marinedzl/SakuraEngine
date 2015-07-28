@@ -2,6 +2,40 @@
 
 namespace SECore
 {
+	struct Vector2
+	{
+		float x, y;
+		Vector2() : x(0), y(0) {}
+		Vector2(float x, float y) : x(x), y(y) {}
+		Vector2 operator+(const Vector2& other)
+		{
+			return Vector2(this->x + other.x, this->y + other.y);
+		}
+		Vector2 operator-(const Vector2& other)
+		{
+			return Vector2(this->x - other.x, this->y - other.y);
+		}
+		Vector2 operator*(const Vector2& other)
+		{
+			return Vector2(this->x * other.x, this->y * other.y);
+		}
+	};
+
+	inline Vector2 operator+(const Vector2& a, const Vector2& b)
+	{
+		return Vector2(a.x + b.x, a.y + b.y);
+	}
+
+	inline Vector2 operator-(const Vector2& a, const Vector2& b)
+	{
+		return Vector2(a.x - b.x, a.y - b.y);
+	}
+
+	inline Vector2 operator*(const Vector2& a, float b)
+	{
+		return Vector2(a.x * b, a.y * b);
+	}
+
 	struct Vector3
 	{
 		float x, y, z;
@@ -99,6 +133,7 @@ namespace SECore
 
 	struct Material
 	{
+		virtual void SetShader(Shader* shader) = 0;
 		virtual void SetFloat(const char* name, float value) = 0;
 		virtual void SetColor(const char* name, const Color& value) = 0;
 		virtual void SetTexture(const char* name, Texture* value) = 0;
@@ -130,6 +165,9 @@ namespace SECore
 	{
 		struct Entity
 		{
+			virtual void SetName(const char* name) = 0;
+			virtual const char* GetName() const = 0;
+
 			virtual void DestroyRenderer() = 0;
 			virtual Renderer* GetRenderer() = 0;
 			virtual Renderer* CreateRenderer() = 0;
@@ -150,6 +188,8 @@ namespace SECore
 		virtual void ClearEntities() = 0;
 		virtual Entity* CreateEntity() = 0;
 		virtual void RemoveEntity(Entity* entity) = 0;
+
+		virtual bool LoadAdditive(const char* filename) = 0;
 	};
 
 	struct RenderTarget : Object

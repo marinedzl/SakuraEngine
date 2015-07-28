@@ -1,7 +1,8 @@
 #pragma once
 
-class Shader : public RefObject<IShader>
+class Shader : public TRefObject<IShader>
 {
+	friend class ShaderCompiler;
 public:
 	struct Property
 	{
@@ -11,17 +12,17 @@ public:
 			Vector3,
 			Vector4,
 			Color,
-			Texture,
+			Texture2D,
 		};
-		int type;
+		Type type;
 		size_t offset;
-		char name[32];
 	};
 	struct Pass
 	{
 	public:
 		Pass();
 		virtual ~Pass();
+		Property* AddProperty(const char* name);
 		const Property* GetProperty(const char* name) const;
 	public:
 		ID3D11VertexShader* VS;
@@ -29,14 +30,17 @@ public:
 		ID3D11BlendState* BlendState;
 		D3D11_CULL_MODE CullMode;
 		ID3D11DepthStencilState* DepthStencilState;
+		size_t buffSize;
+		size_t textureCount;
 	private:
-		typedef std::map<std::string, Property> Properties;
+		typedef std::map<std::string, Property*> Properties;
 	private:
 		Properties mProperties;
 	};
 public:
 	Shader();
 	virtual ~Shader();
+	virtual bool LoadFromFile(const char* filename);
 	size_t GetPassCount() const { return mPasses.size(); }
 	const Pass* GetPass(size_t index) const { return mPasses[index]; }
 private:

@@ -18,12 +18,19 @@
 #include "Interface.h"
 
 #include <d3d11.h>
+#include <DirectXMath.h>
+using namespace DirectX;
+#include <json\json.h>
 
 typedef SECore::Matrix Matrix;
 typedef SECore::Color Color;
+typedef SECore::Vector2 Vector2;
 typedef SECore::Vector3 Vector3;
+typedef SECore::Vector4 Vector4;
+typedef SECore::Quat Quat;
 
 typedef SECore::Object Object;
+typedef SECore::RefObject RefObject;
 
 typedef SECore::Scene IScene;
 typedef SECore::RenderTarget IRenderTarget;
@@ -48,13 +55,13 @@ class SceneEntity;
 class RenderEntity;
 
 template<class T>
-class RefObject : public T
+class TRefObject : public T
 {
 public:
-	RefObject() : mRefCount(0) {}
-	virtual ~RefObject() {}
+	TRefObject() : mRefCount(0) {}
+	virtual ~TRefObject() {}
 	virtual void AddRef() { ++mRefCount; }
-	virtual void Release() { --mRefCount; if (mRefCount <= 0) delete this; }
+	virtual void Release() { --mRefCount; }
 private:
 	int mRefCount;
 };
@@ -95,3 +102,45 @@ struct CBModel
 };
 
 #define texture_slot_reserve 2
+
+class buffer
+{
+public:
+	buffer();
+	~buffer();
+	void clear();
+	void resize(size_t size);
+	char* ptr() { return _ptr; }
+	const char* ptr() const { return _ptr; }
+	size_t size() const { return _size; }
+private:
+	char* _ptr;
+	size_t _size;
+};
+
+bool LoadBinaryFile(buffer& buff, const char* filename);
+bool LoadTextFile(buffer& buff, const char* filename);
+
+struct SplitPath
+{
+	char drive[_MAX_DRIVE];
+	char dir[_MAX_DIR];
+	char fname[_MAX_FNAME];
+	char ext[_MAX_EXT];
+
+	bool Split(const char* filename);
+
+	std::string GetPath() const
+	{
+		std::string ret = drive;
+		ret += dir;
+		if (ret.empty())
+		{
+			ret = ".";
+		}
+		return ret;
+	}
+};
+
+void AffineTransform(Matrix& mat, const Vector3& position, const Quat& rotation, const Vector3& scaling);
+bool MatrixDecompose(const Matrix& mat, Vector3& position, Quat& rotation, Vector3& scaling);
