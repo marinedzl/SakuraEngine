@@ -41,6 +41,7 @@ typedef SECore::Texture ITexture;
 typedef SECore::Material IMaterial;
 typedef SECore::Renderer IRenderer;
 typedef SECore::Animation IAnimation;
+typedef SECore::Camera ICamera;
 
 class Scene;
 
@@ -141,6 +142,31 @@ struct SplitPath
 		return ret;
 	}
 };
+
+inline void MatrixMul(Matrix& dst, const Matrix& m0, const Matrix& m1)
+{
+	XMStoreFloat4x4((XMFLOAT4X4*)&dst, XMLoadFloat4x4((const XMFLOAT4X4*)&m0) * XMLoadFloat4x4((const XMFLOAT4X4*)&m1));
+}
+
+inline XMVECTOR XMLoadFloat3(const Vector3& src)
+{
+	return XMLoadFloat3((const XMFLOAT3*)&src);
+}
+
+inline XMVECTOR XMLoadFloat4(const Vector4& src)
+{
+	return XMLoadFloat4((const XMFLOAT4*)&src);
+}
+
+inline XMVECTOR XMLoadFloat4(const Quat& src)
+{
+	return XMLoadFloat4((const XMFLOAT4*)&src);
+}
+
+inline void XMStoreFloat4x4(Matrix& dst, const XMMATRIX& M)
+{
+	XMStoreFloat4x4((XMFLOAT4X4*)&dst, M);
+}
 
 void AffineTransform(Matrix& mat, const Vector3& position, const Quat& rotation, const Vector3& scaling);
 bool MatrixDecompose(const Matrix& mat, Vector3& position, Quat& rotation, Vector3& scaling);

@@ -132,7 +132,7 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 						const Json::Value& texRoot = mtlRoot["Textures"];
 						if (texRoot.isMember("_MainTex"))
 						{
-							ITexture* texture = gResourceManager.LoadTexture(texRoot["Diffuse"].asCString());
+							ITexture* texture = gResourceManager.LoadTexture(texRoot["_MainTex"].asCString());
 							material->SetTexture("_MainTex", texture);
 							texture->Release();
 						}

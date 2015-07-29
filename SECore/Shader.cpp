@@ -40,6 +40,7 @@ Shader::Shader()
 
 Shader::~Shader()
 {
+	DeleteList(mPasses);
 }
 
 bool Shader::LoadFromFile(const char* filename)

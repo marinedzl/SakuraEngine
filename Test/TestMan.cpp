@@ -53,7 +53,7 @@ void TestMan::Process()
 		mRT->Begin();
 		if (mScene)
 		{
-			mScene->Draw();
+			mScene->Draw(mRT);
 		}
 		mRT->End();
 	}

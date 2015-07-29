@@ -10,6 +10,7 @@ Renderer::Renderer(SceneEntity& owner)
 
 Renderer::~Renderer()
 {
+	ClearEntities();
 }
 
 void Renderer::ClearEntities()

@@ -109,26 +109,29 @@ namespace SECore
 
 	struct Object
 	{
+		virtual ~Object() {}
 		virtual void Release() = 0;
 	};
 
 	struct RefObject : Object
 	{
+		virtual ~RefObject() {}
 		virtual void AddRef() = 0;
 	};
 
 	struct Mesh : RefObject
 	{
-
+		virtual ~Mesh() {}
 	};
 
 	struct Texture : RefObject
 	{
-
+		virtual ~Texture() {}
 	};
 
 	struct Shader : RefObject
 	{
+		virtual ~Shader() {}
 	};
 
 	struct Material
@@ -161,6 +164,39 @@ namespace SECore
 		virtual Entity* GetEntity(size_t index) = 0;
 	};
 
+	struct RenderTarget : Object
+	{
+		virtual bool Begin() = 0;
+		virtual void End() = 0;
+		virtual float GetWidth() const = 0;
+		virtual float GetHeight() const = 0;
+		virtual void ClearDepth() = 0;
+	};
+
+	struct Camera
+	{
+		enum ProjectType
+		{
+			Perspective,
+			Orthographic,
+		} projectType;
+
+		virtual const Vector3& GetEye() = 0;
+		virtual const Vector3& GetLookAt() = 0;
+		virtual const Vector3& GetUp() = 0;
+
+		virtual float GetFov() = 0;
+		virtual float GetZNear() const = 0;
+		virtual float GetZFar() = 0;
+
+		virtual void SetEye(const Vector3& v) = 0;
+		virtual void SetLookAt(const Vector3& v) = 0;
+		virtual void SetUp(const Vector3& v) = 0;
+
+		virtual void ScreenToWorld(const Vector3& src, Vector3& dst) = 0;
+		virtual void WorldToScreen(const Vector3& src, Vector3& dst) = 0;
+	};
+
 	struct Scene : public Object
 	{
 		struct Entity
@@ -182,7 +218,7 @@ namespace SECore
 			virtual void SetWorld(const Matrix& m) = 0;
 		};
 
-		virtual void Draw() = 0;
+		virtual void Draw(RenderTarget* rt) = 0;
 		virtual void Update(float deltaTime) = 0;
 
 		virtual void ClearEntities() = 0;
@@ -190,14 +226,5 @@ namespace SECore
 		virtual void RemoveEntity(Entity* entity) = 0;
 
 		virtual bool LoadAdditive(const char* filename) = 0;
-	};
-
-	struct RenderTarget : Object
-	{
-		virtual bool Begin() = 0;
-		virtual void End() = 0;
-		virtual float GetWidth() const = 0;
-		virtual float GetHeight() const = 0;
-		virtual void ClearDepth() = 0;
 	};
 }

@@ -132,7 +132,7 @@ public:
 	~array() { clear(); }
 	size_t size() const { return _count; }
 	T& at(size_t index) const { return _elements[index]; }
-	void clear() { delete _elements; }
+	void clear() { delete _elements; _elements = nullptr; }
 	void resize(size_t count) { clear(); this->_count = count; _elements = new T[count]; }
 	T& operator [](size_t index) { return _elements[index]; }
 	const T& operator [](size_t index) const { return _elements[index]; }

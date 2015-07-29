@@ -270,11 +270,11 @@ bool ShaderCompiler::ParsePass(Shader* shader, const Json::Value& root, const st
 		}
 		else if (key == "BufferSize")
 		{
-			pass->buffSize = child[1].asInt();
+			pass->buffSize = child[2].asInt();
 		}
 		else if (key == "TextureCount")
 		{
-			pass->textureCount = child[1].asInt();
+			pass->textureCount = child[2].asInt();
 		}
 		else
 		{

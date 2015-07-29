@@ -18,7 +18,19 @@ namespace SECore
 
 	SECORE_API Scene* CreateScene(void)
 	{
-		return new ::Scene();
+		if (::Scene* scene = new ::Scene())
+		{
+			if (!scene->Init())
+			{
+				delete scene;
+				scene = nullptr;
+			}
+			else
+			{
+				return scene;
+			}
+		}
+		return nullptr;
 	}
 
 	SECORE_API RenderTarget * CreateRenderTarget(HWND hWnd)

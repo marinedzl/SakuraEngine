@@ -31,7 +31,9 @@ ITexture* ResourceManager::LoadTexture(const char* filename)
 
 IShader* ResourceManager::LoadShader(const char* filename)
 {
-	return LoadResource<Shader>(filename);
+	std::string fullpath = filename;
+	fullpath += ".shader";
+	return LoadResource<Shader>(fullpath.c_str());
 }
 
 IMesh* ResourceManager::LoadMesh(const char* filename)
