@@ -218,6 +218,8 @@ namespace SECore
 			virtual void SetWorld(const Matrix& m) = 0;
 		};
 
+		virtual Camera* GetCamera() = 0;
+
 		virtual void Draw(RenderTarget* rt) = 0;
 		virtual void Update(float deltaTime) = 0;
 

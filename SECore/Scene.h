@@ -12,6 +12,7 @@ public:
 	virtual bool LoadAdditive(const char* filename);
 	virtual void Draw(IRenderTarget* rt);
 	virtual void Update(float deltaTime);
+	virtual ICamera* GetCamera() { return &mCamera; }
 public:
 	virtual void Release();
 	virtual void ClearEntities();
