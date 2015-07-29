@@ -22,17 +22,17 @@ namespace ModelFile
 		return mesh;
 	}
 
-	Material* Model::AddMaterial(const TCHAR* name)
+	Material* Model::AddMaterial(void* id)
 	{
 		Material* mtl = new Material();
-		mtl->name = name;
-		mMaterials.insert(std::make_pair(name, mtl));
+		mtl->id = id;
+		mMaterials.insert(std::make_pair(id, mtl));
 		return mtl;
 	}
 
-	Material* Model::GetMaterial(const TCHAR* name)
+	Material* Model::GetMaterial(void* id)
 	{
-		Materials::iterator iter = mMaterials.find(name);
+		Materials::iterator iter = mMaterials.find(id);
 		return iter != mMaterials.end() ? iter->second : nullptr;
 	}
 
@@ -111,37 +111,37 @@ namespace ModelFile
 		{
 			switch (blocks[i].type)
 			{
-			case VertexChannel::Position:
+			case MeshFile::Block::Position:
 			{
 				for (size_t j = 0; j < head.vertexCount; ++j)
 					fwrite(&mesh->vertices[j].pos, sizeof(mesh->vertices[j].pos), 1, file);
 			}
 				break;
-			case VertexChannel::Normal:
+			case MeshFile::Block::Normal:
 			{
 				for (size_t j = 0; j < head.vertexCount; ++j)
 					fwrite(&mesh->vertices[j].norm, sizeof(mesh->vertices[j].norm), 1, file);
 			}
 			break;
-			case VertexChannel::Tangent:
+			case MeshFile::Block::Tangent:
 			{
 				for (size_t j = 0; j < head.vertexCount; ++j)
 					fwrite(&mesh->vertices[j].tan, sizeof(mesh->vertices[j].tan), 1, file);
 			}
 			break;
-			case VertexChannel::TexCoords0:
+			case MeshFile::Block::TexCoords0:
 			{
 				for (size_t j = 0; j < head.vertexCount; ++j)
 					fwrite(&mesh->vertices[j].uv0, sizeof(mesh->vertices[j].uv0), 1, file);
 			}
 			break;
-			case VertexChannel::TexCoords1:
+			case MeshFile::Block::TexCoords1:
 			{
 				for (size_t j = 0; j < head.vertexCount; ++j)
 					fwrite(&mesh->vertices[j].uv1, sizeof(mesh->vertices[j].uv1), 1, file);
 			}
 			break;
-			case VertexChannel::TexCoords2:
+			case MeshFile::Block::TexCoords2:
 			{
 				for (size_t j = 0; j < head.vertexCount; ++j)
 					fwrite(&mesh->vertices[j].uv2, sizeof(mesh->vertices[j].uv2), 1, file);
@@ -234,7 +234,7 @@ namespace ModelFile
 			Mesh* mesh = mMeshes[i];
 			Json::Value value;
 			value["Mesh"] = WStr2MStr(strPath + mesh->name + _T(".mesh"));
-			if (Material* material = GetMaterial(mesh->mtlName.c_str()))
+			if (Material* material = GetMaterial(mesh->mtlid))
 			{
 				Json::Value mtl;
 				WriteMaterial(mtl, material, strPath);

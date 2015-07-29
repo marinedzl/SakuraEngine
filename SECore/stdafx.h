@@ -22,6 +22,8 @@
 using namespace DirectX;
 #include <json\json.h>
 
+void log(const TCHAR* fmt, ...);
+
 typedef SECore::Matrix Matrix;
 typedef SECore::Color Color;
 typedef SECore::Vector2 Vector2;

@@ -43,6 +43,12 @@ void ConvertVector2(Vector2& dst, const Point3& src)
 	dst.y = src.y;
 }
 
+void ConvertUV(Vector2& dst, const Point3& src)
+{
+	dst.x = src.x;
+	dst.y = 1 - src.y;
+}
+
 void ConvertVector3(Vector3& dst, const Point3& src)
 {
 	dst.x = src.x;
@@ -378,7 +384,7 @@ void SEExporter::DumpMesh(IGameNode* gNode)
 
 		if (mat != NULL)
 		{
-			mesh->mtlName = mat->GetMaterialName();
+			mesh->mtlid = mat;
 		}
 		else
 			log(_T("no material found for %s\n"), gNode->GetName());
@@ -396,13 +402,13 @@ void SEExporter::DumpMesh(IGameNode* gNode)
 
 		for (int i = 0; i < matIds.Count(); ++i)
 		{
-			TSTR mtlName;
+			void* mtlid = 0;
 			TSTR meshName;
 
 			IGameMaterial* subMat = GetMaterialById(mat, matIds[i]);
 			if (subMat != NULL)
 			{
-				mtlName = subMat->GetMaterialName();
+				mtlid = subMat;
 				meshName.printf(_T("%s_%s"), gNode->GetName(), subMat->GetMaterialName());
 			}
 			else
@@ -411,7 +417,7 @@ void SEExporter::DumpMesh(IGameNode* gNode)
 			}
 
 			ModelFile::Mesh* mesh = mModel.AddMesh(meshName);
-			mesh->mtlName = mtlName;
+			mesh->mtlid = mtlid;
 			mesh->vertexChannels = vertexChannels;
 
 			Tab<FaceEx*> gFaces = gMesh->GetFacesFromMatID(matIds[i]);
@@ -440,13 +446,15 @@ void SEExporter::ExtractVertices(FaceEx* gFace, IGameMesh* gMesh, ModelFile::Mes
 		ConvertVector3(vert.pos, gMesh->GetVertex(gFace->vert[i]));
 
 		if (mesh->vertexChannels & ModelFile::VertexChannel::TexCoords0)
-			ConvertVector2(vert.uv0, gMesh->GetMapVertex(1, gMesh->GetFaceTextureVertex(gFace->meshFaceIndex, i, 1)));
+			ConvertUV(vert.uv0, gMesh->GetMapVertex(1, gMesh->GetFaceTextureVertex(gFace->meshFaceIndex, i, 1)));
+
+		log(_T("%.2f, %.2f\n"), vert.uv0.x, vert.uv0.y);
 
 		if (mesh->vertexChannels & ModelFile::VertexChannel::TexCoords1)
-			ConvertVector2(vert.uv1, gMesh->GetMapVertex(2, gMesh->GetFaceTextureVertex(gFace->meshFaceIndex, i, 2)));
+			ConvertUV(vert.uv1, gMesh->GetMapVertex(2, gMesh->GetFaceTextureVertex(gFace->meshFaceIndex, i, 2)));
 
 		if (mesh->vertexChannels & ModelFile::VertexChannel::TexCoords2)
-			ConvertVector2(vert.uv1, gMesh->GetMapVertex(3, gMesh->GetFaceTextureVertex(gFace->meshFaceIndex, i, 3)));
+			ConvertUV(vert.uv1, gMesh->GetMapVertex(3, gMesh->GetFaceTextureVertex(gFace->meshFaceIndex, i, 3)));
 
 		Point3 normal = gMesh->GetNormal(faceIndex, i);
 
@@ -516,7 +524,7 @@ void SEExporter::DumpMaterial(IGameMaterial* gMaterial)
 		return;
 	}
 
-	ModelFile::Material* material = mModel.AddMaterial(gMaterial->GetMaterialName());
+	ModelFile::Material* material = mModel.AddMaterial(gMaterial);
 
 	Point3 ambient;
 	Point3 diffuse;

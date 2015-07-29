@@ -8,6 +8,18 @@
 // TODO: 在 STDAFX.H 中引用任何所需的附加头文件，
 //而不是在此文件中引用
 
+void log(const TCHAR* fmt, ...)
+{
+	va_list args;
+	size_t len;
+	TCHAR buffer[1024];
+	va_start(args, fmt);
+	len = _vsnwprintf_s(buffer, 1024, fmt, args);
+	va_end(args);
+	wprintf(buffer);
+	OutputDebugString(buffer);
+}
+
 bool SplitPath::Split(const char* filename)
 {
 	errno_t err;

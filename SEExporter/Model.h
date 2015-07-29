@@ -39,7 +39,7 @@ namespace ModelFile
 	{
 	public:
 		TString name;
-		TString mtlName;
+		void* mtlid;
 		UINT vertexChannels;
 		std::vector<USHORT> indices;
 		std::vector<Vertex> vertices;
@@ -48,7 +48,7 @@ namespace ModelFile
 	class Material
 	{
 	public:
-		TString name;
+		void* id;
 		Vector3 ambient;
 		Vector3 diffuse;
 		Vector3 specular;
@@ -66,12 +66,12 @@ namespace ModelFile
 		Model();
 		virtual ~Model();
 		Mesh* AddMesh(const TCHAR* name);
-		Material* AddMaterial(const TCHAR* name);
-		Material* GetMaterial(const TCHAR* name);
+		Material* AddMaterial(void* id);
+		Material* GetMaterial(void* id);
 		void WriteFile(const TCHAR* path, const TCHAR* name);
 		void OptMesh();
 	private:
-		typedef std::map<TString, Material*> Materials;
+		typedef std::map<void*, Material*> Materials;
 	private:
 		std::vector<Mesh*> mMeshes;
 		Materials mMaterials;
