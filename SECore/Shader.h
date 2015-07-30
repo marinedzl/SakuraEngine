@@ -43,6 +43,7 @@ public:
 	virtual bool LoadFromFile(const char* filename);
 	size_t GetPassCount() const { return mPasses.size(); }
 	const Pass* GetPass(size_t index) const { return mPasses[index]; }
+	const Property* GetProperty(const char* name) const;
 private:
 	std::vector<Pass*> mPasses;
 };

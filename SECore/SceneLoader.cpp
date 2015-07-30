@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Scene.h"
+#include "Material.h"
+#include "Shader.h"
 #include "ResourceManager.h"
 #include "SceneLoader.h"
 
@@ -119,24 +121,57 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 				}
 				if (reRoot.isMember("Material"))
 				{
+					Material* material = dynamic_cast<Material*>(re->GetMaterial());
 					const Json::Value& mtlRoot = reRoot["Material"];
-					IMaterial* material = re->GetMaterial();
+
+					Shader* shader = nullptr;
 					if (mtlRoot.isMember("Shader"))
 					{
-						IShader* shader = gResourceManager.LoadShader(mtlRoot["Shader"].asCString());
+						shader = dynamic_cast<Shader*>(gResourceManager.LoadShader(mtlRoot["Shader"].asCString()));
 						material->SetShader(shader);
-						shader->Release();
 					}
-					if (mtlRoot.isMember("Textures"))
+
+					std::vector<std::string> propNames = mtlRoot.getMemberNames();
+					size_t propCount = propNames.size();
+					for (size_t pi = 0; pi < propCount; pi++)
 					{
-						const Json::Value& texRoot = mtlRoot["Textures"];
-						if (texRoot.isMember("_MainTex"))
+						const std::string& propName = propNames[pi];
+						if (const Shader::Property* prop = shader->GetProperty(propName.c_str()))
 						{
-							ITexture* texture = gResourceManager.LoadTexture(texRoot["_MainTex"].asCString());
-							material->SetTexture("_MainTex", texture);
-							texture->Release();
+							switch (prop->type)
+							{
+							case Shader::Property::Color:
+							{
+								Color color;
+								color.r = (float)mtlRoot[propName][size_t(0)].asDouble();
+								color.g = (float)mtlRoot[propName][size_t(1)].asDouble();
+								color.b = (float)mtlRoot[propName][size_t(2)].asDouble();
+								color.a = (float)mtlRoot[propName][size_t(3)].asDouble();
+								material->SetColor(propName.c_str(), color);
+							}
+							break;
+							case Shader::Property::Float:
+							{
+								float value = 0;
+								value = (float)mtlRoot[propName].asDouble();
+								material->SetFloat(propName.c_str(), value);
+							}
+							break;
+							case Shader::Property::Texture2D:
+							{
+								ITexture* texture = gResourceManager.LoadTexture(mtlRoot[propName].asCString());
+								material->SetTexture("_MainTex", texture);
+								texture->Release();
+							}
+							break;
+							default:
+								break;
+							}
 						}
 					}
+
+					if (shader)
+						shader->Release();
 				}
 			}
 		}

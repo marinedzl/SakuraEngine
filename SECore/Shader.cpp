@@ -47,3 +47,15 @@ bool Shader::LoadFromFile(const char* filename)
 {
 	return gShaderCompiler.LoadShader(this, filename);
 }
+
+const Shader::Property * Shader::GetProperty(const char * name) const
+{
+	const Shader::Property * ret = nullptr;
+	for (size_t i = 0; i < mPasses.size(); i++)
+	{
+		ret = mPasses[i]->GetProperty(name);
+		if (ret)
+			break;
+	}
+	return ret;
+}

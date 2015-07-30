@@ -188,7 +188,7 @@ void Material::SetValue(const char* name, const char* data, int type, size_t siz
 			CHECK(sprop->type == type);
 			Pass* pass = mPasses[i];
 			CHECK(pass);
-			CHECK(pass->GetBufferSize() > sprop->offset + size);
+			CHECK(pass->GetBufferSize() >= sprop->offset + size);
 			pass->SetData(data, sprop->offset, size);
 		}
 	}
