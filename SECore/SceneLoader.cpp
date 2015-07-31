@@ -138,34 +138,17 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 						const std::string& propName = propNames[pi];
 						if (const Shader::Property* prop = shader->GetProperty(propName.c_str()))
 						{
-							switch (prop->type)
-							{
-							case Shader::Property::Color:
-							{
-								Color color;
-								color.r = (float)mtlRoot[propName][size_t(0)].asDouble();
-								color.g = (float)mtlRoot[propName][size_t(1)].asDouble();
-								color.b = (float)mtlRoot[propName][size_t(2)].asDouble();
-								color.a = (float)mtlRoot[propName][size_t(3)].asDouble();
-								material->SetColor(propName.c_str(), color);
-							}
-							break;
-							case Shader::Property::Float:
-							{
-								float value = 0;
-								value = (float)mtlRoot[propName].asDouble();
-								material->SetFloat(propName.c_str(), value);
-							}
-							break;
-							case Shader::Property::Texture2D:
+							const AnyValue& defaultValue = prop->GetValue();
+							if (defaultValue.GetType() == eTexture2D)
 							{
 								ITexture* texture = gResourceManager.LoadTexture(mtlRoot[propName].asCString());
 								material->SetTexture("_MainTex", texture);
 								texture->Release();
 							}
-							break;
-							default:
-								break;
+							else
+							{
+								AnyValue value;
+								String2Value(mtlRoot[propName], defaultValue.GetType(), value);
 							}
 						}
 					}

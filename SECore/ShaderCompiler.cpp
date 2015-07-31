@@ -88,11 +88,11 @@ bool ShaderCompiler::Init()
 	mAlphaTestMap.insert(std::make_pair("NotEqual", AlphaTestNotEqual));
 	mAlphaTestMap.insert(std::make_pair("Always", AlphaTestAlways));
 
-	mPropertyMap.insert(std::make_pair("Float", Shader::Property::Float));
-	mPropertyMap.insert(std::make_pair("Vector3", Shader::Property::Vector3));
-	mPropertyMap.insert(std::make_pair("Vector4", Shader::Property::Vector4));
-	mPropertyMap.insert(std::make_pair("Color", Shader::Property::Color));
-	mPropertyMap.insert(std::make_pair("Texture2D", Shader::Property::Texture2D));
+	mPropertyMap.insert(std::make_pair("Float", eFloat));
+	mPropertyMap.insert(std::make_pair("Vector3", eVector3));
+	mPropertyMap.insert(std::make_pair("Vector4", eVector4));
+	mPropertyMap.insert(std::make_pair("Color", eColor));
+	mPropertyMap.insert(std::make_pair("Texture2D", eTexture2D));
 
 	return true;
 }
@@ -177,7 +177,7 @@ bool ShaderCompiler::String2AlphaTest(const std::string& str, AlphaTestMode& dst
 	}
 }
 
-bool ShaderCompiler::String2Proprety(const std::string& str, Shader::Property::Type& dst)
+bool ShaderCompiler::String2Proprety(const std::string& str, ValueType& dst)
 {
 	PropertyMap::iterator iter = mPropertyMap.find(str);
 	if (iter == mPropertyMap.end())
@@ -213,78 +213,68 @@ bool ShaderCompiler::ParsePass(Shader* shader, const Json::Value& root, const st
 	D3D11_BLEND SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	D3D11_BLEND DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 
-	size_t count = root.size();
-	for (size_t i = 0; i < count; ++i)
+	std::vector<std::string> memberNames = root.getMemberNames();
+	size_t memberCount = memberNames.size();
+	for (size_t i = 0; i < memberCount; ++i)
 	{
-		const Json::Value& child = root[i];
-		CHECK(child.isArray());
-		size_t childCount = child.size();
-		std::string key = child[size_t(0)].asString();
-		std::string value = child[size_t(1)].asString();
-		if (key == "Cull")
+		const Json::Value& child = root[memberNames[i]];
+
+		if (memberNames[i] == "BufferSize")
 		{
-			CHECK(StringToCullMode(value, CullMode));
+			pass->buffSize = child.asInt();
 		}
-		else if (key == "ZTest")
+		else if (memberNames[i] == "TextureCount")
 		{
-			CHECK(StringToZTest(value, DepthFunc));
+			pass->textureCount = child.asInt();
 		}
-		else if (key == "ZWrite")
+		else if (memberNames[i] == "PS")
 		{
-			CHECK(StringToZWrite(value, ZWriteEnable));
-		}
-		else if (key == "AlphaTest")
-		{
-			String2AlphaTest(value, alphaTestMode);
-			AlphaTestEnable = TRUE;
-			CutoffValue = (float)child[size_t(2)].asDouble();
-		}
-		else if (key == "Blend")
-		{
-			String2Blend(value, SrcBlend);
-			String2Blend(child[size_t(2)].asString(), DestBlend);
-			BlendEnable = TRUE;
-		}
-		else if (key == "BlendOp")
-		{
-			CHECK(StringToBlendOp(value, BlendOp));
-			BlendEnable = TRUE;
-		}
-		else if (key == "VS")
-		{
-			std::string filename = path + "\\" + value;
-			buffer file;
-			ID3D11VertexShader* s = nullptr;
-			if (LoadBinaryFile(file, filename.c_str()))
-				device->CreateVertexShader(file.ptr(), file.size(), nullptr, &s);
-			pass->VS = s;
-		}
-		else if (key == "PS")
-		{
-			std::string filename = path + "\\" + value;
+			std::string filename = path + "\\" + child.asString();
 			buffer file;
 			ID3D11PixelShader* s = nullptr;
 			if (LoadBinaryFile(file, filename.c_str()))
 				device->CreatePixelShader(file.ptr(), file.size(), nullptr, &s);
 			pass->PS = s;
 		}
-		else if (key == "BufferSize")
+		else if (memberNames[i] == "VS")
 		{
-			pass->buffSize = child[2].asInt();
+			std::string filename = path + "\\" + child.asString();
+			buffer file;
+			ID3D11VertexShader* s = nullptr;
+			if (LoadBinaryFile(file, filename.c_str()))
+				device->CreateVertexShader(file.ptr(), file.size(), nullptr, &s);
+			pass->VS = s;
 		}
-		else if (key == "TextureCount")
+		else if (memberNames[i] == "Properties")
 		{
-			pass->textureCount = child[2].asInt();
+			CHECK(child.isArray());
+			size_t propCount = child.size();
+			for (size_t pi = 0; pi < propCount; pi++)
+			{
+				const Json::Value& props = child[pi];
+				CHECK(props.isArray());
+				CHECK(props.size() >= 3);
+				std::string type = props[size_t(0)].asString();
+				std::string name = props[1].asString();
+				Shader::Property* prop = pass->AddProperty(name.c_str());
+				ValueType etype = eNull;
+				CHECK(String2Proprety(type, etype));
+				prop->SetOffset(props[2].asInt());
+				if (props.size() > 3)
+				{
+					AnyValue value;
+					CHECK(String2Value(props[3], etype, value));
+					prop->SetValue(value);
+				}
+				else
+				{
+					prop->SetValue(AnyValue(etype));
+				}
+			}
 		}
 		else
 		{
-			Shader::Property* prop = pass->AddProperty(value.c_str());
-			CHECK(String2Proprety(key, prop->type));
-			prop->offset = 0;
-			if (childCount >= 3)
-			{
-				prop->offset = child[2].asInt();
-			}
+			CHECK(false);
 		}
 	}
 

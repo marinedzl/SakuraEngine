@@ -87,6 +87,7 @@ void Material::Reload()
 		Pass* pass = new Pass();
 		pass->Init(spass->buffSize, spass->textureCount);
 		mPasses[i] = pass;
+		spass->InitMaterial(this);
 	}
 }
 
@@ -139,14 +140,26 @@ Exit0:
 	;
 }
 
-void Material::SetFloat(const char* name, float value)
+void Material::SetValue(const char* name, const AnyValue& value)
 {
-	SetValue(name, (const char*)&value, Shader::Property::Float, sizeof(float));
-}
+	CHECK(mShader);
 
-void Material::SetColor(const char* name, const Color& value)
-{
-	SetValue(name, (const char*)&value, Shader::Property::Color, sizeof(Color));
+	size_t count = mShader->GetPassCount();
+	CHECK(count == mPasses.size());
+	for (size_t i = 0; i < count; i++)
+	{
+		const Shader::Pass* spass = mShader->GetPass(i);
+		if (const Shader::Property* sprop = spass->GetProperty(name))
+		{
+			CHECK(sprop->GetValue().GetType() == value.GetType());
+			Pass* pass = mPasses[i];
+			CHECK(pass);
+			CHECK(pass->GetBufferSize() >= sprop->GetOffset() + value.GetSize());
+			pass->SetData((const char*)value.GetData(), sprop->GetOffset(), value.GetSize());
+		}
+	}
+Exit0:
+	;
 }
 
 void Material::SetTexture(const char* name, ITexture* value)
@@ -163,33 +176,11 @@ void Material::SetTexture(const char* name, ITexture* value)
 		const Shader::Pass* spass = mShader->GetPass(i);
 		if (const Shader::Property* sprop = spass->GetProperty(name))
 		{
-			CHECK(sprop->type == Shader::Property::Texture2D);
+			CHECK(sprop->GetValue().GetType() == eTexture2D);
 			Pass* pass = mPasses[i];
 			CHECK(pass);
-			CHECK(sprop->offset < pass->GetTextureCount());
-			pass->SetTexture(texture, sprop->offset);
-		}
-	}
-Exit0:
-	;
-}
-
-void Material::SetValue(const char* name, const char* data, int type, size_t size)
-{
-	CHECK(mShader);
-
-	size_t count = mShader->GetPassCount();
-	CHECK(count == mPasses.size());
-	for (size_t i = 0; i < count; i++)
-	{
-		const Shader::Pass* spass = mShader->GetPass(i);
-		if (const Shader::Property* sprop = spass->GetProperty(name))
-		{
-			CHECK(sprop->type == type);
-			Pass* pass = mPasses[i];
-			CHECK(pass);
-			CHECK(pass->GetBufferSize() >= sprop->offset + size);
-			pass->SetData(data, sprop->offset, size);
+			CHECK(sprop->GetOffset() < pass->GetTextureCount());
+			pass->SetTexture(texture, sprop->GetOffset());
 		}
 	}
 Exit0:

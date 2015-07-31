@@ -93,6 +93,12 @@
     <ClInclude Include="Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AnyValue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TAnyValue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -164,6 +170,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="AnyValue.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\AlphaTest-Diffuse.hlsl" />
@@ -175,5 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\common.hlsli" />
+    <None Include="shader_config\Normal-Diffuse.shader" />
+    <None Include="shader_config\AlphaTest-Diffuse.shader" />
   </ItemGroup>
 </Project>

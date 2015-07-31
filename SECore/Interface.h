@@ -137,8 +137,6 @@ namespace SECore
 	struct Material
 	{
 		virtual void SetShader(Shader* shader) = 0;
-		virtual void SetFloat(const char* name, float value) = 0;
-		virtual void SetColor(const char* name, const Color& value) = 0;
 		virtual void SetTexture(const char* name, Texture* value) = 0;
 	};
 

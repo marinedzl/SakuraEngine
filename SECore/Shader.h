@@ -1,20 +1,21 @@
 #pragma once
+#include "AnyValue.h"
 
 class Shader : public TRefObject<IShader>
 {
 	friend class ShaderCompiler;
 public:
-	struct Property
+	class Property
 	{
-		enum Type
-		{
-			Float,
-			Vector3,
-			Vector4,
-			Color,
-			Texture2D,
-		};
-		Type type;
+	public:
+		Property() : offset(0) {}
+		~Property() { }
+		size_t GetOffset() const { return offset; }
+		void SetOffset(size_t offset) { this->offset = offset; }
+		void SetValue(const AnyValue& value) { this->value = value; }
+		const AnyValue& GetValue() const { return value; }
+	private:
+		AnyValue value;
 		size_t offset;
 	};
 	struct Pass
@@ -24,6 +25,7 @@ public:
 		virtual ~Pass();
 		Property* AddProperty(const char* name);
 		const Property* GetProperty(const char* name) const;
+		bool InitMaterial(Material* material) const;
 	public:
 		ID3D11VertexShader* VS;
 		ID3D11PixelShader* PS;

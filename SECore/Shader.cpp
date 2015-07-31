@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Material.h"
 #include "ShaderCompiler.h"
 #include "Shader.h"
 
@@ -25,6 +26,22 @@ const Shader::Property* Shader::Pass::GetProperty(const char* name) const
 {
 	Properties::const_iterator iter = mProperties.find(name);
 	return iter == mProperties.end() ? nullptr : iter->second;
+}
+
+bool Shader::Pass::InitMaterial(Material* material) const
+{
+	if (!mProperties.empty())
+	{
+		Properties::const_iterator iter = mProperties.begin();
+		Properties::const_iterator iterEnd = mProperties.end();
+		for (; iter != iterEnd; ++iter)
+		{
+			if (iter->second->GetValue().GetType() == eTexture2D)
+				continue;
+			material->SetValue(iter->first.c_str(), iter->second->GetValue());
+		}
+	}
+	return true;
 }
 
 Shader::Property* Shader::Pass::AddProperty(const char* name)

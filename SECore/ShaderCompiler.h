@@ -18,13 +18,13 @@ private:
 	bool StringToZWrite(const std::string& str, BOOL& dst);
 	bool StringToZTest(const std::string& str, D3D11_COMPARISON_FUNC& dst);
 	bool String2AlphaTest(const std::string& str, AlphaTestMode& dst);
-	bool String2Proprety(const std::string& str, Shader::Property::Type& dst);
+	bool String2Proprety(const std::string& str, ValueType& dst);
 private:
 	typedef std::map<std::string, D3D11_BLEND_OP> BlendOpMap;
 	typedef std::map<std::string, D3D11_BLEND> BlendMap;
 	typedef std::map<std::string, D3D11_COMPARISON_FUNC> ZTestMap;
 	typedef std::map<std::string, AlphaTestMode> AlphaTestMap;
-	typedef std::map<std::string, Shader::Property::Type> PropertyMap;
+	typedef std::map<std::string, ValueType> PropertyMap;
 private:
 	BlendOpMap mBlendOpMap;
 	BlendMap mBlendMap;

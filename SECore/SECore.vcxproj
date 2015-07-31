@@ -104,6 +104,10 @@
       <AdditionalDependencies>FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib\</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "shader_config" "$(SolutionDir)Bin"
+copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -120,6 +124,10 @@
       <AdditionalDependencies>FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib\</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "shader_config" "$(SolutionDir)Bin"
+copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -140,6 +148,10 @@
       <AdditionalDependencies>FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib\</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "shader_config" "$(SolutionDir)Bin"
+copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -160,6 +172,10 @@
       <AdditionalDependencies>FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib\</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "shader_config" "$(SolutionDir)Bin"
+copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -167,6 +183,7 @@
   <ItemGroup>
     <ClInclude Include="..\Include\SECore\FileFormat.h" />
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="AnyValue.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBufferManager.h" />
     <ClInclude Include="Core.h" />
@@ -188,11 +205,13 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TAnyValue.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnyValue.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBufferManager.cpp" />
     <ClCompile Include="Core.cpp" />
@@ -303,6 +322,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\common.hlsli" />
+    <None Include="shader_config\AlphaTest-Diffuse.shader" />
+    <None Include="shader_config\Normal-Diffuse.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

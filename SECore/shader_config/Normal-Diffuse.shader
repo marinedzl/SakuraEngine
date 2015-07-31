@@ -1,9 +1,11 @@
 [
-[
-	["BufferSize", "", 16],
-	["TextureCount", "", 1],
-	["Color", "_Color"],
-	["Texture2D", "_MainTex"],
-	["PS", "Normal-Diffuse.cso"]
-]
+{
+	"BufferSize" : 16,
+	"TextureCount" : 1,
+	"PS" : "Normal-Diffuse.cso",
+	"Properties" : [
+		["Color", "_Color", 0, "FFFFFFFF"],
+		["Texture2D", "_MainTex", 0]
+	]
+}
 ]
