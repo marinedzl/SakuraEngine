@@ -200,15 +200,18 @@ namespace ModelFile
 			std::map<std::string, TString>::const_iterator iterEnd = material->textures.end();
 			for (; iter != iterEnd; ++iter)
 			{
-				mtlNode["Textures"][iter->first] = WStr2MStr(path + iter->second);
-				AddColorNode(mtlNode, "Ambient", material->ambient);
-				AddColorNode(mtlNode, "Diffuse", material->diffuse);
-				AddColorNode(mtlNode, "Specular", material->specular);
-				AddColorNode(mtlNode, "Emissive", material->emissive);
-				AddFloatNode(mtlNode, "Opacity", material->opacity);
-				AddFloatNode(mtlNode, "Glossiness", material->glossiness);
-				AddFloatNode(mtlNode, "SpecularLevel", material->specularLevel);
-				AddFloatNode(mtlNode, "EmissiveAmount", material->emissiveAmount);
+				if (iter->first == "Opacity")
+				{
+					mtlNode["Shader"] = "AlphaTest-Diffuse";
+				}
+				else if (iter->first == "Diffuse")
+				{
+					mtlNode["_MainTex"] = WStr2MStr(path + iter->second);
+				}
+				else if (iter->first == "Bump")
+				{
+					mtlNode["_BumpMap"] = WStr2MStr(path + iter->second);
+				}
 			}
 		}
 	}
