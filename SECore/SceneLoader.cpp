@@ -180,7 +180,7 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 						case Shader::eTexture:
 						{
 							ITexture* texture = gResourceManager.LoadTexture(mtlRoot[propName].asCString());
-							material->SetTexture("_MainTex", texture);
+							material->SetTexture(propName.c_str(), texture);
 							texture->Release();
 						}
 							break;
