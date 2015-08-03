@@ -149,7 +149,7 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 					}
 					else
 					{
-						shader = gResourceManager.CreateShader("Default");
+						shader = gResourceManager.CreateShader("AlphaTest-Diffuse");
 					}
 
 					CHECK(shader);

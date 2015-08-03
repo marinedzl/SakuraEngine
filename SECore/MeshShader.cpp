@@ -37,7 +37,7 @@ bool MeshShader::Init()
 	bool ret = false;
 	ID3D11Device* device = gCore.GetDevice();
 	buffer file;
-	CHECK(LoadBinaryFile(file, "DefaultPS.cso"));
+	CHECK(LoadBinaryFile(file, "AlphaTest-Diffuse.cso"));
 	CHECK(SUCCEEDED(device->CreatePixelShader(file.ptr(), file.size(), nullptr, &mPS)));
 
 	mBuffer.color = Color(1, 1, 1, 1);

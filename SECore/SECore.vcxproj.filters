@@ -162,7 +162,7 @@
   <ItemGroup>
     <FxCompile Include="shader\Mesh.hlsl" />
     <FxCompile Include="shader\SkinnedMesh.hlsl" />
-    <FxCompile Include="shader\DefaultPS.hlsl" />
+    <FxCompile Include="shader\AlphaTest-Diffuse.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\common.hlsli" />

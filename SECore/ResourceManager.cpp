@@ -22,7 +22,7 @@ void ResourceManager::Release()
 
 bool ResourceManager::Init()
 {
-	mShaderFactories.insert(std::make_pair(std::string("Default"), new MeshShaderFactory()));
+	mShaderFactories.insert(std::make_pair(std::string("AlphaTest-Diffuse"), new MeshShaderFactory()));
 	return true;
 }
 
