@@ -127,17 +127,42 @@ namespace SECore
 	struct Texture : RefObject
 	{
 		virtual ~Texture() {}
+		virtual void SetSlot(int slot) = 0;
 	};
 
-	struct Shader : RefObject
+	struct Shader : Object
 	{
+		enum PropertyType
+		{
+			eInvalid,
+			eFloat,
+			eColor,
+			eTexture,
+		};
 		virtual ~Shader() {}
+		virtual bool Init() = 0;
+		virtual size_t GetPassCount() const = 0;
+		virtual bool SetPass(size_t pass) const = 0;
+		virtual bool SetValue(const char* name, const void* data) = 0;
+		virtual bool SetTexture(const char* name, Texture* texture) = 0;
+		virtual PropertyType GetPropertyType(const char* name) const = 0;
+	};
+
+	struct ShaderFactory : Object 
+	{
+		virtual ~ShaderFactory() {}
+		virtual Shader* CreateNew() = 0;
 	};
 
 	struct Material
 	{
+		virtual ~Material() {}
+		virtual size_t GetPassCount() const = 0;
+		virtual bool SetPass(size_t pass) const = 0;
 		virtual void SetShader(Shader* shader) = 0;
-		virtual void SetTexture(const char* name, Texture* value) = 0;
+		virtual void SetFloat(const char* name, float value) = 0;
+		virtual void SetColor(const char* name, const Color& color) = 0;
+		virtual void SetTexture(const char* name, Texture* texture) = 0;
 	};
 
 	struct Animation

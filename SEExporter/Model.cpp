@@ -193,18 +193,13 @@ namespace ModelFile
 
 	void WriteMaterial(Json::Value& mtlNode, const Material* material, const TString& path)
 	{
-		mtlNode["Shader"] = "Normal-Diffuse";
 		for (size_t i = 0; i < material->textures.size(); i++)
 		{
 			std::map<std::string, TString>::const_iterator iter = material->textures.begin();
 			std::map<std::string, TString>::const_iterator iterEnd = material->textures.end();
 			for (; iter != iterEnd; ++iter)
 			{
-				if (iter->first == "Opacity")
-				{
-					mtlNode["Shader"] = "AlphaTest-Diffuse";
-				}
-				else if (iter->first == "Diffuse")
+				if (iter->first == "Diffuse")
 				{
 					mtlNode["_MainTex"] = WStr2MStr(path + iter->second);
 				}

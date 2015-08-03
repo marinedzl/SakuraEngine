@@ -15,6 +15,9 @@ private:
 	ID3D11VertexShader* mSkinnedMeshVS;
 	ID3D11InputLayout* mInputLayout;
 	ID3D11InputLayout* mSkinnedInputLayout;
+
+	ID3D11BlendState* mBlendState;
+	ID3D11DepthStencilState* mDepthStencilState;
 };
 
 extern MeshRenderer gMeshRenderer;

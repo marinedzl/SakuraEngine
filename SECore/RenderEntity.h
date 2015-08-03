@@ -7,7 +7,7 @@ public:
 	virtual ~RenderEntity();
 public:
 	virtual IMesh* GetMesh();
-	virtual IMaterial* GetMaterial();
+	virtual Material* GetMaterial();
 	virtual void SetMesh(IMesh* mesh);
 	virtual const Matrix& GetWorld() const;
 	virtual void SetWorld(const Matrix& m);

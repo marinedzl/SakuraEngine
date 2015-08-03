@@ -38,9 +38,10 @@ typedef SECore::Scene IScene;
 typedef SECore::RenderTarget IRenderTarget;
 
 typedef SECore::Mesh IMesh;
-typedef SECore::Shader IShader;
+typedef SECore::Shader Shader;
+typedef SECore::ShaderFactory ShaderFactory;
+typedef SECore::Material Material;
 typedef SECore::Texture ITexture;
-typedef SECore::Material IMaterial;
 typedef SECore::Renderer IRenderer;
 typedef SECore::Animation IAnimation;
 typedef SECore::Camera ICamera;
@@ -48,9 +49,7 @@ typedef SECore::Camera ICamera;
 class Scene;
 
 class Mesh;
-class Shader;
 class Texture;
-class Material;
 class Renderer;
 class Animation;
 

@@ -1,23 +1,16 @@
 #pragma once
-#include "AnyValue.h"
 
-class Material : public IMaterial
+class MaterialImpl : public Material
 {
 public:
-	Material();
-	virtual ~Material();
-	virtual void SetShader(IShader* shader);
-	virtual void Setup(size_t pass);
-	virtual size_t GetPassCount() const { return mPasses.size(); }
-	virtual void SetTexture(const char* name, ITexture* value);
-public:
-	void SetValue(const char* name, const AnyValue& value);
-private:
-	void Clear();
-	void Reload();
-private:
-	class Pass;
+	MaterialImpl();
+	virtual ~MaterialImpl();
+	virtual void SetShader(Shader* shader);
+	virtual void SetFloat(const char* name, float value);
+	virtual void SetColor(const char* name, const Color& value);
+	virtual void SetTexture(const char* name, ITexture* texture);
+	virtual size_t GetPassCount() const { return mShader->GetPassCount(); }
+	virtual bool SetPass(size_t pass) const { return mShader->SetPass(pass); }
 private:
 	Shader* mShader;
-	array<Pass*> mPasses;
 };

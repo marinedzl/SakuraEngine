@@ -2,7 +2,6 @@
 #include "ConstantBufferManager.h"
 #include "RenderStateManager.h"
 #include "MeshRenderer.h"
-#include "ShaderCompiler.h"
 #include "ResourceManager.h"
 #include "Core.h"
 
@@ -26,7 +25,6 @@ bool Core::Init(const char* resourePath)
 	CHECK(gResourceManager.Init());
 	CHECK(gConstantBufferManager.Init());
 	CHECK(gRenderStateManager.Init());
-	CHECK(gShaderCompiler.Init());
 	CHECK(gMeshRenderer.Init());
 
 	ret = true;
@@ -37,7 +35,6 @@ Exit0:
 void Core::Release()
 {
 	gMeshRenderer.Release();
-	gShaderCompiler.Release();
 	gRenderStateManager.Release();
 	gConstantBufferManager.Release();
 	gResourceManager.Release();

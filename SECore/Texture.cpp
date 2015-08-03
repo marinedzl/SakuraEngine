@@ -97,3 +97,12 @@ bool Texture::LoadFromFile(const char* filename)
 Exit0:
 	return ret;
 }
+
+void Texture::SetSlot(int slot)
+{
+	if (ID3D11DeviceContext* context = gCore.GetContext())
+	{
+		context->PSSetShaderResources(slot, 1, &mSRV);
+		context->PSSetSamplers(slot, 1, &mSampler);
+	}
+}

@@ -7,7 +7,7 @@
 RenderEntity::RenderEntity(SceneEntity& owner)
 	: mOwner(owner)
 {
-	mMaterial = new Material();
+	mMaterial = new MaterialImpl();
 }
 
 RenderEntity::~RenderEntity()
@@ -21,7 +21,7 @@ IMesh* RenderEntity::GetMesh()
 	return mMesh;
 }
 
-IMaterial* RenderEntity::GetMaterial()
+Material* RenderEntity::GetMaterial()
 {
 	return mMaterial;
 }

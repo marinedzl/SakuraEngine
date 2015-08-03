@@ -5,6 +5,7 @@
 #include "Texture.h"
 #include "RenderEntity.h"
 #include "ConstantBufferManager.h"
+#include "RenderStateManager.h"
 #include "MeshRenderer.h"
 
 MeshRenderer gMeshRenderer;
@@ -56,6 +57,40 @@ bool MeshRenderer::Init()
 	CHECK(SUCCEEDED(device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), file.ptr(), file.size(), &mSkinnedInputLayout)));
 	CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS)));
 
+	// CreateDepthStencilState
+	{
+		D3D11_DEPTH_STENCIL_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.DepthEnable = TRUE;
+		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		desc.StencilEnable = FALSE;
+		desc.StencilReadMask = 0xFF;
+		desc.StencilWriteMask = 0xFF;
+		desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+		desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+		desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+		mDepthStencilState = gRenderStateManager.GetRenderState<ID3D11DepthStencilState>(desc);
+	}
+
+	// CreateBlendState
+	{
+		D3D11_BLEND_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.AlphaToCoverageEnable = FALSE;
+		desc.IndependentBlendEnable = FALSE; // 不针对多个RenderTarget使用不同的混合状态
+		desc.RenderTarget[0].BlendEnable = FALSE;
+		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; // 即使是disable也要填这个参数
+
+		mBlendState = gRenderStateManager.GetRenderState<ID3D11BlendState>(desc);
+	}
+
 	ret = true;
 Exit0:
 	return ret;
@@ -65,7 +100,11 @@ void MeshRenderer::Begin()
 {
 	if (ID3D11DeviceContext* context = gCore.GetContext())
 	{
+		float factor[4] = { 0 };
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->OMSetBlendState(mBlendState, factor, 0xFFFFFFFF);
+		context->OMSetDepthStencilState(mDepthStencilState, 1);
+		context->RSSetState(gRenderStateManager.GetRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID));
 	}
 }
 
@@ -114,7 +153,7 @@ void MeshRenderer::Draw(IRenderer::Entity* entity)
 	size_t passCount = material->GetPassCount();
 	for (size_t i = 0; i < passCount; ++i)
 	{
-		material->Setup(i);
+		material->SetPass(i);
 		mesh->Draw();
 	}
 }

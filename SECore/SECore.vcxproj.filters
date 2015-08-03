@@ -57,9 +57,6 @@
     <ClInclude Include="SceneEntity.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ConstantBufferManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -73,9 +70,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="RenderWindow.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderCompiler.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\Include\SECore\FileFormat.h">
@@ -93,10 +87,7 @@
     <ClInclude Include="Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AnyValue.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="TAnyValue.h">
+    <ClInclude Include="MeshShader.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -137,9 +128,6 @@
     <ClCompile Include="SceneEntity.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ConstantBufferManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -155,9 +143,6 @@
     <ClCompile Include="RenderWindow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderCompiler.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ImageData.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -170,21 +155,16 @@
     <ClCompile Include="Camera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AnyValue.cpp">
+    <ClCompile Include="MeshShader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="shader\AlphaTest-Diffuse.hlsl" />
-    <FxCompile Include="shader\HighlightPS.hlsl" />
-    <FxCompile Include="shader\HighlightVS.hlsl" />
     <FxCompile Include="shader\Mesh.hlsl" />
-    <FxCompile Include="shader\Normal-Diffuse.hlsl" />
     <FxCompile Include="shader\SkinnedMesh.hlsl" />
+    <FxCompile Include="shader\DefaultPS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\common.hlsli" />
-    <None Include="shader_config\Normal-Diffuse.shader" />
-    <None Include="shader_config\AlphaTest-Diffuse.shader" />
   </ItemGroup>
 </Project>
