@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "SECore/FileFormat.h"
+#include "MeshExtracter.h"
+#include "Skeleton.h"
 #include "Model.h"
 
-namespace ModelFile
+namespace MaxPlugin
 {
 	Model::Model()
 	{
@@ -10,40 +12,57 @@ namespace ModelFile
 
 	Model::~Model()
 	{
+		Clear();
+	}
+
+	void Model::Clear()
+	{
 		DeleteList(mMeshes);
-		DeleteMap(mMaterials);
 	}
 
-	Mesh* Model::AddMesh(const TCHAR* name)
+	bool Model::Extract(IGameScene* gScene)
 	{
-		Mesh* mesh = new Mesh();
-		mesh->name = name;
-		mMeshes.push_back(mesh);
-		return mesh;
+		bool ret = false;
+		CHECK(gScene);
+		Clear();
+
+		mMeshExtracter = new MeshExtracter();
+
+		int count = gScene->GetTopLevelNodeCount();
+		for (int i = 0; i < count; ++i)
+			ExtractNode(gScene->GetTopLevelNode(i));
+
+		mMeshExtracter->Clear();
+		delete mMeshExtracter;
+
+		ret = true;
+	Exit0:
+		return ret;
 	}
 
-	Material* Model::AddMaterial(void* id)
+	void Model::ExtractNode(IGameNode* gNode)
 	{
-		Material* mtl = new Material();
-		mtl->id = id;
-		mMaterials.insert(std::make_pair(id, mtl));
-		return mtl;
+		if (gNode->GetIGameObject()->GetIGameType() == IGameObject::IGAME_MESH)
+		{
+			mMeshExtracter->Extract(gNode);
+			mMeshExtracter->GetData(this);
+			mMeshExtracter->Clear();
+		}
+
+		for (int i = 0; i < gNode->GetChildCount(); i++)
+		{
+			ExtractNode(gNode->GetNodeChild(i));
+		}
 	}
 
-	Material* Model::GetMaterial(void* id)
-	{
-		Materials::iterator iter = mMaterials.find(id);
-		return iter != mMaterials.end() ? iter->second : nullptr;
-	}
-
-	void WriteMesh(const TCHAR* path, const Mesh* mesh)
+	void Model::WriteMesh(const Mesh* mesh, const TCHAR* path)
 	{
 		MeshFile::Head head;
 		MeshFile::Block block;
 		std::vector<MeshFile::Block> blocks;
 		TString filename;
 		FILE* file = nullptr;
-		
+
 		filename = path;
 		filename += mesh->name;
 		filename += _T(".mesh");
@@ -61,42 +80,49 @@ namespace ModelFile
 		if (mesh->vertexChannels & VertexChannel::Position)
 		{
 			block.type = MeshFile::Block::Position;
-			block.size = sizeof(Vector3) * head.vertexCount;
+			block.size = sizeof(Vec3) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
 		if (mesh->vertexChannels & VertexChannel::Normal)
 		{
 			block.type = MeshFile::Block::Normal;
-			block.size = sizeof(Vector3) * head.vertexCount;
+			block.size = sizeof(Vec3) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
 		if (mesh->vertexChannels & VertexChannel::Tangent)
 		{
 			block.type = MeshFile::Block::Tangent;
-			block.size = sizeof(Vector3) * head.vertexCount;
+			block.size = sizeof(Vec3) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
 		if (mesh->vertexChannels & VertexChannel::TexCoords0)
 		{
 			block.type = MeshFile::Block::TexCoords0;
-			block.size = sizeof(Vector2) * head.vertexCount;
+			block.size = sizeof(Vec2) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
 		if (mesh->vertexChannels & VertexChannel::TexCoords1)
 		{
 			block.type = MeshFile::Block::TexCoords1;
-			block.size = sizeof(Vector2) * head.vertexCount;
+			block.size = sizeof(Vec2) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
 		if (mesh->vertexChannels & VertexChannel::TexCoords2)
 		{
 			block.type = MeshFile::Block::TexCoords2;
-			block.size = sizeof(Vector2) * head.vertexCount;
+			block.size = sizeof(Vec2) * head.vertexCount;
+			blocks.push_back(block);
+		}
+
+		if (mesh->vertexChannels & VertexChannel::BoneWeights)
+		{
+			block.type = MeshFile::Block::BoneWeights;
+			block.size = sizeof(BoneWeight) * head.vertexCount;
 			blocks.push_back(block);
 		}
 
@@ -116,7 +142,7 @@ namespace ModelFile
 				for (size_t j = 0; j < head.vertexCount; ++j)
 					fwrite(&mesh->vertices[j].pos, sizeof(mesh->vertices[j].pos), 1, file);
 			}
-				break;
+			break;
 			case MeshFile::Block::Normal:
 			{
 				for (size_t j = 0; j < head.vertexCount; ++j)
@@ -147,76 +173,28 @@ namespace ModelFile
 					fwrite(&mesh->vertices[j].uv2, sizeof(mesh->vertices[j].uv2), 1, file);
 			}
 			break;
-			}
-		}
-	Exit0:
-		if (file)
-			fclose(file);
-	}
-
-	void WriteJsonToFile(const Json::Value& value, const TCHAR* filename)
-	{
-		Json::StyledWriter writer;
-		std::string buff = writer.write(value);
-		FILE* file = nullptr;
-		_wfopen_s(&file, filename, _T("w"));
-		CHECK(file);
-		fwrite(buff.c_str(), 1, buff.length(), file);
-	Exit0:
-		if (file)
-			fclose(file);
-	}
-
-	DWORD ConverColor2Dword(const Vector3& color)
-	{
-		static const float factor = 255.0f;
-		int r = (int)(color.x * factor);
-		int g = (int)(color.y * factor);
-		int b = (int)(color.z * factor);
-		return r << 16 | g << 8 | b;
-	}
-
-	void AddColorNode(Json::Value& mtlNode, const char* name, const Vector3& src)
-	{
-		char buff[32];
-		DWORD color = ConverColor2Dword(src);
-		_ultoa_s(color, buff, 16);
-		mtlNode[name] = buff;
-	}
-
-	void AddFloatNode(Json::Value& mtlNode, const char* name, float src)
-	{
-		double d = (int)(src * 1000);
-		d /= 1000;
-		mtlNode[name] = d;
-	}
-
-	void WriteMaterial(Json::Value& mtlNode, const Material* material, const TString& path)
-	{
-		for (size_t i = 0; i < material->textures.size(); i++)
-		{
-			std::map<std::string, TString>::const_iterator iter = material->textures.begin();
-			std::map<std::string, TString>::const_iterator iterEnd = material->textures.end();
-			for (; iter != iterEnd; ++iter)
+			case MeshFile::Block::BoneWeights:
 			{
-				if (iter->first == "Diffuse")
-				{
-					mtlNode["_MainTex"] = WStr2MStr(path + iter->second);
-				}
-				else if (iter->first == "Bump")
-				{
-					mtlNode["_BumpMap"] = WStr2MStr(path + iter->second);
-				}
+				for (size_t j = 0; j < head.vertexCount; ++j)
+					fwrite(&mesh->vertices[j].bw, sizeof(mesh->vertices[j].bw), 1, file);
+			}
+			break;
 			}
 		}
+	Exit0:
+		if (file)
+			fclose(file);
 	}
 
-	void Model::WriteFile(const TCHAR* path, const TCHAR* name)
+	void Model::WriteFile(const TCHAR* filename)
 	{
+		TSTR path, name, ext;
+		SplitFilename(TSTR(filename), &path, &name, &ext);
+
 		Json::Value root;
 		Json::Value entity;
-		TString strFullPath = path;
-		TString strPath = name;
+		TString strFullPath = (const TCHAR*)path;
+		TString strPath = (const TCHAR*)name;
 
 		strPath += _T("\\");
 		strFullPath += _T("\\");
@@ -225,21 +203,27 @@ namespace ModelFile
 		CreateMultiDir(strFullPath.c_str());
 		strFullPath += _T("\\");
 
-		entity["Name"] = WStr2MStr(name);
+		entity["Name"] = WStr2MStr((const TCHAR*)name);
 
 		for (size_t i = 0; i < mMeshes.size(); i++)
 		{
-			Mesh* mesh = mMeshes[i];
+			const Mesh* mesh = mMeshes[i];
+
 			Json::Value value;
 			value["Mesh"] = WStr2MStr(strPath + mesh->name + _T(".mesh"));
-			if (Material* material = GetMaterial(mesh->mtlid))
-			{
-				Json::Value mtl;
-				WriteMaterial(mtl, material, strPath);
-				value["Material"] = mtl;
-			}
+
+			if (!mesh->DiffTex.empty())
+				value["Material"]["DiffTex"] = WStr2MStr(strPath + mesh->DiffTex);
+
+			if (!mesh->BumpTex.empty())
+				value["Material"]["BumpTex"] = WStr2MStr(strPath + mesh->BumpTex);
+
+			if (!mesh->SpecTex.empty())
+				value["Material"]["SpecTex"] = WStr2MStr(strPath + mesh->SpecTex);
+
 			entity["Renderer"].append(value);
-			WriteMesh(strFullPath.c_str(), mMeshes[i]);
+
+			WriteMesh(mMeshes[i], strFullPath.c_str());
 		}
 
 		root["Entities"].append(entity);
@@ -248,21 +232,6 @@ namespace ModelFile
 		strFullPath += _T("\\");
 		strFullPath += name;
 		strFullPath += _T(".mdl");
-		WriteJsonToFile(root, strFullPath.c_str());
-	}
-
-	void Model::OptMesh()
-	{
-		size_t meshCount = mMeshes.size();
-		for (size_t i = 0; i < meshCount; i++)
-		{
-			Mesh* mesh = mMeshes[i];
-			size_t vertexCount = mesh->vertices.size();
-			mesh->indices.reserve(vertexCount);
-			for (size_t j = 0; j < vertexCount; j++)
-			{
-				mesh->indices.push_back(j);
-			}
-		}
+		SaveJsonToFile(strFullPath.c_str(), root);
 	}
 }

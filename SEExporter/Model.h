@@ -1,16 +1,7 @@
 #pragma once
+#include "Utility.h"
 
-struct Vector2
-{
-	float x, y;
-};
-
-struct Vector3
-{
-	float x, y, z;
-};
-
-namespace ModelFile
+namespace MaxPlugin
 {
 	namespace VertexChannel
 	{
@@ -22,58 +13,58 @@ namespace ModelFile
 			TexCoords0 = 0x8,
 			TexCoords1 = 0x10,
 			TexCoords2 = 0x20,
+			BoneWeights = 0x40,
 		};
+	};
+
+	struct BoneWeight
+	{
+		union
+		{
+			byte id[4];
+			uint uid;
+		};
+		float weight[3];
 	};
 
 	struct Vertex
 	{
-		Vector3 pos;
-		Vector3 norm;
-		Vector3 tan;
-		Vector2 uv0;
-		Vector2 uv1;
-		Vector2 uv2;
+		Vec3 pos;
+		Vec3 norm;
+		Vec2 uv0;
+		Vec2 uv1;
+		Vec2 uv2;
+		Vec3 tan;
+		BoneWeight bw;
 	};
 
-	class Mesh
+	struct Mesh
 	{
-	public:
 		TString name;
-		void* mtlid;
+		TString DiffTex;
+		TString BumpTex;
+		TString SpecTex;
 		UINT vertexChannels;
-		std::vector<USHORT> indices;
 		std::vector<Vertex> vertices;
+		std::vector<USHORT> indices;
 	};
 
-	class Material
-	{
-	public:
-		void* id;
-		Vector3 ambient;
-		Vector3 diffuse;
-		Vector3 specular;
-		Vector3 emissive;
-		float opacity;
-		float glossiness;
-		float specularLevel;
-		float emissiveAmount;
-		std::map<std::string, TString> textures;
-	};
+	class MeshExtracter;
 
 	class Model
 	{
 	public:
 		Model();
 		virtual ~Model();
-		Mesh* AddMesh(const TCHAR* name);
-		Material* AddMaterial(void* id);
-		Material* GetMaterial(void* id);
-		void WriteFile(const TCHAR* path, const TCHAR* name);
-		void OptMesh();
+		void Clear();
+		bool Extract(IGameScene* gScene);
+		void WriteMesh(const Mesh* mesh, const TCHAR* path);
+		void WriteFile(const TCHAR* filename);
+		void AddMesh(Mesh* mesh) { mMeshes.push_back(mesh); }
 	private:
-		typedef std::map<void*, Material*> Materials;
+		void ExtractNode(IGameNode* gNode);
 	private:
+		MeshExtracter* mMeshExtracter;
 		std::vector<Mesh*> mMeshes;
-		Materials mMaterials;
 	};
 }

@@ -14,11 +14,20 @@
 
 
 // TODO:  在此处引用程序需要的其他头文件
+#include "decomp.h"
+#include "IGame.h"
+#include "IGameObject.h"
+#include "IGameProperty.h"
+#include "IGameControl.h"
+#include "IGameModifier.h"
+#include "IConversionManager.h"
+#include "IGameError.h"
+#include "3dsmaxport.h"
+
 #include "Base.h"
 #include <tchar.h>
 #include <json\json.h>
 typedef std::wstring TString;
+typedef unsigned int uint;
+typedef unsigned char byte;
 void log(const TCHAR* fmt, ...);
-
-std::string WStr2MStr(const std::wstring& src);
-bool CreateMultiDir(const TCHAR* lpDir);

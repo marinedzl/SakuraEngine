@@ -30,7 +30,16 @@
     <ClInclude Include="resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="Model.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshExtracter.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,7 +53,16 @@
     <ClCompile Include="SEExporter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Utility.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="Model.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshExtracter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
