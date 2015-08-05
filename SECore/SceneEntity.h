@@ -21,6 +21,7 @@ public:
 	virtual const char* GetName() const { return mName.c_str(); }
 public:
 	SceneEntity();
+	bool GetSkinMatrix(Matrix* dst) const;
 private:
 	std::string mName;
 	Matrix mWorld;

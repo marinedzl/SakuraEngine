@@ -25,6 +25,11 @@ const Matrix& SceneEntity::GetWorld() const
 	return mWorld;
 }
 
+bool SceneEntity::GetSkinMatrix(Matrix* dst) const
+{
+	return mAnimation->GetMatrix(dst);
+}
+
 void SceneEntity::DestroyRenderer()
 {
 	SAFE_DELETE(mRenderer);

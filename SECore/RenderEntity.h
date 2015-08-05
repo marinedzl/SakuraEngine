@@ -11,6 +11,9 @@ public:
 	virtual void SetMesh(IMesh* mesh);
 	virtual const Matrix& GetWorld() const;
 	virtual void SetWorld(const Matrix& m);
+	virtual bool IsSkinned() const;
+public:
+	bool GetBoneMatrix(Matrix* dst) const;
 private:
 	SceneEntity& mOwner;
 	Material* mMaterial;

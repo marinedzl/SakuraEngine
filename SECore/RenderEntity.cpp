@@ -45,3 +45,13 @@ void RenderEntity::SetWorld(const Matrix& m)
 {
 	mOwner.SetWorld(m);
 }
+
+bool RenderEntity::IsSkinned() const
+{
+	return mOwner.GetAnimation() != nullptr;
+}
+
+bool RenderEntity::GetBoneMatrix(Matrix* dst) const
+{
+	return mOwner.GetSkinMatrix(dst);
+}

@@ -19,11 +19,7 @@ namespace MaxPlugin
 
 	struct BoneWeight
 	{
-		union
-		{
-			byte id[4];
-			uint uid;
-		};
+		byte id[4];
 		float weight[3];
 	};
 

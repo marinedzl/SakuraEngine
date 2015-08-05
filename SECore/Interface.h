@@ -179,6 +179,7 @@ namespace SECore
 			virtual void SetMesh(Mesh* mesh) = 0;
 			virtual const Matrix& GetWorld() const = 0;
 			virtual void SetWorld(const Matrix& m) = 0;
+			virtual bool IsSkinned() const = 0;
 		};
 
 		virtual void ClearEntities() = 0;

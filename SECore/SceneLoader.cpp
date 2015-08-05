@@ -142,6 +142,11 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 				animation->AddClip(memberNames[i].c_str(), clip);
 				clip->Release();
 			}
+
+			if (!memberNames.empty())
+			{
+				animation->Play(memberNames[0].c_str());
+			}
 		}
 
 		if (entityRoot.isMember("Renderer"))

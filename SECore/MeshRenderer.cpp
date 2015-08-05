@@ -113,10 +113,12 @@ void MeshRenderer::End()
 
 }
 
-void MeshRenderer::Draw(IRenderer::Entity* entity)
+void MeshRenderer::Draw(IRenderer::Entity* _entity)
 {
-	if (!entity)
+	if (!_entity)
 		return;
+
+	RenderEntity* entity = dynamic_cast<RenderEntity*>(_entity);
 
 	ID3D11DeviceContext* context = gCore.GetContext();
 	if (!context)
@@ -134,9 +136,9 @@ void MeshRenderer::Draw(IRenderer::Entity* entity)
 
 	cbModel->MATRIX_M = entity->GetWorld();
 
-	size_t boneCount = mesh->GetBoneCount();
-	if (boneCount > 0)
+	if (entity->IsSkinned())
 	{
+		entity->GetBoneMatrix(cbModel->MATRIX_M_SKIN);
 		context->VSSetShader(mSkinnedMeshVS, nullptr, 0);
 		context->IASetInputLayout(mSkinnedInputLayout);
 	}

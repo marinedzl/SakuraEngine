@@ -3,6 +3,8 @@
 #include "AnimationClip.h"
 
 AnimationClip::AnimationClip()
+	: mBoneCount(0)
+	, mFrameRate(30)
 {
 }
 
@@ -35,17 +37,11 @@ bool AnimationClip::LoadFromFile(const char * filename)
 
 		for (size_t j = 0; j < mBoneCount; ++j)
 		{
-			const Vector3& pos = *(const Vector3*)data;
+			frame->tm[j].pos = *(const Vector3*)data;
 			data += sizeof(Vector3);
 
-			const Quat& rot = *(const Quat*)data;
+			frame->tm[j].rot = *(const Quat*)data;
 			data += sizeof(Quat);
-
-			XMVECTOR p = XMLoadFloat3((const XMFLOAT3*)&pos);
-			XMVECTOR q = XMLoadFloat4((const XMFLOAT4*)&rot);
-			XMVECTOR s = XMLoadFloat3((const XMFLOAT3*)&scaling);
-			XMMATRIX m = XMMatrixAffineTransformation(s, XMQuaternionIdentity(), q, p);
-			XMStoreFloat4x4((XMFLOAT4X4*)&frame->tm[j], m);
 		}
 	}
 

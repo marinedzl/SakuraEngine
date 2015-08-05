@@ -12,7 +12,6 @@ Input main(appdata_t IN)
 		+ MATRIX_M_SKIN[IN.boneIndices[2]] * IN.weights[2]
 		+ MATRIX_M_SKIN[IN.boneIndices[3]] * weight;
 	m = mul(m, MATRIX_M);
-	//m = MATRIX_M;
 	m = mul(m, MATRIX_VP);
 	o.pos = mul(IN.pos, m);
 	o.uv = IN.uv0;

@@ -23,7 +23,6 @@ struct Vertex
 Mesh::Mesh()
 	: mVertexSize(0)
 	, mIndexCount(0)
-	, mBoneCount(0)
 	, mVertexBuffer(nullptr)
 	, mIndexBuffer(nullptr)
 {
