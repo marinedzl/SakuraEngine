@@ -29,8 +29,6 @@ public:
 	~SEUtil() {}
 	void Init(HWND hWnd);
 	void Destroy(HWND hWnd);
-	void ExportModel(const TCHAR* name);
-	void ExportAnimation(const TCHAR* name);
 	static INT_PTR CALLBACK UtilDlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 public:
@@ -79,10 +77,50 @@ void SEUtil::EndEditParams(Interface * ip, IUtil * iu)
 
 void SEUtil::Init(HWND hWnd)
 {
+	MyErrorProc pErrorProc;
+	SetErrorCallBack(&pErrorProc);
+
+	pIgame = GetIGameInterface();
+
+	IGameConversionManager * cm = GetConversionManager();
+	cm->SetCoordSystem(IGameConversionManager::IGAME_D3D);
+	pIgame->InitialiseIGame(false);
+	pIgame->SetStaticFrame(0);
 }
 
 void SEUtil::Destroy(HWND hWnd)
 {
+	pIgame->ReleaseIGame();
+}
+
+bool SEGetSaveFileName(HWND hWnd, TCHAR* dst, const TCHAR* szFilter, const TCHAR* szExt)
+{
+	OPENFILENAME ofn;
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFilter = szFilter;
+	ofn.lpstrFile = dst;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.lpstrDefExt = szExt;
+	ofn.lpstrInitialDir = _T(".\\");
+	return GetSaveFileName(&ofn) == TRUE;
+}
+
+bool SEGetOpenFileName(HWND hWnd, TCHAR* dst, const TCHAR* szFilter, const TCHAR* szExt)
+{
+	OPENFILENAME ofn;
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFilter = szFilter;
+	ofn.lpstrFile = dst;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.lpstrDefExt = szExt;
+	ofn.lpstrInitialDir = _T(".\\");
+	return GetOpenFileName(&ofn) == TRUE;
 }
 
 INT_PTR CALLBACK SEUtil::UtilDlgProc(
@@ -107,18 +145,8 @@ INT_PTR CALLBACK SEUtil::UtilDlgProc(
 		break;
 		case IDC_BTN_EXP_SKE:
 		{
-			OPENFILENAME ofn;
 			TCHAR szFileName[MAX_PATH] = _T("");
-			ZeroMemory(&ofn, sizeof(ofn));
-			ofn.lStructSize = sizeof(ofn);
-			ofn.hwndOwner = hWnd;
-			ofn.lpstrFilter = _T("Ske Files (*.ske)\0*.ske\0All Files (*.*)\0*.*\0");
-			ofn.lpstrFile = szFileName;
-			ofn.nMaxFile = MAX_PATH;
-			ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-			ofn.lpstrDefExt = _T("ske");
-			ofn.lpstrInitialDir = _T(".\\");
-			if (GetSaveFileName(&ofn))
+			if (SEGetSaveFileName(hWnd, szFileName, _T("SE Skeleton Files (*.ske)\0*.ske\0All Files (*.*)\0*.*\0"), _T("ske")))
 			{
 				MaxPlugin::Skeleton::Instance().WriteToFile(szFileName);
 			}
@@ -126,18 +154,8 @@ INT_PTR CALLBACK SEUtil::UtilDlgProc(
 		break;
 		case IDC_BTN_LOD_SKE:
 		{
-			OPENFILENAME ofn;
 			TCHAR szFileName[MAX_PATH] = _T("");
-			ZeroMemory(&ofn, sizeof(ofn));
-			ofn.lStructSize = sizeof(ofn);
-			ofn.hwndOwner = hWnd;
-			ofn.lpstrFilter = _T("Ske Files (*.ske)\0*.ske\0All Files (*.*)\0*.*\0");
-			ofn.lpstrFile = szFileName;
-			ofn.nMaxFile = MAX_PATH;
-			ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-			ofn.lpstrDefExt = _T("ske");
-			ofn.lpstrInitialDir = _T(".\\");
-			if (GetOpenFileName(&ofn))
+			if (SEGetOpenFileName(hWnd, szFileName, _T("SE Skeleton Files (*.ske)\0*.ske\0All Files (*.*)\0*.*\0"), _T("ske")))
 			{
 				MaxPlugin::Skeleton::Instance().LoadFromFile(szFileName);
 			}
@@ -145,39 +163,27 @@ INT_PTR CALLBACK SEUtil::UtilDlgProc(
 		break;
 		case IDC_BTN_EXPORT_MESH:
 		{
-			OPENFILENAME ofn;
 			TCHAR szFileName[MAX_PATH] = _T("");
-			ZeroMemory(&ofn, sizeof(ofn));
-			ofn.lStructSize = sizeof(ofn);
-			ofn.hwndOwner = hWnd;
-			ofn.lpstrFilter = _T("SE Model Files (*.mdl)\0*.mdl\0All Files (*.*)\0*.*\0");
-			ofn.lpstrFile = szFileName;
-			ofn.nMaxFile = MAX_PATH;
-			ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-			ofn.lpstrDefExt = _T("mdl");
-			ofn.lpstrInitialDir = _T(".\\");
-			if (GetSaveFileName(&ofn))
+			if (SEGetSaveFileName(hWnd, szFileName, _T("SE Model Files (*.mdl)\0*.mdl\0All Files (*.*)\0*.*\0"), _T("mdl")))
 			{
-				seUtil.ExportModel(szFileName);
+				MaxPlugin::Model model;
+				CHECK(MaxPlugin::Skeleton::Instance().IsInit());
+				if (model.Extract(seUtil.pIgame))
+					model.WriteFile(szFileName);
+				model.Clear();
 			}
 		}
 		break;
 		case IDC_BTN_EXPORT_ANIMATION:
 		{
-			OPENFILENAME ofn;
 			TCHAR szFileName[MAX_PATH] = _T("");
-			ZeroMemory(&ofn, sizeof(ofn));
-			ofn.lStructSize = sizeof(ofn);
-			ofn.hwndOwner = hWnd;
-			ofn.lpstrFilter = _T("SE Animation Files (*.anim)\0*.anim\0All Files (*.*)\0*.*\0");
-			ofn.lpstrFile = szFileName;
-			ofn.nMaxFile = MAX_PATH;
-			ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-			ofn.lpstrDefExt = _T("anim");
-			ofn.lpstrInitialDir = _T(".\\");
-			if (GetSaveFileName(&ofn))
+			if (SEGetSaveFileName(hWnd, szFileName, _T("SE Animation Files (*.anim)\0*.anim\0All Files (*.*)\0*.*\0"), _T("anim")))
 			{
-				seUtil.ExportAnimation(szFileName);
+				MaxPlugin::Animation anim;
+				CHECK(MaxPlugin::Skeleton::Instance().IsInit());
+				if (anim.Extract(seUtil.pIgame))
+					anim.WriteFile(szFileName);
+				anim.Clear();
 			}
 		}
 		break;
@@ -196,53 +202,7 @@ INT_PTR CALLBACK SEUtil::UtilDlgProc(
 	default:
 		return FALSE;
 	}
+
+Exit0:
 	return TRUE;
-}
-
-void SEUtil::ExportModel(const TCHAR* name)
-{
-	MyErrorProc pErrorProc;
-	SetErrorCallBack(&pErrorProc);
-
-	pIgame = GetIGameInterface();
-
-	IGameConversionManager * cm = GetConversionManager();
-	cm->SetCoordSystem(IGameConversionManager::IGAME_D3D);
-	pIgame->InitialiseIGame(false);
-	pIgame->SetStaticFrame(0);
-
-	MaxPlugin::Model model;
-
-	CHECK(MaxPlugin::Skeleton::Instance().IsInit());
-
-	if (model.Extract(pIgame))
-		model.WriteFile(name);
-	model.Clear();
-
-Exit0:
-	pIgame->ReleaseIGame();
-}
-
-void SEUtil::ExportAnimation(const TCHAR* name)
-{
-	MyErrorProc pErrorProc;
-	SetErrorCallBack(&pErrorProc);
-
-	pIgame = GetIGameInterface();
-
-	IGameConversionManager * cm = GetConversionManager();
-	cm->SetCoordSystem(IGameConversionManager::IGAME_D3D);
-	pIgame->InitialiseIGame(false);
-	pIgame->SetStaticFrame(0);
-
-	MaxPlugin::Animation anim;
-
-	CHECK(MaxPlugin::Skeleton::Instance().IsInit());
-
-	if (anim.Extract(pIgame))
-		anim.WriteFile(name);
-	anim.Clear();
-
-Exit0:
-	pIgame->ReleaseIGame();
 }

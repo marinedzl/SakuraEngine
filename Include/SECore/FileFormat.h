@@ -37,3 +37,24 @@ namespace AnimationFile
 		unsigned int boneCount;
 	};
 }
+
+namespace SkeletonFile
+{
+	enum
+	{
+		MaxBoneName = 20,
+	};
+
+	struct Head
+	{
+		unsigned int version;
+		unsigned int boneCount;
+	};
+
+	struct Bone
+	{
+		char name[MaxBoneName];
+		float pos[3];
+		float rot[4];
+	};
+}

@@ -2,6 +2,8 @@
 #include "Texture.h"
 #include "Mesh.h"
 #include "MeshShader.h"
+#include "Skeleton.h"
+#include "AnimationClip.h"
 #include "ResourceManager.h"
 
 ResourceManager gResourceManager;
@@ -34,6 +36,16 @@ ITexture* ResourceManager::LoadTexture(const char* filename)
 IMesh* ResourceManager::LoadMesh(const char* filename)
 {
 	return LoadResource<Mesh>(filename);
+}
+
+AnimationClip* ResourceManager::LoadClip(const char* filename)
+{
+	return LoadResource<AnimationClip>(filename);
+}
+
+Skeleton* ResourceManager::LoadSkeleton(const char* filename)
+{
+	return LoadResource<Skeleton>(filename);
 }
 
 bool ResourceManager::AddShaderFactory(const char * name, ShaderFactory * factory)

@@ -21,8 +21,8 @@ namespace MaxPlugin
 		static Skeleton& Instance() { static Skeleton instance; return instance; }
 		bool Build(IGameScene* gScene);
 		uint GetBoneId(const TCHAR* name);
-		void WriteToFile(const TCHAR* path);
-		void LoadFromFile(const TCHAR* path);
+		void WriteToFile(const TCHAR* filename);
+		void LoadFromFile(const TCHAR* filename);
 		bool IsInit() { return mBones.size() > 0; }
 		uint GetBoneCount() const { return (uint)mBones.size(); }
 	private:

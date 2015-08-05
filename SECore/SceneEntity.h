@@ -3,9 +3,7 @@
 class SceneEntity : public IScene::Entity
 {
 public:
-	SceneEntity();
 	virtual ~SceneEntity();
-public:
 	virtual void SetWorld(const Matrix& m);
 	virtual const Matrix& GetWorld() const;
 
@@ -21,6 +19,8 @@ public:
 
 	virtual void SetName(const char* name) { mName = name; }
 	virtual const char* GetName() const { return mName.c_str(); }
+public:
+	SceneEntity();
 private:
 	std::string mName;
 	Matrix mWorld;

@@ -5,6 +5,7 @@
 
 SceneEntity::SceneEntity()
 	: mRenderer(nullptr)
+	, mAnimation(nullptr)
 {
 }
 

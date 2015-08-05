@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "Scene.h"
+#include "Skeleton.h"
+#include "Animation.h"
+#include "AnimationClip.h"
 #include "ResourceManager.h"
 #include "SceneLoader.h"
 
@@ -33,7 +36,7 @@ bool LoadJsonFromFile(const char* filename, Json::Value& root)
 
 	if (!reader.parse(file.ptr(), root))
 	{
-		//log(reader.getFormatedErrorMessages().c_str());
+		log(reader.getFormatedErrorMessages().c_str());
 		CHECK(false);
 	}
 
@@ -119,6 +122,26 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 			}
 			AffineTransform(mat, position, rotation, scaling);
 			entity->SetWorld(mat);
+		}
+
+		if (entityRoot.isMember("Animation"))
+		{
+			const Json::Value& animationRoot = entityRoot["Animation"];
+
+			Animation* animation = dynamic_cast<Animation*>(entity->CreateAnimation());
+
+			Skeleton* skeleton = gResourceManager.LoadSkeleton(animationRoot["Skeleton"].asCString());
+			animation->SetSkeleton(skeleton);
+			skeleton->Release();
+
+			const Json::Value& jsonClips = animationRoot["Clips"];
+			std::vector<std::string> memberNames = jsonClips.getMemberNames();
+			for (size_t i = 0; i < memberNames.size(); ++i)
+			{
+				AnimationClip* clip = gResourceManager.LoadClip(jsonClips[memberNames[i]].asCString());
+				animation->AddClip(memberNames[i].c_str(), clip);
+				clip->Release();
+			}
 		}
 
 		if (entityRoot.isMember("Renderer"))

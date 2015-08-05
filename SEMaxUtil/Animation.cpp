@@ -109,7 +109,7 @@ namespace MaxPlugin
 		head.frameCount = (uint)mFrames.size();
 		head.boneCount = Skeleton::Instance().GetBoneCount();
 
-		fwrite(&head, sizeof(MeshFile::Head), 1, file);
+		fwrite(&head, sizeof(head), 1, file);
 
 		for (uint i = 0; i < head.frameCount; ++i)
 		{

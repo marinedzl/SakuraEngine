@@ -9,6 +9,8 @@ public:
 	bool Init();
 	ITexture* LoadTexture(const char* filename);
 	IMesh* LoadMesh(const char* filename);
+	AnimationClip* LoadClip(const char* filename);
+	Skeleton* LoadSkeleton(const char* filename);
 	template<typename T>
 	T* LoadResource(const char* filename);
 	bool AddShaderFactory(const char* name, ShaderFactory* factory);

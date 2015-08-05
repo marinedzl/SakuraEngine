@@ -3,13 +3,19 @@
 class Animation : public IAnimation
 {
 public:
-	Animation(SceneEntity& owner);
 	virtual ~Animation();
-public:
-	void Update(float deltaTime);
-public:
 	virtual void Play(const char* clipname);
-	virtual bool GetMatrix(Matrix* dst, size_t count) const;
+public:
+	Animation(SceneEntity& owner);
+	void Update(float deltaTime);
+	void SetSkeleton(Skeleton* skeleton);
+	bool AddClip(const char* name, AnimationClip* clip);
+	bool GetMatrix(Matrix* dst, size_t count) const;
+	const AnimationClip* GetClip(const char* name) const;
+private:
+	typedef std::map<std::string, AnimationClip*> Clips;
 private:
 	SceneEntity& mOwner;
+	Skeleton* mSkeleton;
+	Clips mClips;
 };

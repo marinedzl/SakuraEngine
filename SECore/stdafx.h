@@ -51,7 +51,9 @@ class Scene;
 class Mesh;
 class Texture;
 class Renderer;
+class Skeleton;
 class Animation;
+class AnimationClip;
 
 class SceneEntity;
 class RenderEntity;

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "SECore/FileFormat.h"
 #include "Skeleton.h"
 
 namespace MaxPlugin
@@ -85,35 +86,64 @@ namespace MaxPlugin
 			return 0;
 	}
 
-	void Skeleton::WriteToFile(const TCHAR * path)
+	void Skeleton::WriteToFile(const TCHAR * filename)
 	{
-		Json::Value json;
-		size_t count = mBones.size();
-		for (size_t i = 0; i < count; ++i)
+		char buff[SkeletonFile::MaxBoneName];
+		SkeletonFile::Head head;
+		FILE* file = nullptr;
+
+		_wfopen_s(&file, filename, _T("wb"));
+		CHECK(file);
+
+		head.version = 100;
+		head.boneCount = GetBoneCount();
+
+		fwrite(&head, sizeof(head), 1, file);
+
+		for (uint i = 0; i < head.boneCount; ++i)
 		{
-			json.append(WStr2MStr(mBones[i]->name));
+			const Bone* bone = mBones[i];
+			std::string name = WStr2MStr(bone->name);
+			CHECK(bone->name.length() < SkeletonFile::MaxBoneName);
+			ZeroMemory(buff, SkeletonFile::MaxBoneName);
+			strncpy_s(buff, name.c_str(), SkeletonFile::MaxBoneName);
+			fwrite(buff, sizeof(char), SkeletonFile::MaxBoneName, file);
+			fwrite(&bone->position, sizeof(bone->position), 1, file);
+			fwrite(&bone->orientation, sizeof(bone->orientation), 1, file);
 		}
-		MaxPlugin::SaveJsonToFile(path, json);
+	Exit0:
+		if (file)
+			fclose(file);
 	}
 
-	void Skeleton::LoadFromFile(const TCHAR * path)
+	void Skeleton::LoadFromFile(const TCHAR * filename)
 	{
 		Clear();
-		TString buff;
-		Json::Value root;
-		MaxPlugin::LoadJsonFromFile(path, root);
-		CHECK(root.isArray());
-		uint count = root.size();
-		for (uint i = 0; i < count; ++i)
+		char buff[SkeletonFile::MaxBoneName];
+		SkeletonFile::Head head;
+		FILE* file = nullptr;
+
+		_wfopen_s(&file, filename, _T("rb"));
+		CHECK(file);
+
+		head.version = 100;
+		head.boneCount = GetBoneCount();
+
+		fread(&head, sizeof(head), 1, file);
+
+		for (uint i = 0; i < head.boneCount; ++i)
 		{
-			const Json::Value& jsonBone = root[i];
 			Bone* bone = new Bone();
-			bone->id = i + 1;
-			bone->name = MStr2WStr(root[i].asCString());
+			fread(buff, sizeof(char), SkeletonFile::MaxBoneName, file);
+			bone->name = MStr2WStr(buff);
+			fread(&bone->position, sizeof(bone->position), 1, file);
+			fread(&bone->orientation, sizeof(bone->orientation), 1, file);
+			bone->id = (uint)mBones.size() + 1;
 			mBones.push_back(bone);
 			mBoneMap.insert(std::make_pair(bone->name, bone));
 		}
 	Exit0:
-		;
+		if (file)
+			fclose(file);
 	}
 }
