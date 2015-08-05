@@ -51,12 +51,12 @@ namespace MaxPlugin
 			dst.z = src.z;
 		}
 
-		static void ToVec4(Vec4& dst, const Quat& src)
+		static void ToQuat(Vec4& dst, const Quat& src)
 		{
 			dst.x = src.x;
 			dst.y = src.y;
 			dst.z = src.z;
-			dst.w = src.w;
+			dst.w = -src.w;
 		}
 	};
 }

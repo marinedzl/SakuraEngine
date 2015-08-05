@@ -90,7 +90,7 @@ namespace MaxPlugin
 		for (int i = 0; i < count; i++)
 		{
 			Utility::ToVec3(mFrames[i]->tm[index].pos, Key[i].sampleKey.gval.Translation());
-			Utility::ToVec4(mFrames[i]->tm[index].rot, Key[i].sampleKey.gval.Rotation());
+			Utility::ToQuat(mFrames[i]->tm[index].rot, Key[i].sampleKey.gval.Rotation());
 		}
 
 	Exit0:

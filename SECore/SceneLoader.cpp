@@ -143,9 +143,9 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 				clip->Release();
 			}
 
-			if (!memberNames.empty())
+			if (animationRoot.isMember("Clip"))
 			{
-				animation->Play(memberNames[0].c_str());
+				animation->Play(animationRoot["Clip"].asCString());
 			}
 		}
 

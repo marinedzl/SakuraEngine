@@ -62,7 +62,7 @@ namespace MaxPlugin
 			GMatrix matWorld = node->GetWorldTM();
 
 			Utility::ToVec3(bone->position, matWorld.Translation());
-			Utility::ToVec4(bone->orientation, matWorld.Rotation());
+			Utility::ToQuat(bone->orientation, matWorld.Rotation());
 			Utility::ToVec3(bone->scale, matWorld.Scaling());
 
 			mBones.push_back(bone);
