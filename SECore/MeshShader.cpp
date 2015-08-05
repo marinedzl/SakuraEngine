@@ -8,11 +8,11 @@ namespace
 {
 	Shader::PropertyType GetPropertyType(const char* name)
 	{
-		if (strcmp(name, "_Color") == 0)
+		if (strcmp(name, "DiffColor") == 0)
 			return Shader::eColor;
-		else if (strcmp(name, "_MainTex") == 0)
+		else if (strcmp(name, "DiffTex") == 0)
 			return Shader::eTexture;
-		else if (strcmp(name, "_CutOff") == 0)
+		else if (strcmp(name, "CutOff") == 0)
 			return Shader::eFloat;
 		else
 			return Shader::eInvalid;

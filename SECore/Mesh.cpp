@@ -5,8 +5,8 @@
 
 struct BoneWeights
 {
-	float weights[3];
 	byte bones[4];
+	float weights[3];
 };
 
 struct Vertex

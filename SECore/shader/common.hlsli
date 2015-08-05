@@ -22,8 +22,8 @@ struct appdata_t
 	float2 uv0 : TEXCOORD0;
 	float2 uv1 : TEXCOORD1;
 	float2 uv2 : TEXCOORD2;
-	float3 weights : BLENDWEIGHT;
 	uint4 boneIndices : BLENDINDICES;
+	float3 weights : BLENDWEIGHT;
 };
 
 struct Input

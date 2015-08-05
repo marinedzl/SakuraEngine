@@ -23,6 +23,44 @@ Color ConvertDwordToColor(DWORD dw)
 	return Color(r * factor, g * factor, b * factor, a * factor);
 }
 
+bool LoadJsonFromFile(const char* filename, Json::Value& root)
+{
+	bool ret = false;
+	buffer file;
+	Json::Reader reader;
+
+	CHECK(LoadTextFile(file, filename) && file.size() > 0);
+
+	if (!reader.parse(file.ptr(), root))
+	{
+		//log(reader.getFormatedErrorMessages().c_str());
+		CHECK(false);
+	}
+
+	ret = true;
+Exit0:
+	return ret;
+}
+
+bool SaveJsonToFile(const char* filename, const Json::Value& root)
+{
+	bool ret = false;
+	FILE* file = nullptr;
+	Json::StyledWriter writer;
+	std::string dst;
+
+	dst = writer.write(root);
+	fopen_s(&file, filename, "w");
+	CHECK(file);
+	fwrite(dst.c_str(), 1, dst.length(), file);
+
+	ret = true;
+Exit0:
+	if (file)
+		fclose(file);
+	return ret;
+}
+
 SceneLoader::SceneLoader()
 {
 }
