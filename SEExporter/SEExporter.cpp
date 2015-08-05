@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Model.h"
 #include "Skeleton.h"
+#include "Animation.h"
 #include "SEExporter.h"
 
 // Dummy function for progress bar
@@ -85,7 +86,7 @@ int SEExporter::ExtCount()
 const TCHAR *SEExporter::Ext(int n)
 {
 	//TODO: Return the 'i-th' file name extension (i.e. "3DS").
-	return _T("mdl");
+	return _T("json");
 }
 
 const TCHAR *SEExporter::LongDesc()
@@ -282,7 +283,7 @@ int SEExporter::DoExport(const TCHAR * name, ExpInterface* ei, Interface* i, BOO
 		}
 	}
 
-	ExportType exportType = eExportMesh;
+	CHECK(MaxPlugin::Skeleton::Instance().IsInit());
 
 	switch (exportType)
 	{
@@ -296,7 +297,10 @@ int SEExporter::DoExport(const TCHAR * name, ExpInterface* ei, Interface* i, BOO
 	break;
 	case eExportAnimation:
 	{
-
+		MaxPlugin::Animation animation;
+		if (animation.Extract(pIgame))
+			animation.WriteFile(name);
+		animation.Clear();
 	}
 	break;
 	}
@@ -305,5 +309,6 @@ int SEExporter::DoExport(const TCHAR * name, ExpInterface* ei, Interface* i, BOO
 
 	ip->ProgressEnd();
 
+Exit0:
 	return TRUE;
 }

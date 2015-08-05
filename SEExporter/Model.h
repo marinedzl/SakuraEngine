@@ -58,11 +58,11 @@ namespace MaxPlugin
 		virtual ~Model();
 		void Clear();
 		bool Extract(IGameScene* gScene);
-		void WriteMesh(const Mesh* mesh, const TCHAR* path);
 		void WriteFile(const TCHAR* filename);
 		void AddMesh(Mesh* mesh) { mMeshes.push_back(mesh); }
 	private:
 		void ExtractNode(IGameNode* gNode);
+		void WriteMesh(const Mesh* mesh, const TCHAR* path);
 	private:
 		MeshExtracter* mMeshExtracter;
 		std::vector<Mesh*> mMeshes;

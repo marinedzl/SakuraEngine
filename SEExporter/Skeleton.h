@@ -23,6 +23,8 @@ namespace MaxPlugin
 		uint GetBoneId(const TCHAR* name);
 		void WriteToFile(const TCHAR* path);
 		void LoadFromFile(const TCHAR* path);
+		bool IsInit() { return mBones.size() > 0; }
+		uint GetBoneCount() const { return (uint)mBones.size(); }
 	private:
 		void ExtractNode(IGameNode* gNode);
 		void DumpBone(IGameNode * node);

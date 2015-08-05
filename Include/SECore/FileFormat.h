@@ -27,3 +27,13 @@ namespace MeshFile
 		unsigned int size;
 	};
 }
+
+namespace AnimationFile
+{
+	struct Head
+	{
+		unsigned int version;
+		unsigned int frameCount;
+		unsigned int boneCount;
+	};
+}

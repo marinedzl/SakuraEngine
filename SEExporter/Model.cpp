@@ -228,10 +228,6 @@ namespace MaxPlugin
 
 		root["Entities"].append(entity);
 
-		strFullPath = path;
-		strFullPath += _T("\\");
-		strFullPath += name;
-		strFullPath += _T(".mdl");
-		SaveJsonToFile(strFullPath.c_str(), root);
+		SaveJsonToFile(filename, root);
 	}
 }

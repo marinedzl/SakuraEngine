@@ -14,9 +14,9 @@ struct Vertex
 	Vector3 pos;
 	Vector3 norm;
 	Vector3 tan;
-	Vector2 uv0;
-	Vector2 uv1;
-	Vector2 uv2;
+	Vector2 uv0; // Texture
+	Vector2 uv1; // LightMap
+	Vector2 uv2; // ShadowMap
 	BoneWeights boneWeights;
 };
 

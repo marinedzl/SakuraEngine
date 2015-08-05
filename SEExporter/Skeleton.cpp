@@ -58,8 +58,6 @@ namespace MaxPlugin
 			bone->id = (uint)mBones.size() + 1;
 			bone->name = node->GetName();
 
-			IGameControl * pGameControl = node->GetIGameControl();
-
 			GMatrix matWorld = node->GetWorldTM();
 
 			Utility::ToVec3(bone->position, matWorld.Translation());
