@@ -5,6 +5,7 @@ class Animation : public IAnimation
 public:
 	virtual ~Animation();
 	virtual void Play(const char* clipname);
+	virtual void CrossFade(const char* clipname, float fade);
 public:
 	Animation(SceneEntity& owner);
 	void Update(float deltaTime);

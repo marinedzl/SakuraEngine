@@ -35,6 +35,12 @@ void Animation::Play(const char* clipname)
 	mElapsedTime = 0;
 }
 
+void Animation::CrossFade(const char * clipname, float fade)
+{
+	mClip = GetClip(clipname);
+	mElapsedTime = 0;
+}
+
 bool Animation::GetMatrix(Matrix* dst) const
 {
 	dst[0] = Matrix();

@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include "CameraController.h"
 
+const Vector3 InitOffset(0, 2, 0);
+
 CameraController::CameraController(Camera* camera)
 	: mCamera(camera)
 	, mOp(eOpNone)
-	, mLookAt(camera->GetLookAt())
-	, mEye(camera->GetEye())
+	, mLookAt(camera->GetLookAt() + InitOffset)
+	, mEye(camera->GetEye() + InitOffset)
 	, mUp(0, 1, 0)
 	, mDistance(1)
 	, mMinDistance(0.1f)

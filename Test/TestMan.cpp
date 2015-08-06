@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "CharaCtrl.h"
 #include "CameraController.h"
 #include "TestMan.h"
 
@@ -8,6 +9,7 @@ TestMan::TestMan()
 	: mScene(nullptr)
 	, mRT(nullptr)
 	, mCamera(nullptr)
+	, mCharaCtrl(nullptr)
 {
 }
 
@@ -17,6 +19,7 @@ TestMan::~TestMan()
 
 void TestMan::Release()
 {
+	SAFE_DELETE(mCharaCtrl);
 	SAFE_DELETE(mCamera);
 	SAFE_RELEASE(mRT);
 	SAFE_RELEASE(mScene);
@@ -39,6 +42,11 @@ void TestMan::Init()
 
 	CHECK(mScene->LoadAdditive("scene.json"));
 
+	GameObject* mainChara = mScene->FindEntity("main chara");
+	CHECK(mainChara);
+
+	mCharaCtrl = new CharaCtrl(mainChara);
+
 	mLastTime = timeGetTime();
 Exit0:
 	;
@@ -52,16 +60,19 @@ void TestMan::CreateWnd(HWND hWnd)
 void TestMan::Process()
 {
 	DWORD currentTime = timeGetTime();
-	DWORD deltaTime = currentTime - mLastTime;
+	DWORD dwDelta = currentTime - mLastTime;
 	mLastTime = currentTime;
 
-	float d = deltaTime / 1000.0f;
-	mCamera->Update(d);
+	float deltaTime = dwDelta / 1000.0f;
+
+	if (mCamera)
+		mCamera->Update(deltaTime);
 
 	if (mScene)
-	{
-		mScene->Update(d);
-	}
+		mScene->Update(deltaTime);
+
+	if (mCharaCtrl)
+		mCharaCtrl->Update(deltaTime);
 
 	if (mRT)
 	{
@@ -77,6 +88,11 @@ void TestMan::Process()
 void TestMan::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	Vector2 pos((float)(short)LOWORD(lParam), (float)(short)HIWORD(lParam));
+
+	if (mCharaCtrl)
+	{
+		mCharaCtrl->WndProc(hWnd, message, wParam, lParam);
+	}
 
 	switch (message)
 	{

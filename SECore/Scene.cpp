@@ -36,6 +36,23 @@ void Scene::RemoveEntity(Entity* entity)
 	}
 }
 
+Scene::Entity * Scene::FindEntity(const char * name)
+{
+	Entities::iterator iter = mEntities.begin();
+	Entities::iterator iterEnd = mEntities.end();
+	for (; iter != iterEnd; ++iter)
+	{
+		if (SceneEntity* entity = *iter)
+		{
+			if (strcmp(entity->GetName(), name) == 0)
+			{
+				return entity;
+			}
+		}
+	}
+	return nullptr;
+}
+
 void Scene::ClearEntities()
 {
 	DeleteList(mEntities);

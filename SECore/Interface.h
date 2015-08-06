@@ -168,6 +168,7 @@ namespace SECore
 	struct Animation
 	{
 		virtual void Play(const char* clipname) = 0;
+		virtual void CrossFade(const char* clipname, float fade) = 0;
 	};
 
 	struct Renderer
@@ -249,6 +250,7 @@ namespace SECore
 
 		virtual void ClearEntities() = 0;
 		virtual Entity* CreateEntity() = 0;
+		virtual Entity* FindEntity(const char* name) = 0;
 		virtual void RemoveEntity(Entity* entity) = 0;
 
 		virtual bool LoadAdditive(const char* filename) = 0;

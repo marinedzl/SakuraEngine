@@ -32,3 +32,5 @@ typedef SECore::Vector4 Vector4;
 typedef SECore::Quat Quat;
 typedef SECore::Texture Texture;
 typedef SECore::Camera Camera;
+typedef SECore::Scene::Entity GameObject;
+typedef SECore::Animation Animation;

@@ -18,6 +18,7 @@ public:
 	virtual void ClearEntities();
 	virtual Entity* CreateEntity();
 	virtual void RemoveEntity(Entity* entity);
+	virtual Entity* FindEntity(const char* name);
 private:
 	void DrawScene();
 private:

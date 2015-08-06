@@ -1,6 +1,7 @@
 #pragma once
 
 class CameraController;
+class CharaCtrl;
 class TestMan
 {
 public:
@@ -16,6 +17,7 @@ private:
 	SECore::RenderTarget* mRT;
 	DWORD mLastTime;
 	CameraController* mCamera;
+	CharaCtrl* mCharaCtrl;
 };
 
 extern TestMan gTestMan;
