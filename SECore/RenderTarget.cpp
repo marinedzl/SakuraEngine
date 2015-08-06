@@ -37,8 +37,7 @@ bool RenderTarget::Begin()
 {
 	if (ID3D11DeviceContext* context = gCore.GetContext())
 	{
-		//float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f };
-		float ClearColor[4] = { 1, 1, 1, 1 };
+		float ClearColor[4] = { 0.278f, 0.278f, 0.278f, 1 };
 		context->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
 		context->ClearRenderTargetView(mRenderTargetView, ClearColor);
 		context->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
