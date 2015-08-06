@@ -8,6 +8,7 @@ Animation::Animation(SceneEntity& owner)
 	: mOwner(owner)
 	, mSkeleton(nullptr)
 	, mClip(nullptr)
+	, mNextClip(nullptr)
 	, mElapsedTime(0)
 {
 }
@@ -32,13 +33,15 @@ void Animation::SetSkeleton(Skeleton * skeleton)
 void Animation::Play(const char* clipname)
 {
 	mClip = GetClip(clipname);
+	mNextClip = nullptr;
 	mElapsedTime = 0;
 }
 
 void Animation::CrossFade(const char * clipname, float fade)
 {
-	mClip = GetClip(clipname);
-	mElapsedTime = 0;
+	mNextClip = GetClip(clipname);
+	mFadeLength = fade;
+	mFadeTime = 0;
 }
 
 bool Animation::GetMatrix(Matrix* dst) const
@@ -54,58 +57,96 @@ const AnimationClip * Animation::GetClip(const char * name) const
 	return iter == mClips.end() ? nullptr : iter->second;
 }
 
+void GetClipTM(XMMATRIX& dst, const AnimationClip* clip, float time, size_t index)
+{
+	const float interval = 1.0f / clip->GetFrameRate();
+	int frameCount = clip->GetFrameCount();
+	const float length = interval * frameCount;
+	time = fmod(time, length);
+	int frame = (int)(time / interval);
+	float lerp = (time - frame * interval) / interval;
+
+	const AnimationClip::Frame* prev = clip->GetFrame((frameCount + frame - 1) % frameCount);
+	const AnimationClip::Frame* next = clip->GetFrame(frame % frameCount);
+
+	XMVECTOR position;
+	XMVECTOR rotation;
+	XMVECTOR prevT = XMLoadFloat3(prev->tm[index].pos);
+	XMVECTOR prevR = XMLoadFloat4(prev->tm[index].rot);
+	XMVECTOR nextT = XMLoadFloat3(next->tm[index].pos);
+	XMVECTOR nextR = XMLoadFloat4(next->tm[index].rot);
+
+	if (lerp <= 0)
+	{
+		position = prevT;
+		rotation = prevR;
+	}
+	else if (lerp >= 1)
+	{
+		position = nextT;
+		rotation = nextR;
+	}
+	else
+	{
+		position = XMVectorLerp(prevT, nextT, lerp);
+		rotation = XMQuaternionSlerp(prevR, nextR, lerp);
+	}
+
+	XMMATRIX trans;
+	trans = XMMatrixTranslationFromVector(position);
+	dst = XMMatrixRotationQuaternion(rotation);
+	dst *= trans;
+}
+
 void Animation::Update(float deltaTime)
 {
+	mElapsedTime += deltaTime;
+
 	if (mClip)
 	{
-		mElapsedTime += deltaTime;
-
-		const float interval = 1.0f / mClip->GetFrameRate();
-		int frameCount = mClip->GetFrameCount();
-		const float length = interval * frameCount;
-		float time = fmod(mElapsedTime, length);
-		int frame = (int)(time / interval);
-		float lerp = (time - frame * interval) / interval;
-
-		const AnimationClip::Frame* prev = mClip->GetFrame((frameCount + frame - 1) % frameCount);
-		const AnimationClip::Frame* next = mClip->GetFrame(frame % frameCount);
-		
-		size_t boneCount = mSkeleton->GetBoneCount();
-		for (size_t i = 0; i < boneCount; ++i)
+		if (!mNextClip)
 		{
-			XMVECTOR position;
-			XMVECTOR rotation;
-			XMVECTOR prevT = XMLoadFloat3(prev->tm[i].pos);
-			XMVECTOR prevR = XMLoadFloat4(prev->tm[i].rot);
-			XMVECTOR nextT = XMLoadFloat3(next->tm[i].pos);
-			XMVECTOR nextR = XMLoadFloat4(next->tm[i].rot);
-
-			if (lerp <= 0)
+			size_t boneCount = mSkeleton->GetBoneCount();
+			for (size_t i = 0; i < boneCount; ++i)
 			{
-				position = prevT;
-				rotation = prevR;
+				XMMATRIX inv, mat;
+				inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
+
+				GetClipTM(mat, mClip, mElapsedTime, i);
+
+				mat = inv * mat;
+
+				XMStoreFloat4x4(mTMs[i], mat);
 			}
-			else if (lerp >= 1)
+		}
+		else
+		{
+			mFadeTime += deltaTime;
+			mFadeTime = min(mFadeTime, mFadeLength);
+
+			float weight = mFadeTime / mFadeLength;
+
+			size_t boneCount = mSkeleton->GetBoneCount();
+			for (size_t i = 0; i < boneCount; ++i)
 			{
-				position = nextT;
-				rotation = nextR;
+				XMMATRIX inv, mat, matNext;
+				inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
+
+				GetClipTM(mat, mClip, mElapsedTime, i);
+				GetClipTM(matNext, mNextClip, mElapsedTime, i);
+
+				mat = mat * (1 - weight) + matNext * weight;
+
+				mat = inv * mat;
+
+				XMStoreFloat4x4(mTMs[i], mat);
 			}
-			else
+
+			if (mFadeTime >= mFadeLength)
 			{
-				position = XMVectorLerp(prevT, nextT, lerp);
-				rotation = XMQuaternionSlerp(prevR, nextR, lerp);
+				mClip = mNextClip;
+				mNextClip = nullptr;
 			}
-
-			XMMATRIX mat, trans, inv;
-			trans = XMMatrixTranslationFromVector(position);
-			mat = XMMatrixRotationQuaternion(rotation);
-			mat *= trans;
-
-			inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
-
-			mat = inv * mat;
-
-			XMStoreFloat4x4(mTMs[i], mat);
 		}
 	}
 }

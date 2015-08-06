@@ -19,7 +19,11 @@ private:
 	SceneEntity& mOwner;
 	Skeleton* mSkeleton;
 	Clips mClips;
-	const AnimationClip* mClip;
-	float mElapsedTime;
 	std::vector<Matrix> mTMs;
+	float mElapsedTime;
+
+	float mFadeLength;
+	float mFadeTime;
+	const AnimationClip* mClip;
+	const AnimationClip* mNextClip;
 };
