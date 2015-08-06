@@ -9,7 +9,7 @@ public:
 	bool Init();
 	void Begin();
 	void End();
-	void Draw(IRenderer::Entity* entity);
+	void Draw(RenderEntity* entity);
 private:
 	ID3D11VertexShader* mMeshVS;
 	ID3D11VertexShader* mSkinnedMeshVS;

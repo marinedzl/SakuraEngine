@@ -68,7 +68,7 @@ Exit0:
 	return ret;
 }
 
-bool MeshShader::SetTexture(const char* name, ITexture* texture)
+bool MeshShader::SetTexture(const char* name, SECore::Texture* texture)
 {
 	if (GetPropertyType(name) == Shader::eTexture)
 	{

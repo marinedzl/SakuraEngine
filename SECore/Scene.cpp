@@ -1,9 +1,11 @@
 #include "stdafx.h"
+#include "Renderer.h"
 #include "MeshRenderer.h"
 #include "SceneEntity.h"
 #include "SceneLoader.h"
 #include "ConstantBufferManager.h"
 #include "Core.h"
+#include "Physics.h"
 #include "Scene.h"
 
 Scene::Scene()
@@ -22,7 +24,7 @@ void Scene::Release()
 
 Scene::Entity* Scene::CreateEntity()
 {
-	SceneEntity* entity = new SceneEntity();
+	SceneEntity* entity = new SceneEntity(*this);
 	mEntities.push_back(entity);
 	return entity;
 }
@@ -60,6 +62,8 @@ void Scene::ClearEntities()
 
 bool Scene::Init()
 {
+	bool ret = false;
+
 	mCamera.projectType = Camera::Perspective;
 	mCamera.eye = Vector3(0, 0, -10);
 	mCamera.lookat = Vector3(0, 0, 0);
@@ -74,7 +78,15 @@ bool Scene::Init()
 	mCamera.viewportW = 1;
 	mCamera.viewportH = 1;
 
-	return true;
+	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
+	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+
+	mPxScene = gPhysics->createScene(sceneDesc);
+	CHECK(mPxScene);
+
+	ret = true;
+Exit0:
+	return ret;
 }
 
 bool Scene::LoadAdditive(const char * filename)
@@ -82,7 +94,7 @@ bool Scene::LoadAdditive(const char * filename)
 	return SceneLoader::Load(this, filename);
 }
 
-void Scene::Draw(IRenderTarget* rt)
+void Scene::Draw(SECore::RenderTarget* rt)
 {
 	mCamera.rtW = rt->GetWidth();
 	mCamera.rtH = rt->GetHeight();
@@ -116,18 +128,18 @@ void Scene::DrawScene()
 		Entities::iterator iterEnd = mEntities.end();
 		for (; iter != iterEnd; ++iter)
 		{
-			Entity* entity = *iter;
+			SceneEntity* entity = *iter;
 			if (!entity)
 				continue;
 
-			IRenderer* renderer = entity->GetRenderer();
+			Renderer* renderer = entity->GetComponent<Renderer>();
 			if (!renderer)
 				continue;
 
 			size_t count = renderer->GetEntityCount();
 			for (size_t i = 0; i < count; ++i)
 			{
-				if (IRenderer::Entity* renderEntity = renderer->GetEntity(i))
+				if (RenderEntity* renderEntity = renderer->GetEntityInternal(i))
 				{
 					gMeshRenderer.Draw(renderEntity);
 				}
@@ -152,4 +164,7 @@ void Scene::Update(float deltaTime)
 			}
 		}
 	}
+
+	if (mPxScene)
+		mPxScene->simulate(deltaTime);
 }

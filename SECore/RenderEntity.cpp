@@ -7,7 +7,7 @@
 RenderEntity::RenderEntity(SceneEntity& owner)
 	: mOwner(owner)
 {
-	mMaterial = new MaterialImpl();
+	mMaterial = new Material();
 }
 
 RenderEntity::~RenderEntity()
@@ -16,17 +16,17 @@ RenderEntity::~RenderEntity()
 	SAFE_RELEASE(mMesh);
 }
 
-IMesh* RenderEntity::GetMesh()
+SECore::Mesh* RenderEntity::GetMesh()
 {
 	return mMesh;
 }
 
-Material* RenderEntity::GetMaterial()
+SECore::Material* RenderEntity::GetMaterial()
 {
 	return mMaterial;
 }
 
-void RenderEntity::SetMesh(IMesh* mesh)
+void RenderEntity::SetMesh(SECore::Mesh* mesh)
 {
 	SAFE_RELEASE(mMesh);
 	if (Mesh* m = dynamic_cast<Mesh*>(mesh))

@@ -3,6 +3,7 @@
 #include "RenderStateManager.h"
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
+#include "Physics.h"
 #include "Core.h"
 
 Core gCore;
@@ -26,6 +27,7 @@ bool Core::Init(const char* resourePath)
 	CHECK(gConstantBufferManager.Init());
 	CHECK(gRenderStateManager.Init());
 	CHECK(gMeshRenderer.Init());
+	CHECK(gPhysicsCore.Init());
 
 	ret = true;
 Exit0:
@@ -34,6 +36,7 @@ Exit0:
 
 void Core::Release()
 {
+	gPhysicsCore.Release();
 	gMeshRenderer.Release();
 	gRenderStateManager.Release();
 	gConstantBufferManager.Release();

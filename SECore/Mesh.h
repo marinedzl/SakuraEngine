@@ -1,6 +1,6 @@
 #pragma once
 
-class Mesh : public TRefObject<IMesh>
+class Mesh : public TRefObject<SECore::Mesh>
 {
 public:
 	Mesh();

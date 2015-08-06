@@ -28,12 +28,12 @@ bool ResourceManager::Init()
 	return true;
 }
 
-ITexture* ResourceManager::LoadTexture(const char* filename)
+Texture* ResourceManager::LoadTexture(const char* filename)
 {
 	return LoadResource<Texture>(filename);
 }
 
-IMesh* ResourceManager::LoadMesh(const char* filename)
+Mesh* ResourceManager::LoadMesh(const char* filename)
 {
 	return LoadResource<Mesh>(filename);
 }

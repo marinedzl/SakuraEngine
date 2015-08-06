@@ -1,6 +1,6 @@
 #pragma once
 
-class Animation : public IAnimation
+class Animation : public SECore::Animation
 {
 public:
 	virtual ~Animation();

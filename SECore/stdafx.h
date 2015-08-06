@@ -21,6 +21,8 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 #include <json\json.h>
+#include "PxPhysicsAPI.h"
+using namespace physx;
 
 void log(const TCHAR* fmt, ...);
 
@@ -34,22 +36,15 @@ typedef SECore::Quat Quat;
 typedef SECore::Object Object;
 typedef SECore::RefObject RefObject;
 
-typedef SECore::Scene IScene;
-typedef SECore::RenderTarget IRenderTarget;
-
-typedef SECore::Mesh IMesh;
+typedef SECore::Collider Collider;
 typedef SECore::Shader Shader;
 typedef SECore::ShaderFactory ShaderFactory;
-typedef SECore::Material Material;
-typedef SECore::Texture ITexture;
-typedef SECore::Renderer IRenderer;
-typedef SECore::Animation IAnimation;
-typedef SECore::Camera ICamera;
 
 class Scene;
 
 class Mesh;
 class Texture;
+class Material;
 class Renderer;
 class Skeleton;
 class Animation;

@@ -167,14 +167,32 @@ namespace SECore
 
 	struct Animation
 	{
+		virtual ~Animation() {}
 		virtual void Play(const char* clipname) = 0;
 		virtual void CrossFade(const char* clipname, float fade) = 0;
+	};
+
+	struct Collider
+	{
+		enum Type
+		{
+			eInvalid,
+			eBox,
+		};
+		virtual ~Collider() {}
+	};
+
+	struct BoxCollider : Collider
+	{
+		virtual ~BoxCollider() {}
+		virtual void SetSize(const Vector3& size) = 0;
 	};
 
 	struct Renderer
 	{
 		struct Entity
 		{
+			virtual ~Entity() {}
 			virtual Mesh* GetMesh() = 0;
 			virtual Material* GetMaterial() = 0;
 			virtual void SetMesh(Mesh* mesh) = 0;
@@ -183,6 +201,7 @@ namespace SECore
 			virtual bool IsSkinned() const = 0;
 		};
 
+		virtual ~Renderer() {}
 		virtual void ClearEntities() = 0;
 		virtual Entity* CreateEntity() = 0;
 		virtual size_t GetEntityCount() = 0;
@@ -191,6 +210,7 @@ namespace SECore
 
 	struct RenderTarget : Object
 	{
+		virtual ~RenderTarget() {}
 		virtual bool Begin() = 0;
 		virtual void End() = 0;
 		virtual float GetWidth() const = 0;
@@ -205,6 +225,8 @@ namespace SECore
 			Perspective,
 			Orthographic,
 		} projectType;
+
+		virtual ~Camera() {}
 
 		virtual const Vector3& GetEye() = 0;
 		virtual const Vector3& GetLookAt() = 0;
@@ -226,6 +248,8 @@ namespace SECore
 	{
 		struct Entity
 		{
+			virtual ~Entity() {}
+
 			virtual void SetName(const char* name) = 0;
 			virtual const char* GetName() const = 0;
 
@@ -237,11 +261,17 @@ namespace SECore
 			virtual Animation* GetAnimation() = 0;
 			virtual Animation* CreateAnimation() = 0;
 
+			virtual void DestroyCollider() = 0;
+			virtual Collider* GetCollider() = 0;
+			virtual Collider* CreateCollider(Collider::Type type) = 0;
+
 			virtual void Update(float deltaTime) = 0;
 
 			virtual const Matrix& GetWorld() const = 0;
 			virtual void SetWorld(const Matrix& m) = 0;
 		};
+
+		virtual ~Scene() {}
 
 		virtual Camera* GetCamera() = 0;
 

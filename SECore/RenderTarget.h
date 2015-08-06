@@ -1,6 +1,6 @@
 #pragma once
 
-class RenderTarget : public IRenderTarget
+class RenderTarget : public SECore::RenderTarget
 {
 public:
 	RenderTarget();

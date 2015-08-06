@@ -1,11 +1,14 @@
 #include "stdafx.h"
 #include "Renderer.h"
 #include "Animation.h"
+#include "BoxCollider.h"
 #include "SceneEntity.h"
 
-SceneEntity::SceneEntity()
-	: mRenderer(nullptr)
+SceneEntity::SceneEntity(Scene& scene)
+	: mScene(scene)
+	, mRenderer(nullptr)
 	, mAnimation(nullptr)
+	, mCollider(nullptr)
 {
 }
 
@@ -13,6 +16,7 @@ SceneEntity::~SceneEntity()
 {
 	DestroyAnimation();
 	DestroyRenderer();
+	DestroyCollider();
 }
 
 void SceneEntity::SetWorld(const Matrix& m)
@@ -35,12 +39,12 @@ void SceneEntity::DestroyRenderer()
 	SAFE_DELETE(mRenderer);
 }
 
-IRenderer* SceneEntity::GetRenderer()
+SECore::Renderer* SceneEntity::GetRenderer()
 {
 	return mRenderer;
 }
 
-IRenderer* SceneEntity::CreateRenderer()
+SECore::Renderer* SceneEntity::CreateRenderer()
 {
 	CHECK(!mRenderer);
 	mRenderer = new Renderer(*this);
@@ -53,12 +57,12 @@ void SceneEntity::DestroyAnimation()
 	SAFE_DELETE(mAnimation);
 }
 
-IAnimation* SceneEntity::GetAnimation()
+SECore::Animation* SceneEntity::GetAnimation()
 {
 	return mAnimation;
 }
 
-IAnimation* SceneEntity::CreateAnimation()
+SECore::Animation* SceneEntity::CreateAnimation()
 {
 	CHECK(!mAnimation);
 	mAnimation = new Animation(*this);
@@ -66,10 +70,33 @@ Exit0:
 	return mAnimation;
 }
 
+void SceneEntity::DestroyCollider()
+{
+	delete mCollider;
+}
+
+SECore::Collider * SceneEntity::GetCollider()
+{
+	return mCollider;
+}
+
+SECore::Collider * SceneEntity::CreateCollider(Collider::Type type)
+{
+	CHECK(!mCollider);
+	switch (type)
+	{
+	case Collider::eBox:
+		BoxCollider* collider = new BoxCollider(*this);
+		CHECK(collider && collider->Init());
+		mCollider = collider;
+		break;
+	}
+Exit0:
+	return mCollider;
+}
+
 void SceneEntity::Update(float deltaTime)
 {
 	if (mAnimation)
-	{
 		mAnimation->Update(deltaTime);
-	}
 }

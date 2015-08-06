@@ -1,6 +1,6 @@
 #pragma once
 
-class Texture : public TRefObject<ITexture>
+class Texture : public TRefObject<SECore::Texture>
 {
 public:
 	Texture();

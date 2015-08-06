@@ -96,17 +96,17 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SECORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)Include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Include; $(PhysX_SDK_Core)\Include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PhysX3_x86.lib;PhysX3Common_x86.lib;FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Lib; $(PhysX_SDK_Core)\Lib\vc11win32;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy "shader_config" "$(SolutionDir)Bin"
-copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -116,17 +116,17 @@ copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;SECORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)Include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Include; $(PhysX_SDK_Core)\Include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PhysX3_x86.lib;PhysX3Common_x86.lib;FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Lib; $(PhysX_SDK_Core)\Lib\vc11win32;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy "shader_config" "$(SolutionDir)Bin"
-copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,19 +138,19 @@ copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SECORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)Include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Include; $(PhysX_SDK_Core)\Include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PhysX3_x86.lib;PhysX3Common_x86.lib;FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Lib; $(PhysX_SDK_Core)\Lib\vc11win32;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy "shader_config" "$(SolutionDir)Bin"
-copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -162,19 +162,19 @@ copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;SECORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)Include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Include; $(PhysX_SDK_Core)\Include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PhysX3_x86.lib;PhysX3Common_x86.lib;FreeImage.lib;dxgi.lib;d3d11.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Lib; $(PhysX_SDK_Core)\Lib\vc11win32;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy "shader_config" "$(SolutionDir)Bin"
-copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -185,6 +185,7 @@ copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationClip.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="ConstantBufferManager.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="ImageData.h" />
@@ -193,6 +194,7 @@ copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="MeshShader.h" />
+    <ClInclude Include="Physics.h" />
     <ClInclude Include="RenderEntity.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderStateManager.h" />
@@ -212,6 +214,7 @@ copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationClip.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="ConstantBufferManager.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="dllmain.cpp">
@@ -233,6 +236,7 @@ copy "$(SolutionDir)Lib\Bin" "$(SolutionDir)Bin"</Command>
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="MeshShader.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="RenderEntity.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderStateManager.cpp" />

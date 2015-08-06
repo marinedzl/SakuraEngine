@@ -34,3 +34,8 @@ Renderer::Entity* Renderer::GetEntity(size_t index)
 {
 	return mEntities[index];
 }
+
+RenderEntity* Renderer::GetEntityInternal(size_t index)
+{
+	return mEntities[index];
+}

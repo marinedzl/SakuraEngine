@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "mesh.h"
+#include "Texture.h"
 #include "Scene.h"
 #include "Skeleton.h"
 #include "Animation.h"
@@ -72,6 +74,34 @@ SceneLoader::~SceneLoader()
 {
 }
 
+Collider::Type String2ColliderShape(const char* typeName)
+{
+	if (strcmp(typeName, "Box") == 0)
+	{
+		return Collider::eBox;
+	}
+	return Collider::eInvalid;
+}
+
+Vector3 Json2Vec3(const Json::Value& value)
+{
+	Vector3 ret;
+	ret.x = (float)value[(size_t)0].asDouble();
+	ret.y = (float)value[1].asDouble();
+	ret.z = (float)value[2].asDouble();
+	return ret;
+}
+
+Quat Json2Quat(const Json::Value& value)
+{
+	Quat ret;
+	ret.x = (float)value[(size_t)0].asDouble();
+	ret.y = (float)value[1].asDouble();
+	ret.z = (float)value[2].asDouble();
+	ret.w = (float)value[3].asDouble();
+	return ret;
+}
+
 bool SceneLoader::Load(Scene* scene, const char* filename)
 {
 	bool ret = false;
@@ -86,7 +116,7 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 
 	for (size_t i = 0; i < entityCount; ++i)
 	{
-		Scene::Entity* entity = dynamic_cast<Scene::Entity*>(scene->CreateEntity());
+		Scene::Entity* entity = scene->CreateEntity();
 		const Json::Value& entityRoot = root["Entities"][i];
 		if (entityRoot.isMember("Name"))
 		{
@@ -99,27 +129,14 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 			Quat rotation;
 			const Json::Value& transformRoot = entityRoot["Transform"];
 			if (transformRoot.isMember("Position"))
-			{
-				CHECK(transformRoot["Position"].isArray() && transformRoot["Position"].size() >= 3);
-				position.x = (float)transformRoot["Position"][size_t(0)].asDouble();
-				position.y = (float)transformRoot["Position"][size_t(1)].asDouble();
-				position.z = (float)transformRoot["Position"][size_t(2)].asDouble();
-			}
+				position = Json2Vec3(transformRoot["Position"]);
+
 			if (transformRoot.isMember("Rotation"))
-			{
-				CHECK(transformRoot["Rotation"].isArray() && transformRoot["Rotation"].size() >= 4);
-				rotation.x = (float)transformRoot["Rotation"][size_t(0)].asDouble();
-				rotation.y = (float)transformRoot["Rotation"][size_t(1)].asDouble();
-				rotation.z = (float)transformRoot["Rotation"][size_t(2)].asDouble();
-				rotation.w = (float)transformRoot["Rotation"][size_t(3)].asDouble();
-			}
+				rotation = Json2Quat(transformRoot["Rotation"]);
+
 			if (transformRoot.isMember("Scaling"))
-			{
-				CHECK(transformRoot["Scaling"].isArray() && transformRoot["Scaling"].size() >= 3);
-				scaling.x = (float)transformRoot["Scaling"][size_t(0)].asDouble();
-				scaling.y = (float)transformRoot["Scaling"][size_t(1)].asDouble();
-				scaling.z = (float)transformRoot["Scaling"][size_t(2)].asDouble();
-			}
+				scaling = Json2Vec3(transformRoot["Scaling"]);
+
 			AffineTransform(mat, position, rotation, scaling);
 			entity->SetWorld(mat);
 		}
@@ -149,25 +166,44 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 			}
 		}
 
+		if (entityRoot.isMember("Collider"))
+		{
+			const Json::Value& colliderRoot = entityRoot["Collider"];
+			Collider::Type type = String2ColliderShape(colliderRoot["Shape"].asCString());
+			Collider* collider = entity->CreateCollider(type);
+			switch (type)
+			{
+			case Collider::eBox:
+			{
+				SECore::BoxCollider* boxCollider = dynamic_cast<SECore::BoxCollider*>(collider);
+				CHECK(boxCollider);
+				if (colliderRoot.isMember("Size"))
+					boxCollider->SetSize(Json2Vec3(colliderRoot["Size"]));
+			}
+				break;
+			}
+		}
+
+
 		if (entityRoot.isMember("Renderer"))
 		{
 			const Json::Value& rendererRoot = entityRoot["Renderer"];
 			CHECK(rendererRoot.isArray());
 			size_t count = rendererRoot.size();
-			IRenderer* renderer = entity->CreateRenderer();
+			SECore::Renderer* renderer = entity->CreateRenderer();
 			for (size_t i = 0; i < count; ++i)
 			{
-				IRenderer::Entity* re = renderer->CreateEntity();
+				SECore::Renderer::Entity* re = renderer->CreateEntity();
 				const Json::Value& reRoot = rendererRoot[i];
 				if (reRoot.isMember("Mesh"))
 				{
-					IMesh* mesh = gResourceManager.LoadMesh(reRoot["Mesh"].asCString());
+					Mesh* mesh = gResourceManager.LoadMesh(reRoot["Mesh"].asCString());
 					re->SetMesh(mesh);
 					mesh->Release();
 				}
 				if (reRoot.isMember("Material"))
 				{
-					Material* material = dynamic_cast<Material*>(re->GetMaterial());
+					SECore::Material* material = re->GetMaterial();
 					const Json::Value& mtlRoot = reRoot["Material"];
 
 					Shader* shader = nullptr;
@@ -207,7 +243,7 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 							break;
 						case Shader::eTexture:
 						{
-							ITexture* texture = gResourceManager.LoadTexture(mtlRoot[propName].asCString());
+							Texture* texture = gResourceManager.LoadTexture(mtlRoot[propName].asCString());
 							material->SetTexture(propName.c_str(), texture);
 							texture->Release();
 						}

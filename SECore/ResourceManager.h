@@ -7,8 +7,8 @@ public:
 	virtual ~ResourceManager();
 	void Release();
 	bool Init();
-	ITexture* LoadTexture(const char* filename);
-	IMesh* LoadMesh(const char* filename);
+	Texture* LoadTexture(const char* filename);
+	Mesh* LoadMesh(const char* filename);
 	AnimationClip* LoadClip(const char* filename);
 	Skeleton* LoadSkeleton(const char* filename);
 	template<typename T>

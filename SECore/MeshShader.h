@@ -15,7 +15,7 @@ public:
 	virtual bool SetPass(size_t pass) const;
 	virtual size_t GetPassCount() const { return 1; }
 	virtual bool SetValue(const char* name, const void* data);
-	virtual bool SetTexture(const char* name, ITexture* texture);
+	virtual bool SetTexture(const char* name, SECore::Texture* texture);
 	virtual PropertyType GetPropertyType(const char* name) const;
 public:
 	MeshShader();

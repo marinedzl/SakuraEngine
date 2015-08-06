@@ -113,19 +113,17 @@ void MeshRenderer::End()
 
 }
 
-void MeshRenderer::Draw(IRenderer::Entity* _entity)
+void MeshRenderer::Draw(RenderEntity* entity)
 {
-	if (!_entity)
+	if (!entity)
 		return;
-
-	RenderEntity* entity = dynamic_cast<RenderEntity*>(_entity);
 
 	ID3D11DeviceContext* context = gCore.GetContext();
 	if (!context)
 		return;
 
-	Mesh* mesh = dynamic_cast<Mesh*>(entity->GetMesh());
-	Material* material = dynamic_cast<Material*>(entity->GetMaterial());
+	Mesh* mesh = entity->GetMeshInternal();
+	Material* material = entity->GetMaterialInternal();
 
 	if (!mesh || !material)
 		return;

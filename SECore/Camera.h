@@ -1,6 +1,6 @@
 #pragma once
 
-class Camera : public ICamera
+class Camera : public SECore::Camera
 {
 public:
 	friend class Scene;

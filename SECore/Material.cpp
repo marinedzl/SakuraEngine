@@ -1,18 +1,18 @@
 #include "stdafx.h"
 #include "Material.h"
 
-MaterialImpl::MaterialImpl()
+Material::Material()
 	: mShader(nullptr)
 {
 
 }
 
-MaterialImpl::~MaterialImpl()
+Material::~Material()
 {
 	SAFE_RELEASE(mShader);
 }
 
-void MaterialImpl::SetColor(const char* name, const Color& value)
+void Material::SetColor(const char* name, const Color& value)
 {
 	CHECK(mShader);
 	CHECK(mShader->SetValue(name, &value));
@@ -20,7 +20,7 @@ Exit0:
 	;
 }
 
-void MaterialImpl::SetTexture(const char* name, ITexture* texture)
+void Material::SetTexture(const char* name, SECore::Texture* texture)
 {
 	CHECK(mShader);
 	CHECK(mShader->SetTexture(name, texture));
@@ -28,13 +28,13 @@ Exit0:
 	;
 }
 
-void MaterialImpl::SetShader(Shader* shader)
+void Material::SetShader(Shader* shader)
 {
 	SAFE_RELEASE(mShader);
 	mShader = shader;
 }
 
-void MaterialImpl::SetFloat(const char * name, float value)
+void Material::SetFloat(const char * name, float value)
 {
 	mShader->SetValue(name, &value);
 }
