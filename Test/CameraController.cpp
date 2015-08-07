@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CameraController.h"
 
-const Vector3 InitOffset(0, 2, 0);
+const Vector3 InitOffset(0, 0, 0);
 
 CameraController::CameraController(Camera* camera)
 	: mCamera(camera)
@@ -82,8 +82,8 @@ void CameraController::Move(float x, float y)
 	{
 		Vector3 screen;
 		mCamera->WorldToScreen(mLookAt, screen);
-		screen.x -= (mCurrentPoint.x - mDownPoint.x) * 0.001f;
-		screen.y -= (mCurrentPoint.y - mDownPoint.y) * 0.001f;
+		screen.x -= (mCurrentPoint.x - mDownPoint.x);
+		screen.y -= (mCurrentPoint.y - mDownPoint.y);
 		mCamera->ScreenToWorld(screen, mLookAt);
 		mDownPoint = mCurrentPoint;
 	}

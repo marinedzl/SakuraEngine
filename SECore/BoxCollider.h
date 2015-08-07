@@ -12,5 +12,6 @@ private:
 	SceneEntity& mOwner;
 	PxMaterial* mMaterial;
 	PxRigidStatic* mRigid;
+	PxShape* mShape;
 	Vector3 mSize;
 };

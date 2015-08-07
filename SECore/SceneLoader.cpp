@@ -124,21 +124,16 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 		}
 		if (entityRoot.isMember("Transform"))
 		{
-			Matrix mat;
-			Vector3 position, scaling;
-			Quat rotation;
 			const Json::Value& transformRoot = entityRoot["Transform"];
+
 			if (transformRoot.isMember("Position"))
-				position = Json2Vec3(transformRoot["Position"]);
+				entity->GetTransform().position = Json2Vec3(transformRoot["Position"]);
 
 			if (transformRoot.isMember("Rotation"))
-				rotation = Json2Quat(transformRoot["Rotation"]);
+				entity->GetTransform().rotation = Json2Quat(transformRoot["Rotation"]);
 
 			if (transformRoot.isMember("Scaling"))
-				scaling = Json2Vec3(transformRoot["Scaling"]);
-
-			AffineTransform(mat, position, rotation, scaling);
-			entity->SetWorld(mat);
+				entity->GetTransform().scaling = Json2Vec3(transformRoot["Scaling"]);
 		}
 
 		if (entityRoot.isMember("Animation"))

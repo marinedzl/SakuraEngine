@@ -22,6 +22,7 @@ public:
 
 	virtual void ScreenToWorld(const Vector3& src, Vector3& dst);
 	virtual void WorldToScreen(const Vector3& src, Vector3& dst);
+	virtual void ScreenPointToRay(Ray& ray, const Vector3& point);
 
 	virtual void GetViewProjMatrix(Matrix& dst);
 	virtual void GetViewport(D3D11_VIEWPORT& dst);

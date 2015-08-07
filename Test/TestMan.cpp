@@ -6,7 +6,7 @@
 TestMan gTestMan;
 
 TestMan::TestMan()
-	: mScene(nullptr)
+	: scene(nullptr)
 	, mRT(nullptr)
 	, mCamera(nullptr)
 	, mCharaCtrl(nullptr)
@@ -22,7 +22,7 @@ void TestMan::Release()
 	SAFE_DELETE(mCharaCtrl);
 	SAFE_DELETE(mCamera);
 	SAFE_RELEASE(mRT);
-	SAFE_RELEASE(mScene);
+	SAFE_RELEASE(scene);
 	SECore::ReleaseCore();
 }
 
@@ -35,14 +35,14 @@ void TestMan::Init()
 	workpath += "\\";
 
 	CHECK(SECore::InitCore(workpath.c_str()));
-	mScene = SECore::CreateScene();
-	CHECK(mScene);
+	scene = SECore::CreateScene();
+	CHECK(scene);
 
-	mCamera = new CameraController(mScene->GetCamera());
+	mCamera = new CameraController(scene->GetCamera());
 
-	CHECK(mScene->LoadAdditive("scene.json"));
+	CHECK(scene->LoadAdditive("scene.json"));
 
-	GameObject* mainChara = mScene->FindEntity("main chara");
+	GameObject* mainChara = scene->FindEntity("main chara");
 	CHECK(mainChara);
 
 	mCharaCtrl = new CharaCtrl(mainChara);
@@ -68,8 +68,8 @@ void TestMan::Process()
 	if (mCamera)
 		mCamera->Update(deltaTime);
 
-	if (mScene)
-		mScene->Update(deltaTime);
+	if (scene)
+		scene->Update(deltaTime);
 
 	if (mCharaCtrl)
 		mCharaCtrl->Update(deltaTime);
@@ -77,9 +77,9 @@ void TestMan::Process()
 	if (mRT)
 	{
 		mRT->Begin();
-		if (mScene)
+		if (scene)
 		{
-			mScene->Draw(mRT);
+			scene->Draw(mRT);
 		}
 		mRT->End();
 	}

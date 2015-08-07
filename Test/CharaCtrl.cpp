@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "TestMan.h"
 #include "CharaCtrl.h"
 
 CharaCtrl::CharaCtrl(GameObject* gameObject)
@@ -24,7 +25,16 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_LBUTTONDOWN:
 	{
-		Run();
+		if (gTestMan.scene)
+		{
+			SECore::Ray ray;
+			SECore::RaycastHit hit;
+			gTestMan.scene->GetCamera()->ScreenPointToRay(ray, Vector3(pos.x, pos.y, 0));
+			if (gTestMan.scene->Raycast(ray, hit, 10000))
+			{
+				Run();
+			}
+		}
 	}
 	break;
 	case WM_LBUTTONUP:

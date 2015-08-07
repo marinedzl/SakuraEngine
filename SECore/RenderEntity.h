@@ -9,8 +9,7 @@ public:
 	virtual SECore::Mesh* GetMesh();
 	virtual SECore::Material* GetMaterial();
 	virtual void SetMesh(SECore::Mesh* mesh);
-	virtual const Matrix& GetWorld() const;
-	virtual void SetWorld(const Matrix& m);
+	virtual const Transform& GetTransform() const;
 	virtual bool IsSkinned() const;
 public:
 	bool GetBoneMatrix(Matrix* dst) const;

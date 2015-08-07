@@ -4,8 +4,8 @@ class SceneEntity : public SECore::Scene::Entity
 {
 public:
 	virtual ~SceneEntity();
-	virtual void SetWorld(const Matrix& m);
-	virtual const Matrix& GetWorld() const;
+	virtual Transform& GetTransform() { return mTransform; }
+	virtual const Transform& GetTransform() const { return mTransform; }
 
 	virtual void Update(float deltaTime);
 
@@ -33,7 +33,7 @@ public:
 	template<> Renderer* GetComponent() { return mRenderer; }
 private:
 	std::string mName;
-	Matrix mWorld;
+	Transform mTransform;
 	Scene& mScene;
 	Renderer* mRenderer;
 	Animation* mAnimation;

@@ -19,16 +19,6 @@ SceneEntity::~SceneEntity()
 	DestroyCollider();
 }
 
-void SceneEntity::SetWorld(const Matrix& m)
-{
-	mWorld = m;
-}
-
-const Matrix& SceneEntity::GetWorld() const
-{
-	return mWorld;
-}
-
 bool SceneEntity::GetSkinMatrix(Matrix* dst) const
 {
 	return mAnimation->GetMatrix(dst);

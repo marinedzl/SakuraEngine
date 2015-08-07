@@ -168,3 +168,20 @@ void Scene::Update(float deltaTime)
 	if (mPxScene)
 		mPxScene->simulate(deltaTime);
 }
+
+bool Scene::Raycast(const Ray& ray, RaycastHit& hit, float distance)
+{
+	PxVec3 origin = ConvertPxVec3(ray.origin);
+	PxVec3 unitDir = ConvertPxVec3(ray.direction);
+	PxRaycastBuffer pxhit;
+
+	if (mPxScene->raycast(origin, unitDir, distance, pxhit))
+	{
+		hit.point = ConvertPxVec3(pxhit.block.position);
+		hit.normal = ConvertPxVec3(pxhit.block.normal);
+		hit.distance = pxhit.block.distance;
+		return true;
+	}
+
+	return false;
+}

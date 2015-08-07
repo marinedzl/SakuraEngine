@@ -32,6 +32,9 @@ typedef SECore::Vector2 Vector2;
 typedef SECore::Vector3 Vector3;
 typedef SECore::Vector4 Vector4;
 typedef SECore::Quat Quat;
+typedef SECore::Transform Transform;
+typedef SECore::Ray Ray;
+typedef SECore::RaycastHit RaycastHit;
 
 typedef SECore::Object Object;
 typedef SECore::RefObject RefObject;
@@ -167,4 +170,23 @@ inline void XMStoreFloat4x4(Matrix& dst, const XMMATRIX& M)
 }
 
 void AffineTransform(Matrix& mat, const Vector3& position, const Quat& rotation, const Vector3& scaling);
+inline void AffineTransform(Matrix& mat, const Transform& transform)
+{
+	AffineTransform(mat, transform.position, transform.rotation, transform.scaling);
+}
 bool MatrixDecompose(const Matrix& mat, Vector3& position, Quat& rotation, Vector3& scaling);
+
+inline PxVec3 ConvertPxVec3(const Vector3& v)
+{
+	return PxVec3(v.x, v.y, v.z);
+}
+
+inline Vector3 ConvertPxVec3(const PxVec3& v)
+{
+	return Vector3(v.x, v.y, v.z);
+}
+
+inline PxQuat GetPxQuat(const Quat& v)
+{
+	return PxQuat(v.x, v.y, v.z, v.w);
+}

@@ -107,6 +107,27 @@ namespace SECore
 		{}
 	};
 
+	struct Transform 
+	{
+		Vector3 position;
+		Quat rotation;
+		Vector3 scaling;
+		Transform() : position(0, 0, 0), rotation(0, 0, 0, 1), scaling(1, 1, 1) {}
+	};
+
+	struct Ray
+	{
+		Vector3 origin;
+		Vector3 direction;
+	};
+
+	struct RaycastHit
+	{
+		Vector3 point;
+		Vector3 normal;
+		float distance;
+	};
+
 	struct Object
 	{
 		virtual ~Object() {}
@@ -196,8 +217,7 @@ namespace SECore
 			virtual Mesh* GetMesh() = 0;
 			virtual Material* GetMaterial() = 0;
 			virtual void SetMesh(Mesh* mesh) = 0;
-			virtual const Matrix& GetWorld() const = 0;
-			virtual void SetWorld(const Matrix& m) = 0;
+			virtual const Transform& GetTransform() const = 0;
 			virtual bool IsSkinned() const = 0;
 		};
 
@@ -242,6 +262,7 @@ namespace SECore
 
 		virtual void ScreenToWorld(const Vector3& src, Vector3& dst) = 0;
 		virtual void WorldToScreen(const Vector3& src, Vector3& dst) = 0;
+		virtual void ScreenPointToRay(Ray& ray, const Vector3& point) = 0;
 	};
 
 	struct Scene : public Object
@@ -267,8 +288,8 @@ namespace SECore
 
 			virtual void Update(float deltaTime) = 0;
 
-			virtual const Matrix& GetWorld() const = 0;
-			virtual void SetWorld(const Matrix& m) = 0;
+			virtual Transform& GetTransform() = 0;
+			virtual const Transform& GetTransform() const = 0;
 		};
 
 		virtual ~Scene() {}
@@ -284,5 +305,7 @@ namespace SECore
 		virtual void RemoveEntity(Entity* entity) = 0;
 
 		virtual bool LoadAdditive(const char* filename) = 0;
+
+		virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance) = 0;
 	};
 }

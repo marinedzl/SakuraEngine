@@ -7,6 +7,8 @@
 BoxCollider::BoxCollider(SceneEntity& owner)
 	: mOwner(owner)
 	, mSize(1, 1, 1)
+	, mRigid(nullptr)
+	, mShape(nullptr)
 {
 }
 
@@ -20,9 +22,10 @@ bool BoxCollider::Init()
 {
 	bool ret = false;
 
-	PxVec3 pos;
-	PxQuat rot;
-	float radius = 0.5f;
+	const Transform& transform = mOwner.GetTransform();
+
+	PxVec3 pos = ConvertPxVec3(transform.position);
+	PxQuat rot = GetPxQuat(transform.rotation);
 
 	PxScene* scene = mOwner.GetScene().GetPxScene();
 	CHECK(scene);
@@ -33,7 +36,7 @@ bool BoxCollider::Init()
 	mRigid = gPhysics->createRigidStatic(PxTransform(pos, rot));
 	CHECK(mRigid);
 
-	SetSize(mSize);
+	SetSize(transform.scaling);
 
 	scene->addActor(*mRigid);
 
@@ -46,10 +49,15 @@ void BoxCollider::SetSize(const Vector3& size)
 {
 	CHECK(mRigid);
 
-	PxShape* shape = mRigid->createShape(PxBoxGeometry(size.x, size.y, size.z), *mMaterial);
-	CHECK(shape);
+	if (mShape)
+	{
+		mRigid->detachShape(*mShape);
+	}
 
-	mRigid->attachShape(*shape);
+	mShape = mRigid->createShape(PxBoxGeometry(size.x, size.y, size.z), *mMaterial);
+	CHECK(mShape);
+
+	mRigid->attachShape(*mShape);
 Exit0:
 	;
 }

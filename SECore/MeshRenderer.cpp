@@ -132,7 +132,7 @@ void MeshRenderer::Draw(RenderEntity* entity)
 	if (!cbModel)
 		return;
 
-	cbModel->MATRIX_M = entity->GetWorld();
+	AffineTransform(cbModel->MATRIX_M, entity->GetTransform());
 
 	if (entity->IsSkinned())
 	{

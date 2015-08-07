@@ -16,6 +16,7 @@ public:
 	virtual void Draw(SECore::RenderTarget* rt);
 	virtual void Update(float deltaTime);
 	virtual SECore::Camera* GetCamera() { return &mCamera; }
+	virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance);
 public:
 	Scene();
 	PxScene* GetPxScene() { return mPxScene; }

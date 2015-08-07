@@ -36,14 +36,9 @@ void RenderEntity::SetMesh(SECore::Mesh* mesh)
 	}
 }
 
-const Matrix& RenderEntity::GetWorld() const
+const Transform& RenderEntity::GetTransform() const
 {
-	return mOwner.GetWorld();
-}
-
-void RenderEntity::SetWorld(const Matrix& m)
-{
-	mOwner.SetWorld(m);
+	return mOwner.GetTransform();
 }
 
 bool RenderEntity::IsSkinned() const
