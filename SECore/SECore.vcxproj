@@ -186,8 +186,9 @@
     <ClInclude Include="AnimationClip.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="BoxCollider.h" />
-    <ClInclude Include="ConstantBufferManager.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="Gizmo.h" />
+    <ClInclude Include="GizmoRenderer.h" />
     <ClInclude Include="ImageData.h" />
     <ClInclude Include="Interface.h" />
     <ClInclude Include="Material.h" />
@@ -200,11 +201,13 @@
     <ClInclude Include="RenderStateManager.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="RenderWindow.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneEntity.h" />
     <ClInclude Include="SceneLoader.h" />
     <ClInclude Include="SECore.h" />
+    <ClInclude Include="ShapeMesh.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -215,7 +218,6 @@
     <ClCompile Include="AnimationClip.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
-    <ClCompile Include="ConstantBufferManager.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
@@ -231,6 +233,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Gizmo.cpp" />
+    <ClCompile Include="GizmoRenderer.cpp" />
     <ClCompile Include="ImageData.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -247,6 +251,7 @@
     <ClCompile Include="SceneEntity.cpp" />
     <ClCompile Include="SceneLoader.cpp" />
     <ClCompile Include="SECore.cpp" />
+    <ClCompile Include="ShapeMesh.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -271,6 +276,26 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="shader\GizmoPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="shader\GizmoVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="shader\Mesh.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>

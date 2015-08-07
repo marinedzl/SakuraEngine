@@ -24,12 +24,12 @@ public:
 	virtual void WorldToScreen(const Vector3& src, Vector3& dst);
 	virtual void ScreenPointToRay(Ray& ray, const Vector3& point);
 
-	virtual void GetViewProjMatrix(Matrix& dst);
+	virtual void GetViewProjMatrix(Matrix& dst) const;
 	virtual void GetViewport(D3D11_VIEWPORT& dst);
 
-private:
-	XMMATRIX GetProj();
-	XMMATRIX GetView();
+public:
+	XMMATRIX GetProj() const;
+	XMMATRIX GetView() const;
 
 private:
 	Vector3 eye;

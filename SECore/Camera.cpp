@@ -47,7 +47,7 @@ void Camera::ScreenPointToRay(Ray & ray, const Vector3 & point)
 	XMStoreFloat3((XMFLOAT3*)&ray.direction, vDir);
 }
 
-void Camera::GetViewProjMatrix(Matrix& dst)
+void Camera::GetViewProjMatrix(Matrix& dst) const
 {
 	XMStoreFloat4x4((XMFLOAT4X4*)&dst, GetView() * GetProj());
 }
@@ -62,7 +62,7 @@ void Camera::GetViewport(D3D11_VIEWPORT& dst)
 	dst.MaxDepth = 1.0f;
 }
 
-XMMATRIX Camera::GetProj()
+XMMATRIX Camera::GetProj() const
 {
 	XMMATRIX proj;
 	if (projectType == Camera::Perspective)
@@ -72,7 +72,7 @@ XMMATRIX Camera::GetProj()
 	return proj;
 }
 
-XMMATRIX Camera::GetView()
+XMMATRIX Camera::GetView() const
 {
 	return XMMatrixLookAtLH(XMLoadFloat3(eye), XMLoadFloat3(lookat), XMLoadFloat3(up));
 }

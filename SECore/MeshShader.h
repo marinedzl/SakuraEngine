@@ -3,10 +3,11 @@
 class MeshShader : public Shader
 {
 public:
-	struct Buffer
+	struct CBPS
 	{
 		Color color;
 		float cutoff;
+		float nouse[3];
 	};
 public:
 	virtual ~MeshShader();
@@ -20,9 +21,11 @@ public:
 public:
 	MeshShader();
 private:
-	Buffer mBuffer;
+	CBPS mPSBuffer;
+	ID3D11Buffer* mCBPS;
 	Texture* mMainTexture;
 	ID3D11PixelShader* mPS;
+	bool isDirty;
 };
 
 struct MeshShaderFactory : ShaderFactory

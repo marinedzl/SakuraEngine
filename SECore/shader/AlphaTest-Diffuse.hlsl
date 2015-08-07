@@ -1,13 +1,13 @@
 #define surface
 #include <common.hlsli>
 
-decl_buffer
+cbuffer Property : register(b0)
 {
 	float4 _Color;
 	float _CutOff;
 };
 
-decl_texture(_MainTex, 0);
+Sampler2D(_MainTex, 0);
 
 void surf(Input IN, inout SurfaceOutput o)
 {

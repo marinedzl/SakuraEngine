@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "Renderer.h"
 #include "MeshRenderer.h"
+#include "GizmoRenderer.h"
 #include "SceneEntity.h"
 #include "SceneLoader.h"
-#include "ConstantBufferManager.h"
 #include "Core.h"
 #include "Physics.h"
 #include "Scene.h"
@@ -103,16 +103,11 @@ void Scene::Draw(SECore::RenderTarget* rt)
 	ID3D11DeviceContext* context = gCore.GetContext();
 	CHECK(context);
 
-	CBGlobal* cbGlobal = gConstantBufferManager.GetBuffer<CBGlobal>();
-	CHECK(cbGlobal);
-
 	mCamera.GetViewport(viewport);
 	context->RSSetViewports(1, &viewport);
 
-	mCamera.GetViewProjMatrix(cbGlobal->MATRIX_VP);
-	gConstantBufferManager.Commit<CBGlobal>();
-
 	DrawScene();
+	DrawGizmos();
 
 Exit0:
 	;
@@ -122,7 +117,7 @@ void Scene::DrawScene()
 {
 	if (!mEntities.empty())
 	{
-		gMeshRenderer.Begin();
+		gMeshRenderer.Begin(mCamera);
 
 		Entities::iterator iter = mEntities.begin();
 		Entities::iterator iterEnd = mEntities.end();
@@ -147,6 +142,23 @@ void Scene::DrawScene()
 		}
 
 		gMeshRenderer.End();
+	}
+}
+
+void Scene::DrawGizmos()
+{
+	if (!mGizmos.empty())
+	{
+		gGizmosRenderer.Begin();
+
+		Gizmos::iterator iter = mGizmos.begin();
+		Gizmos::iterator iterEnd = mGizmos.end();
+		for (; iter != iterEnd; ++iter)
+		{
+			gGizmosRenderer.Draw(mCamera, *iter);
+		}
+
+		gGizmosRenderer.End();
 	}
 }
 
@@ -184,4 +196,14 @@ bool Scene::Raycast(const Ray& ray, RaycastHit& hit, float distance)
 	}
 
 	return false;
+}
+
+void Scene::AddGizmo(Gizmo* gizmo)
+{
+	mGizmos.push_back(gizmo);
+}
+
+void Scene::RemoveGizmo(Gizmo* gizmo)
+{
+	mGizmos.remove(gizmo);
 }

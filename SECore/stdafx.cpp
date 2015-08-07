@@ -115,13 +115,12 @@ bool LoadTextFile(buffer& buff, const char* filename)
 	return LoadDataFromFile(buff, filename, true);
 }
 
-void AffineTransform(Matrix& mat, const Vector3& position, const Quat& rotation, const Vector3& scaling)
+void AffineTransform(XMMATRIX& mat, const Vector3& position, const Quat& rotation, const Vector3& scaling)
 {
 	XMVECTOR p = XMLoadFloat3((const XMFLOAT3*)&position);
 	XMVECTOR q = XMLoadFloat4((const XMFLOAT4*)&rotation);
 	XMVECTOR s = XMLoadFloat3((const XMFLOAT3*)&scaling);
-	XMMATRIX m = XMMatrixAffineTransformation(s, XMQuaternionIdentity(), q, p);
-	XMStoreFloat4x4((XMFLOAT4X4*)&mat, m);
+	mat = XMMatrixAffineTransformation(s, XMQuaternionIdentity(), q, p);
 }
 
 bool MatrixDecompose(const Matrix& mat, Vector3& position, Quat& rotation, Vector3& scaling)

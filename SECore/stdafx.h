@@ -49,12 +49,15 @@ class Mesh;
 class Texture;
 class Material;
 class Renderer;
+class Gizmo;
 class Skeleton;
 class Animation;
 class AnimationClip;
 
 class SceneEntity;
 class RenderEntity;
+
+class Camera;
 
 template<class T>
 class TRefObject : public T
@@ -80,30 +83,7 @@ enum AlphaTestMode
 	AlphaTestAlways,
 };
 
-enum CBSlot
-{
-	eCBGlobal,
-	eCBModel,
-	eCBProperty,
-	eCBCount,
-};
-
-struct CBGlobal
-{
-	enum { slot = eCBGlobal };
-	Matrix MATRIX_VP;
-};
-
 #define MAX_BONE 256
-
-struct CBModel
-{
-	enum { slot = eCBModel };
-	Matrix MATRIX_M;
-	Matrix MATRIX_M_SKIN[MAX_BONE];
-};
-
-#define texture_slot_reserve 2
 
 class buffer
 {
@@ -169,11 +149,25 @@ inline void XMStoreFloat4x4(Matrix& dst, const XMMATRIX& M)
 	XMStoreFloat4x4((XMFLOAT4X4*)&dst, M);
 }
 
-void AffineTransform(Matrix& mat, const Vector3& position, const Quat& rotation, const Vector3& scaling);
+void AffineTransform(XMMATRIX& mat, const Vector3& position, const Quat& rotation, const Vector3& scaling);
+
+inline void AffineTransform(Matrix& mat, const Vector3& position, const Quat& rotation, const Vector3& scaling)
+{
+	XMMATRIX temp;
+	AffineTransform(temp, position, rotation, scaling);
+	XMStoreFloat4x4((XMFLOAT4X4*)&mat, temp);
+}
+
 inline void AffineTransform(Matrix& mat, const Transform& transform)
 {
 	AffineTransform(mat, transform.position, transform.rotation, transform.scaling);
 }
+
+inline void AffineTransform(XMMATRIX& mat, const Transform& transform)
+{
+	AffineTransform(mat, transform.position, transform.rotation, transform.scaling);
+}
+
 bool MatrixDecompose(const Matrix& mat, Vector3& position, Quat& rotation, Vector3& scaling);
 
 inline PxVec3 ConvertPxVec3(const Vector3& v)
@@ -190,3 +184,15 @@ inline PxQuat GetPxQuat(const Quat& v)
 {
 	return PxQuat(v.x, v.y, v.z, v.w);
 }
+
+struct GizmoMesh
+{
+	struct Vertex
+	{
+		Vector3 pos;
+		Color color;
+	};
+	size_t indexCount;
+	ID3D11Buffer* vb;
+	ID3D11Buffer* ib;
+};

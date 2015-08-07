@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "ConstantBufferManager.h"
 #include "RenderStateManager.h"
 #include "MeshRenderer.h"
+#include "GizmoRenderer.h"
 #include "ResourceManager.h"
 #include "Physics.h"
 #include "Core.h"
@@ -24,8 +24,8 @@ bool Core::Init(const char* resourePath)
 
 	CHECK(CreateDevice());
 	CHECK(gResourceManager.Init());
-	CHECK(gConstantBufferManager.Init());
 	CHECK(gRenderStateManager.Init());
+	CHECK(gGizmosRenderer.Init());
 	CHECK(gMeshRenderer.Init());
 	CHECK(gPhysicsCore.Init());
 
@@ -38,8 +38,8 @@ void Core::Release()
 {
 	gPhysicsCore.Release();
 	gMeshRenderer.Release();
+	gGizmosRenderer.Release();
 	gRenderStateManager.Release();
-	gConstantBufferManager.Release();
 	gResourceManager.Release();
 
 	SAFE_RELEASE(mDxgiFactory);

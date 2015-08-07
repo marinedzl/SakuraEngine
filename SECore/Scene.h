@@ -20,12 +20,17 @@ public:
 public:
 	Scene();
 	PxScene* GetPxScene() { return mPxScene; }
+	void AddGizmo(Gizmo* gizmo);
+	void RemoveGizmo(Gizmo* gizmo);
 private:
 	void DrawScene();
+	void DrawGizmos();
 private:
 	typedef std::list<SceneEntity*> Entities;
+	typedef std::list<Gizmo*> Gizmos;
 private:
 	PxScene* mPxScene;
 	Camera mCamera;
 	Entities mEntities;
+	Gizmos mGizmos;
 };

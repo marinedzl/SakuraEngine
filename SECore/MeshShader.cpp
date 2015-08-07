@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Core.h"
-#include "ConstantBufferManager.h"
 #include "Texture.h"
 #include "MeshShader.h"
 
@@ -22,6 +21,8 @@ namespace
 MeshShader::MeshShader()
 	: mMainTexture(nullptr)
 	, mPS(nullptr)
+	, mCBPS(nullptr)
+	, isDirty(false)
 {
 
 }
@@ -29,6 +30,7 @@ MeshShader::MeshShader()
 MeshShader::~MeshShader()
 {
 	SAFE_RELEASE(mPS);
+	SAFE_RELEASE(mCBPS);
 	SAFE_RELEASE(mMainTexture);
 }
 
@@ -40,8 +42,17 @@ bool MeshShader::Init()
 	CHECK(LoadBinaryFile(file, "AlphaTest-Diffuse.cso"));
 	CHECK(SUCCEEDED(device->CreatePixelShader(file.ptr(), file.size(), nullptr, &mPS)));
 
-	mBuffer.color = Color(1, 1, 1, 1);
-	mBuffer.cutoff = 0.5f;
+	D3D11_BUFFER_DESC buffDesc;
+	ZeroMemory(&buffDesc, sizeof(buffDesc));
+	buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	buffDesc.Usage = D3D11_USAGE_DYNAMIC;
+	buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	buffDesc.ByteWidth = sizeof(mPSBuffer);
+	CHECK(SUCCEEDED(device->CreateBuffer(&buffDesc, nullptr, &mCBPS)));
+
+	mPSBuffer.color = Color(1, 1, 1, 1);
+	mPSBuffer.cutoff = 0.5f;
+	isDirty = true;
 
 	ret = true;
 Exit0:
@@ -55,14 +66,15 @@ bool MeshShader::SetValue(const char* name, const void* data)
 	switch (type)
 	{
 	case Shader::eFloat:
-		mBuffer.cutoff = *(float*)data;
+		mPSBuffer.cutoff = *(float*)data;
 		break;
 	case Shader::eColor:
-		mBuffer.color = *(Color*)data;
+		mPSBuffer.color = *(Color*)data;
 		break;
 	default:
 		goto Exit0;
 	}
+	isDirty = true;
 	ret = true;
 Exit0:
 	return ret;
@@ -95,18 +107,22 @@ bool MeshShader::SetPass(size_t passIndex) const
 	ID3D11DeviceContext* context = gCore.GetContext();
 	CHECK(context);
 
-	// commit buffer
-	ConstantBuffer* cb = gConstantBufferManager.GetBuffer(eCBProperty);
-	if (cb)
+	if (isDirty)
 	{
-		ConstantBuffer* cb = gConstantBufferManager.GetBuffer(eCBProperty);
-		cb->SetData(0, &mBuffer, sizeof(mBuffer));
-		cb->Commit();
+		// commit buffer
+		D3D11_MAPPED_SUBRESOURCE mr;
+		if (SUCCEEDED(context->Map(mCBPS, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
+		{
+			memcpy(mr.pData, &mPSBuffer, sizeof(CBPS));
+			context->Unmap(mCBPS, 0);
+		}
 	}
+
+	context->PSSetConstantBuffers(0, 1, &mCBPS);
 
 	// set texture
 	if (mMainTexture)
-		mMainTexture->SetSlot(texture_slot_reserve + 0);
+		mMainTexture->SetSlot(0);
 
 	context->PSSetShader(mPS, nullptr, 0);
 

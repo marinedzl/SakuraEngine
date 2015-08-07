@@ -9,6 +9,7 @@ public:
 	BoxCollider(SceneEntity& owner);
 	bool Init();
 private:
+	Gizmo* mGizmo;
 	SceneEntity& mOwner;
 	PxMaterial* mMaterial;
 	PxRigidStatic* mRigid;

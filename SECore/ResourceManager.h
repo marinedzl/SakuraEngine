@@ -7,12 +7,12 @@ public:
 	virtual ~ResourceManager();
 	void Release();
 	bool Init();
-	Texture* LoadTexture(const char* filename);
-	Mesh* LoadMesh(const char* filename);
-	AnimationClip* LoadClip(const char* filename);
-	Skeleton* LoadSkeleton(const char* filename);
+	Texture* LoadTexture(const char* name);
+	Mesh* LoadMesh(const char* name);
+	AnimationClip* LoadClip(const char* name);
+	Skeleton* LoadSkeleton(const char* name);
 	template<typename T>
-	T* LoadResource(const char* filename);
+	T* LoadResource(const char* name);
 	bool AddShaderFactory(const char* name, ShaderFactory* factory);
 	ShaderFactory* FindShaderFactory(const char* name);
 	Shader* CreateShader(const char* name);

@@ -1,16 +1,10 @@
 #pragma pack_matrix(row_major)
 
-#define reserve_tex_slot 2
-#define reserve_cb_slot 2
-
-#define dtexture(name, slot) \
+#define Sampler2D(name, slot) \
 Texture2D name : register(t##[slot]);\
 SamplerState name##S : register(s##[slot])
 
 #define tex2D(tex, uv) tex.Sample(tex##S, uv)
-
-#define decl_texture(name, slot) \
-	dtexture(name, reserve_tex_slot + slot)
 
 #define MVP(pos) mul(mul(pos, MATRIX_M), MATRIX_VP)
 
@@ -32,18 +26,20 @@ struct Input
 	float2 uv : TEXCOORD;
 };
 
-cbuffer CBGobal : register(b0)
+cbuffer CBGobal : register(b1)
 {
 	matrix MATRIX_VP;
 };
 
-cbuffer CBModel : register(b1)
+cbuffer CBModel : register(b2)
 {
 	matrix MATRIX_M;
-	matrix MATRIX_M_SKIN[256];
 };
 
-#define decl_buffer cbuffer CBProperty : register(b2)
+cbuffer CBSkinned : register(b3)
+{
+	matrix MATRIX_M_SKIN[256];
+};
 
 #ifdef surface
 struct SurfaceOutput

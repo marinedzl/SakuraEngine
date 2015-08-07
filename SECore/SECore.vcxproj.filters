@@ -57,9 +57,6 @@
     <ClInclude Include="SceneEntity.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ConstantBufferManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="RenderStateManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -102,6 +99,18 @@
     <ClInclude Include="BoxCollider.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="GizmoRenderer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ShapeMesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -138,9 +147,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SceneEntity.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ConstantBufferManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="RenderStateManager.cpp">
@@ -182,11 +188,22 @@
     <ClCompile Include="BoxCollider.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="GizmoRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Gizmo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ShapeMesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\Mesh.hlsl" />
     <FxCompile Include="shader\SkinnedMesh.hlsl" />
     <FxCompile Include="shader\AlphaTest-Diffuse.hlsl" />
+    <FxCompile Include="shader\GizmoVS.hlsl" />
+    <FxCompile Include="shader\GizmoPS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\common.hlsli" />

@@ -28,24 +28,24 @@ bool ResourceManager::Init()
 	return true;
 }
 
-Texture* ResourceManager::LoadTexture(const char* filename)
+Texture* ResourceManager::LoadTexture(const char* name)
 {
-	return LoadResource<Texture>(filename);
+	return LoadResource<Texture>(name);
 }
 
-Mesh* ResourceManager::LoadMesh(const char* filename)
+Mesh* ResourceManager::LoadMesh(const char* name)
 {
-	return LoadResource<Mesh>(filename);
+	return LoadResource<Mesh>(name);
 }
 
-AnimationClip* ResourceManager::LoadClip(const char* filename)
+AnimationClip* ResourceManager::LoadClip(const char* name)
 {
-	return LoadResource<AnimationClip>(filename);
+	return LoadResource<AnimationClip>(name);
 }
 
-Skeleton* ResourceManager::LoadSkeleton(const char* filename)
+Skeleton* ResourceManager::LoadSkeleton(const char* name)
 {
-	return LoadResource<Skeleton>(filename);
+	return LoadResource<Skeleton>(name);
 }
 
 bool ResourceManager::AddShaderFactory(const char * name, ShaderFactory * factory)
@@ -79,14 +79,14 @@ Shader * ResourceManager::CreateShader(const char * name)
 }
 
 template<typename T>
-T* ResourceManager::LoadResource(const char* filename)
+T* ResourceManager::LoadResource(const char* name)
 {
 	T* res = nullptr;
 	Resources::iterator iter;
 
-	CHECK(filename);
+	CHECK(name);
 
-	iter = mResources.find(filename);
+	iter = mResources.find(name);
 	if (iter != mResources.end())
 	{
 		res = dynamic_cast<T*>(iter->second);
@@ -94,9 +94,9 @@ T* ResourceManager::LoadResource(const char* filename)
 	else
 	{
 		res = new T();
-		if (res->LoadFromFile(filename))
+		if (res->LoadFromFile(name))
 		{
-			mResources.insert(std::make_pair(filename, res));
+			mResources.insert(std::make_pair(name, res));
 		}
 		else
 		{
