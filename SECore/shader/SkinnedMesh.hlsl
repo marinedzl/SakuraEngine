@@ -3,8 +3,6 @@
 Input main(appdata_t IN)
 {
 	Input o;
-	IN.pos.w = 1.0f;
-
 	float weight = 1 - IN.weights[0] - IN.weights[1] - IN.weights[2];
 	matrix m;
 	m = MATRIX_M_SKIN[IN.boneIndices[0]] * IN.weights[0]

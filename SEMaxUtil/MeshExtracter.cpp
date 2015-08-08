@@ -35,13 +35,19 @@ namespace MaxPlugin
 		IGameObject* obj = gNode->GetIGameObject();
 		IGameMesh* gMesh = (IGameMesh*)obj;
 
+		CHECK(obj);
+
 		gMesh->SetCreateOptimizedNormalList();
 		obj->InitializeData();
 
 		ExtractGeom(gMesh);
-		ExtractSkinInfo(obj);
+		if (obj->IsObjectSkinned())
+		{
+			ExtractSkinInfo(obj);
+		}
 		ExtractSubMesh(gNode, gMesh);
 
+	Exit0:
 		gNode->ReleaseIGameObject();
 	}
 
@@ -61,12 +67,13 @@ namespace MaxPlugin
 			Utility::ToVec3(mMaxMesh.N[i], gMesh->GetNormal(i));
 		}
 
-		Tab<int> texMaps = gMesh->GetActiveMapChannelNum();
-
 		// texcoord
+		Tab<int> texMaps = gMesh->GetActiveMapChannelNum();
+		mMaxMesh.CH.resize(texMaps.Count());
 		for (int i = 0; i < texMaps.Count(); ++i)
 		{
 			int chan = texMaps[i];
+			mMaxMesh.CH[i] = chan;
 			int uvCount = gMesh->GetNumberOfMapVerts(chan);
 			mMaxMesh.UV[i].resize(uvCount);
 			for (int j = 0; j < uvCount; ++j)
@@ -84,13 +91,15 @@ namespace MaxPlugin
 
 		DWORD vertexChannels = VertexChannel::Position | VertexChannel::Normal;
 
-		if (gMesh->GetNumberOfMapVerts(1) > 0)
+		size_t chCount = mMaxMesh.CH.size();
+
+		if (chCount > 0)
 			vertexChannels |= VertexChannel::TexCoords0;
 
-		if (gMesh->GetNumberOfMapVerts(2) > 0)
+		if (chCount > 1)
 			vertexChannels |= VertexChannel::TexCoords1;
 
-		if (gMesh->GetNumberOfMapVerts(3) > 0)
+		if (chCount > 2)
 			vertexChannels |= VertexChannel::TexCoords2;
 
 		if (!mMaxMesh.BW.empty())
@@ -113,7 +122,7 @@ namespace MaxPlugin
 			int faceCount = gMesh->GetNumberOfFaces();
 			mesh->faces.resize(faceCount * 3);
 			for (int i = 0; i < faceCount; ++i)
-				ExtractFace(mesh->faces[i], gMesh->GetFace(i));
+				ExtractFace(mesh->faces[i], gMesh->GetFace(i), gMesh);
 		}
 		else
 		{
@@ -148,7 +157,7 @@ namespace MaxPlugin
 				int faceCount = gFaces.Count();
 				mesh->faces.resize(faceCount * 3);
 				for (int j = 0; j < faceCount; ++j)
-					ExtractFace(mesh->faces[j], gFaces[j]);
+					ExtractFace(mesh->faces[j], gFaces[j], gMesh);
 			}
 		}
 	}
@@ -213,13 +222,23 @@ namespace MaxPlugin
 		return Skeleton::Instance().GetBoneId(name);
 	}
 
-	void MeshExtracter::ExtractFace(Face& face, const FaceEx* src)
+	void MeshExtracter::ExtractFace(Face& face, const FaceEx* src, IGameMesh* gMesh)
 	{
+		size_t chCount = mMaxMesh.CH.size();
+
+		if (chCount > 0)
+			gMesh->GetMapFaceIndex(mMaxMesh.CH[0], src->meshFaceIndex, &face.uv0[0]);
+
+		if (chCount > 1)
+			gMesh->GetMapFaceIndex(mMaxMesh.CH[1], src->meshFaceIndex, &face.uv1[0]);
+
+		if (chCount > 2)
+			gMesh->GetMapFaceIndex(mMaxMesh.CH[2], src->meshFaceIndex, &face.uv2[0]);
+
 		for (size_t i = 0; i < 3; ++i)
 		{
 			face.vert[i] = src->vert[i];
 			face.norm[i] = src->norm[i];
-			face.uv[i] = src->texCoord[i];
 		}
 	}
 
@@ -261,7 +280,9 @@ namespace MaxPlugin
 	struct VertID 
 	{
 		uint vert;
-		uint uv;
+		uint uv0;
+		uint uv1;
+		uint uv2;
 		uint norm;
 	};
 	
@@ -272,11 +293,17 @@ namespace MaxPlugin
 			if (a.vert < b.vert) return true;
 			if (a.vert > b.vert) return false;
 
-			if (a.uv < b.uv) return true;
-			if (a.uv > b.uv) return false;
-
 			if (a.norm < b.norm) return true;
 			if (a.norm > b.norm) return false;
+
+			if (a.uv0 < b.uv0) return true;
+			if (a.uv0 > b.uv0) return false;
+
+			if (a.uv1 < b.uv1) return true;
+			if (a.uv1 > b.uv1) return false;
+
+			if (a.uv2 < b.uv2) return true;
+			if (a.uv2 > b.uv2) return false;
 
 			return false;
 		}
@@ -300,6 +327,8 @@ namespace MaxPlugin
 		size_t faceCount = subMesh->faces.size();
 		mesh->vertices.reserve(faceCount * 3);
 
+		size_t chCount = mMaxMesh.CH.size();
+
 		for (size_t i = 0; i < faceCount; ++i)
 		{
 			const Face& face = subMesh->faces[i];
@@ -308,7 +337,9 @@ namespace MaxPlugin
 				uint index = 0;
 				vid.vert = face.vert[j];
 				vid.norm = face.norm[j];
-				vid.uv = face.uv[j];
+				vid.uv0 = face.uv0[j];
+				vid.uv1 = face.uv1[j];
+				vid.uv2 = face.uv2[j];
 				iter = vertMap.find(vid);
 				if (iter == vertMap.end())
 				{
@@ -317,9 +348,12 @@ namespace MaxPlugin
 					if (subMesh->vertexChannels & VertexChannel::BoneWeights)
 						vert.bw = mMaxMesh.BW[vid.vert];
 					vert.norm = mMaxMesh.N[vid.norm];
-					vert.uv0 = mMaxMesh.UV[0][vid.uv];
-					if (subMesh->vertexChannels & VertexChannel::TexCoords1)
-						vert.uv1 = mMaxMesh.UV[1][vid.uv];
+					if (chCount > 0)
+						vert.uv0 = mMaxMesh.UV[0][vid.uv0];
+					if (chCount > 1)
+						vert.uv1 = mMaxMesh.UV[1][vid.uv1];
+					if (chCount > 2)
+						vert.uv2 = mMaxMesh.UV[2][vid.uv2];
 					mesh->vertices.push_back(vert);
 					vertMap.insert(std::make_pair(vid, index));
 				}

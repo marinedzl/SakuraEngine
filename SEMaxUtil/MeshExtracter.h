@@ -16,7 +16,9 @@ namespace MaxPlugin
 		struct Face
 		{
 			uint vert[3];
-			uint uv[3];
+			DWORD uv0[3];
+			DWORD uv1[3];
+			DWORD uv2[3];
 			uint norm[3];
 		};
 
@@ -34,14 +36,17 @@ namespace MaxPlugin
 		{
 			std::vector<Vec3> P; // position
 			std::vector<Vec3> N; // normal
-			std::vector<Vec2> UV[2];
+			std::vector<Vec2> UV[3];
+			std::vector<int> CH;
 			std::vector<BoneWeight> BW; // blend weight and indices
 			void Clear()
 			{
+				CH.clear();
 				P.clear();
 				N.clear();
 				UV[0].clear();
 				UV[1].clear();
+				UV[2].clear();
 				BW.clear();
 			}
 		};
@@ -50,7 +55,7 @@ namespace MaxPlugin
 		void ExtractSubMesh(IGameNode* gNode, IGameMesh* gMesh);
 		void ExtractSkinInfo(IGameObject * obj);
 		uint GetBoneID(const TCHAR* name);
-		void ExtractFace(Face& face, const FaceEx* src);
+		void ExtractFace(Face& face, const FaceEx* src, IGameMesh* gMesh);
 		void ExtractMat(SubMesh * subMesh, IGameMaterial * gMaterial);
 		void GetSubMeshData(Model* model, const SubMesh* subMesh);
 	private:

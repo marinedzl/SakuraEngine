@@ -1,17 +1,15 @@
 #include "stdafx.h"
 #include "CameraController.h"
 
-const Vector3 InitOffset(0, 0, 0);
-
 CameraController::CameraController(Camera* camera)
 	: mCamera(camera)
 	, mOp(eOpNone)
-	, mLookAt(camera->GetLookAt() + InitOffset)
-	, mEye(camera->GetEye() + InitOffset)
+	, mLookAt(camera->GetLookAt())
+	, mEye(camera->GetEye())
 	, mUp(0, 1, 0)
-	, mDistance(1)
+	, mDistance(3)
 	, mMinDistance(0.1f)
-	, mMaxDistance(2.0f)
+	, mMaxDistance(10.0f)
 {
 	Vector3 delta = mEye - mLookAt;
 	XMVECTOR v = XMVector3Length(XMLoadFloat3((XMFLOAT3*)&delta));

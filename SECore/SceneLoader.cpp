@@ -92,13 +92,17 @@ Vector3 Json2Vec3(const Json::Value& value)
 	return ret;
 }
 
+const float Angle2Radian = XM_PI / 180.0f;
+
 Quat Json2Quat(const Json::Value& value)
 {
 	Quat ret;
-	ret.x = (float)value[(size_t)0].asDouble();
-	ret.y = (float)value[1].asDouble();
-	ret.z = (float)value[2].asDouble();
-	ret.w = (float)value[3].asDouble();
+	Vector3 v3;
+	v3.x = (float)value[(size_t)0].asDouble();
+	v3.y = (float)value[1].asDouble();
+	v3.z = (float)value[2].asDouble();
+	XMVECTOR q = XMQuaternionRotationRollPitchYaw(v3.x * Angle2Radian, v3.y * Angle2Radian, v3.z * Angle2Radian);
+	XMStoreFloat4((XMFLOAT4*)&ret, q);
 	return ret;
 }
 

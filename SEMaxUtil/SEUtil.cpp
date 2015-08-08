@@ -167,7 +167,6 @@ INT_PTR CALLBACK SEUtil::UtilDlgProc(
 			if (SEGetSaveFileName(hWnd, szFileName, _T("SE Model Files (*.mdl)\0*.mdl\0All Files (*.*)\0*.*\0"), _T("mdl")))
 			{
 				MaxPlugin::Model model;
-				CHECK(MaxPlugin::Skeleton::Instance().IsInit());
 				if (model.Extract(seUtil.pIgame))
 					model.WriteFile(szFileName);
 				model.Clear();
@@ -180,7 +179,6 @@ INT_PTR CALLBACK SEUtil::UtilDlgProc(
 			if (SEGetSaveFileName(hWnd, szFileName, _T("SE Animation Files (*.anim)\0*.anim\0All Files (*.*)\0*.*\0"), _T("anim")))
 			{
 				MaxPlugin::Animation anim;
-				CHECK(MaxPlugin::Skeleton::Instance().IsInit());
 				if (anim.Extract(seUtil.pIgame))
 					anim.WriteFile(szFileName);
 				anim.Clear();
