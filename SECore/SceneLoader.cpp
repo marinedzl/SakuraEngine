@@ -106,6 +106,176 @@ Quat Json2Quat(const Json::Value& value)
 	return ret;
 }
 
+bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
+{
+	bool ret = false;
+
+	if (entityRoot.isMember("Name"))
+	{
+		entity->SetName(entityRoot["Name"].asCString());
+	}
+
+	if (entityRoot.isMember("Transform"))
+	{
+		const Json::Value& transformRoot = entityRoot["Transform"];
+
+		if (transformRoot.isMember("Position"))
+			entity->GetTransform().position = Json2Vec3(transformRoot["Position"]);
+
+		if (transformRoot.isMember("Rotation"))
+			entity->GetTransform().rotation = Json2Quat(transformRoot["Rotation"]);
+
+		if (transformRoot.isMember("Scaling"))
+			entity->GetTransform().scaling = Json2Vec3(transformRoot["Scaling"]);
+	}
+
+	if (entityRoot.isMember("Animation"))
+	{
+		const Json::Value& animationRoot = entityRoot["Animation"];
+
+		Animation* animation = nullptr;
+
+		if (SECore::Animation* _ptr = entity->GetAnimation())
+		{
+			animation = dynamic_cast<Animation*>(_ptr);
+		}
+		else
+		{
+			animation = dynamic_cast<Animation*>(entity->CreateAnimation());
+		}
+
+		Skeleton* skeleton = gResourceManager.LoadSkeleton(animationRoot["Skeleton"].asCString());
+		animation->SetSkeleton(skeleton);
+		skeleton->Release();
+
+		const Json::Value& jsonClips = animationRoot["Clips"];
+		std::vector<std::string> memberNames = jsonClips.getMemberNames();
+		for (size_t i = 0; i < memberNames.size(); ++i)
+		{
+			AnimationClip* clip = gResourceManager.LoadClip(jsonClips[memberNames[i]].asCString());
+			animation->AddClip(memberNames[i].c_str(), clip);
+			clip->Release();
+		}
+
+		if (animationRoot.isMember("Clip"))
+		{
+			animation->Play(animationRoot["Clip"].asCString());
+		}
+	}
+
+	if (entityRoot.isMember("Collider"))
+	{
+		const Json::Value& colliderRoot = entityRoot["Collider"];
+		Collider::Type type = String2ColliderShape(colliderRoot["Shape"].asCString());
+
+		Collider* collider = nullptr;
+
+		if (Collider* _ptr = entity->GetCollider())
+		{
+			collider = dynamic_cast<Collider*>(_ptr);
+		}
+		else
+		{
+			collider = dynamic_cast<Collider*>(entity->CreateCollider(type));
+		}
+
+		switch (type)
+		{
+		case Collider::eBox:
+		{
+			SECore::BoxCollider* boxCollider = dynamic_cast<SECore::BoxCollider*>(collider);
+			CHECK(boxCollider);
+			if (colliderRoot.isMember("Size"))
+				boxCollider->SetSize(Json2Vec3(colliderRoot["Size"]));
+		}
+		break;
+		}
+	}
+
+	if (entityRoot.isMember("Renderer"))
+	{
+		const Json::Value& rendererRoot = entityRoot["Renderer"];
+
+		CHECK(rendererRoot.isArray());
+		size_t count = rendererRoot.size();
+		SECore::Renderer* renderer = entity->GetRenderer();
+
+		if (!renderer)
+		{
+			renderer = entity->CreateRenderer();
+		}
+
+		for (size_t i = 0; i < count; ++i)
+		{
+			SECore::Renderer::Entity* re = renderer->CreateEntity();
+			const Json::Value& reRoot = rendererRoot[i];
+			if (reRoot.isMember("Mesh"))
+			{
+				Mesh* mesh = gResourceManager.LoadMesh(reRoot["Mesh"].asCString());
+				re->SetMesh(mesh);
+				mesh->Release();
+			}
+			if (reRoot.isMember("Material"))
+			{
+				SECore::Material* material = re->GetMaterial();
+				const Json::Value& mtlRoot = reRoot["Material"];
+
+				Shader* shader = nullptr;
+				if (mtlRoot.isMember("Shader"))
+				{
+					shader = gResourceManager.CreateShader(mtlRoot["Shader"].asCString());
+				}
+				else
+				{
+					shader = gResourceManager.CreateShader("AlphaTest-Diffuse");
+				}
+
+				CHECK(shader);
+
+				material->SetShader(shader);
+
+				std::vector<std::string> propNames = mtlRoot.getMemberNames();
+				size_t propCount = propNames.size();
+				for (size_t pi = 0; pi < propCount; pi++)
+				{
+					const std::string& propName = propNames[pi];
+					Shader::PropertyType propType = shader->GetPropertyType(propName.c_str());
+					switch (propType)
+					{
+					case Shader::eFloat:
+					{
+						material->SetFloat(propName.c_str(), (float)mtlRoot[propName].asDouble());
+					}
+					break;
+					case Shader::eColor:
+					{
+						const char* str = mtlRoot[propName].asCString();
+						DWORD dwColor = strtoul(str, NULL, 16);
+						Color color = ConvertDwordToColor(dwColor);
+						material->SetColor(propName.c_str(), color);
+					}
+					break;
+					case Shader::eTexture:
+					{
+						Texture* texture = gResourceManager.LoadTexture(mtlRoot[propName].asCString());
+						material->SetTexture(propName.c_str(), texture);
+						texture->Release();
+					}
+					break;
+					default:
+						CHECK(false);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	ret = true;
+Exit0:
+	return ret;
+}
+
 bool SceneLoader::Load(Scene* scene, const char* filename)
 {
 	bool ret = false;
@@ -122,139 +292,15 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 	{
 		Scene::Entity* entity = scene->CreateEntity();
 		const Json::Value& entityRoot = root["Entities"][i];
-		if (entityRoot.isMember("Name"))
+
+		if (entityRoot.isMember("Prefab"))
 		{
-			entity->SetName(entityRoot["Name"].asCString());
+			Json::Value prefab;
+			LoadJsonFromFile(entityRoot["Prefab"].asCString(), prefab);
+			LoadEntity(entity, prefab);
 		}
-		if (entityRoot.isMember("Transform"))
-		{
-			const Json::Value& transformRoot = entityRoot["Transform"];
-
-			if (transformRoot.isMember("Position"))
-				entity->GetTransform().position = Json2Vec3(transformRoot["Position"]);
-
-			if (transformRoot.isMember("Rotation"))
-				entity->GetTransform().rotation = Json2Quat(transformRoot["Rotation"]);
-
-			if (transformRoot.isMember("Scaling"))
-				entity->GetTransform().scaling = Json2Vec3(transformRoot["Scaling"]);
-		}
-
-		if (entityRoot.isMember("Animation"))
-		{
-			const Json::Value& animationRoot = entityRoot["Animation"];
-
-			Animation* animation = dynamic_cast<Animation*>(entity->CreateAnimation());
-
-			Skeleton* skeleton = gResourceManager.LoadSkeleton(animationRoot["Skeleton"].asCString());
-			animation->SetSkeleton(skeleton);
-			skeleton->Release();
-
-			const Json::Value& jsonClips = animationRoot["Clips"];
-			std::vector<std::string> memberNames = jsonClips.getMemberNames();
-			for (size_t i = 0; i < memberNames.size(); ++i)
-			{
-				AnimationClip* clip = gResourceManager.LoadClip(jsonClips[memberNames[i]].asCString());
-				animation->AddClip(memberNames[i].c_str(), clip);
-				clip->Release();
-			}
-
-			if (animationRoot.isMember("Clip"))
-			{
-				animation->Play(animationRoot["Clip"].asCString());
-			}
-		}
-
-		if (entityRoot.isMember("Collider"))
-		{
-			const Json::Value& colliderRoot = entityRoot["Collider"];
-			Collider::Type type = String2ColliderShape(colliderRoot["Shape"].asCString());
-			Collider* collider = entity->CreateCollider(type);
-			switch (type)
-			{
-			case Collider::eBox:
-			{
-				SECore::BoxCollider* boxCollider = dynamic_cast<SECore::BoxCollider*>(collider);
-				CHECK(boxCollider);
-				if (colliderRoot.isMember("Size"))
-					boxCollider->SetSize(Json2Vec3(colliderRoot["Size"]));
-			}
-				break;
-			}
-		}
-
-
-		if (entityRoot.isMember("Renderer"))
-		{
-			const Json::Value& rendererRoot = entityRoot["Renderer"];
-			CHECK(rendererRoot.isArray());
-			size_t count = rendererRoot.size();
-			SECore::Renderer* renderer = entity->CreateRenderer();
-			for (size_t i = 0; i < count; ++i)
-			{
-				SECore::Renderer::Entity* re = renderer->CreateEntity();
-				const Json::Value& reRoot = rendererRoot[i];
-				if (reRoot.isMember("Mesh"))
-				{
-					Mesh* mesh = gResourceManager.LoadMesh(reRoot["Mesh"].asCString());
-					re->SetMesh(mesh);
-					mesh->Release();
-				}
-				if (reRoot.isMember("Material"))
-				{
-					SECore::Material* material = re->GetMaterial();
-					const Json::Value& mtlRoot = reRoot["Material"];
-
-					Shader* shader = nullptr;
-					if (mtlRoot.isMember("Shader"))
-					{
-						shader = gResourceManager.CreateShader(mtlRoot["Shader"].asCString());
-					}
-					else
-					{
-						shader = gResourceManager.CreateShader("AlphaTest-Diffuse");
-					}
-
-					CHECK(shader);
-
-					material->SetShader(shader);
-
-					std::vector<std::string> propNames = mtlRoot.getMemberNames();
-					size_t propCount = propNames.size();
-					for (size_t pi = 0; pi < propCount; pi++)
-					{
-						const std::string& propName = propNames[pi];
-						Shader::PropertyType propType = shader->GetPropertyType(propName.c_str());
-						switch (propType)
-						{
-						case Shader::eFloat:
-						{
-							material->SetFloat(propName.c_str(), (float)mtlRoot[propName].asDouble());
-						}
-							break;
-						case Shader::eColor:
-						{
-							const char* str = mtlRoot[propName].asCString();
-							DWORD dwColor = strtoul(str, NULL, 16);
-							Color color = ConvertDwordToColor(dwColor);
-							material->SetColor(propName.c_str(), color);
-						}
-							break;
-						case Shader::eTexture:
-						{
-							Texture* texture = gResourceManager.LoadTexture(mtlRoot[propName].asCString());
-							material->SetTexture(propName.c_str(), texture);
-							texture->Release();
-						}
-							break;
-						default:
-							CHECK(false);
-							break;
-						}
-					}
-				}
-			}
-		}
+		
+		LoadEntity(entity, entityRoot);
 	}
 
 	ret = true;

@@ -192,7 +192,6 @@ namespace MaxPlugin
 		SplitFilename(TSTR(filename), &path, &name, &ext);
 
 		Json::Value root;
-		Json::Value entity;
 		TString strFullPath = (const TCHAR*)path;
 		TString strPath = (const TCHAR*)name;
 
@@ -202,8 +201,6 @@ namespace MaxPlugin
 		strFullPath += name;
 		CreateMultiDir(strFullPath.c_str());
 		strFullPath += _T("\\");
-
-		entity["Name"] = WStr2MStr((const TCHAR*)name);
 
 		for (size_t i = 0; i < mMeshes.size(); i++)
 		{
@@ -221,12 +218,10 @@ namespace MaxPlugin
 			if (!mesh->SpecTex.empty())
 				value["Material"]["SpecTex"] = WStr2MStr(strPath + mesh->SpecTex);
 
-			entity["Renderer"].append(value);
+			root["Renderer"].append(value);
 
 			WriteMesh(mMeshes[i], strFullPath.c_str());
 		}
-
-		root["Entities"].append(entity);
 
 		SaveJsonToFile(filename, root);
 	}
