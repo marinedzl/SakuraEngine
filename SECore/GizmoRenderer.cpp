@@ -112,7 +112,6 @@ void GizmoRenderer::Begin()
 		return;
 
 	float factor[4] = { 0 };
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	context->OMSetBlendState(mBlendState, factor, 0xFFFFFFFF);
 	context->OMSetDepthStencilState(mDepthStencilState, 1);
 	context->RSSetState(gRenderStateManager.GetRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID));
@@ -154,5 +153,6 @@ void GizmoRenderer::Draw(const Camera& camera, const Gizmo* entity)
 	UINT offset = 0;
 	context->IASetVertexBuffers(0, 1, &mesh->vb, &stride, &offset);
 	context->IASetIndexBuffer(mesh->ib, DXGI_FORMAT_R16_UINT, 0);
+	context->IASetPrimitiveTopology(mesh->primitive);
 	context->DrawIndexed(mesh->indexCount, 0, 0);
 }

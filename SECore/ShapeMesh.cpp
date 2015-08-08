@@ -35,6 +35,7 @@ GizmoMesh* ShapeMesh::CreateBox(const Vector3& size)
 	CHECK(mesh);
 
 	mesh->indexCount = _countof(indices);
+	mesh->primitive = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
 
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	ZeroMemory(&dataDesc, sizeof(dataDesc));
