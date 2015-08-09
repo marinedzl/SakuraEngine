@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "Gizmo.h"
 
-Gizmo::Gizmo(const Transform& transform)
-	: mTransform(transform)
-	, mMesh(nullptr)
+Gizmo::Gizmo()
+	: mMesh(nullptr)
 {
 }
 

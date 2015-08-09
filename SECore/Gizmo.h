@@ -3,9 +3,10 @@
 class Gizmo
 {
 public:
-	Gizmo(const Transform& transform);
+	Gizmo();
 	virtual ~Gizmo();
 	const Transform& GetTransform() const { return mTransform;  }
+	Transform& GetTransform() { return mTransform; }
 	const GizmoMesh* GetMesh() const { return mMesh; }
 	void SetMesh(GizmoMesh* mesh);
 private:

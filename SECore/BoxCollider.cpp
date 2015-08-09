@@ -8,7 +8,6 @@
 
 BoxCollider::BoxCollider(SceneEntity& owner)
 	: mOwner(owner)
-	, mSize(1, 1, 1)
 	, mRigid(nullptr)
 	, mShape(nullptr)
 	, mGizmo(nullptr)
@@ -28,10 +27,9 @@ bool BoxCollider::Init()
 	bool ret = false;
 
 	const Transform& transform = mOwner.GetTransform();
-	Vector3 scaling = transform.scaling;
 
 	PxVec3 pos = ConvertPxVec3(transform.position);
-	PxQuat rot = GetPxQuat(transform.rotation);
+	PxQuat rot = ConvertPxQuat(transform.rotation);
 
 	PxScene* scene = mOwner.GetScene().GetPxScene();
 	CHECK(scene);
@@ -41,10 +39,6 @@ bool BoxCollider::Init()
 
 	mRigid = gPhysics->createRigidStatic(PxTransform(pos, rot));
 	CHECK(mRigid);
-
-	scaling.x = 1 / scaling.x;
-	scaling.y = 1 / scaling.y;
-	scaling.z = 1 / scaling.z;
 
 	SetSize(Vector3(0.5f, 0.5f, 0.5f));
 
@@ -59,30 +53,39 @@ void BoxCollider::SetSize(const Vector3& size)
 {
 	CHECK(mRigid);
 
-	mSize = size;
-
 	if (mShape)
 	{
 		mRigid->detachShape(*mShape);
+		mShape = nullptr;
 	}
 
-	mShape = mRigid->createShape(PxBoxGeometry(mSize.x, mSize.y, mSize.z), *mMaterial);
+	mShape = mRigid->createShape(PxBoxGeometry(size.x, size.y, size.z), *mMaterial);
 	CHECK(mShape);
-
-	mRigid->attachShape(*mShape);
 
 	if (!mGizmo)
 	{
-		Transform transform = mOwner.GetTransform();
-		transform.scaling = Vector3(1, 1, 1);
-		mGizmo = new Gizmo(transform);
+		mGizmo = new Gizmo();
 		mOwner.GetScene().AddGizmo(mGizmo);
 	}
 
 	if (mGizmo)
 	{
-		mGizmo->SetMesh(ShapeMesh::CreateBox(mSize));
+		mGizmo->SetMesh(ShapeMesh::CreateBox(size));
 	}
 Exit0:
 	;
+}
+
+void BoxCollider::SetLocalPose(const Vector3& pos, const Quat& rot)
+{
+	mPos = pos;
+	mRot = rot;
+	mShape->setLocalPose(PxTransform(ConvertPxVec3(pos), ConvertPxQuat(rot)));
+	UpdateGizmo();
+}
+
+void BoxCollider::UpdateGizmo()
+{
+	mGizmo->GetTransform().position = mOwner.GetTransform().position + mPos;
+	mGizmo->GetTransform().rotation = mOwner.GetTransform().rotation;
 }

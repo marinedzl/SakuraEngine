@@ -217,6 +217,7 @@ namespace SECore
 	{
 		virtual ~BoxCollider() {}
 		virtual void SetSize(const Vector3& size) = 0;
+		virtual void SetLocalPose(const Vector3& pos, const Quat& rot) = 0;
 	};
 
 	struct Renderer

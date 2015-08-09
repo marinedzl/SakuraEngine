@@ -180,7 +180,7 @@ inline Vector3 ConvertPxVec3(const PxVec3& v)
 	return Vector3(v.x, v.y, v.z);
 }
 
-inline PxQuat GetPxQuat(const Quat& v)
+inline PxQuat ConvertPxQuat(const Quat& v)
 {
 	return PxQuat(v.x, v.y, v.z, v.w);
 }

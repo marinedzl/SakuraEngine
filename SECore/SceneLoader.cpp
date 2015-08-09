@@ -187,6 +187,8 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 			CHECK(boxCollider);
 			if (colliderRoot.isMember("Size"))
 				boxCollider->SetSize(Json2Vec3(colliderRoot["Size"]));
+			if (colliderRoot.isMember("Offset"))
+				boxCollider->SetLocalPose(Json2Vec3(colliderRoot["Offset"]), Quat());
 		}
 		break;
 		}
