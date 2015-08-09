@@ -4,16 +4,14 @@
 CameraController::CameraController(Camera* camera)
 	: mCamera(camera)
 	, mOp(eOpNone)
-	, mLookAt(camera->GetLookAt())
-	, mEye(camera->GetEye())
+	, mLookAt(0, 0, 0)
 	, mUp(0, 1, 0)
-	, mDistance(3)
+	, mDistance(10)
 	, mMinDistance(0.1f)
-	, mMaxDistance(10.0f)
+	, mMaxDistance(100.0f)
+	, mYawPitch(0, -0.5f)
 {
-	Vector3 delta = mEye - mLookAt;
-	XMVECTOR v = XMVector3Length(XMLoadFloat3((XMFLOAT3*)&delta));
-	XMStoreFloat(&mBaseDistance, v);
+
 }
 
 CameraController::~CameraController()
@@ -29,16 +27,16 @@ void CameraController::Update(float deltaTime)
 	XMVECTOR vLocalAhead = XMLoadFloat3(&XMFLOAT3(0, 0, 1));
 	vWorldUp = XMVector3TransformCoord(vLocalUp, invRotation);
 	vWorldAhead = XMVector3TransformCoord(vLocalAhead, invRotation);
-	vWorldAhead *= mDistance * mBaseDistance;
+	vWorldAhead *= mDistance;
 	
 	Vector3 worldAhead;
 	XMStoreFloat3((XMFLOAT3*)&worldAhead, vWorldAhead);
 	XMStoreFloat3((XMFLOAT3*)&mUp, vWorldUp);
 
 	Vector3 lookAt = mLookAt;
-	mEye = lookAt - worldAhead;
+	Vector3 eye = lookAt - worldAhead;
 
-	mCamera->SetEye(mEye);
+	mCamera->SetEye(eye);
 	mCamera->SetLookAt(mLookAt);
 	mCamera->SetUp(mUp);
 }
@@ -103,7 +101,5 @@ void CameraController::Scroll(float delta)
 
 void CameraController::FocusOn(Vector3 v)
 {
-	Vector3 delta = v - mLookAt;
 	mLookAt = v;
-	mEye = mEye + delta;
 }

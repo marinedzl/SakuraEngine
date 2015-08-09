@@ -30,10 +30,8 @@ private:
 
 	float mMinDistance;
 	float mMaxDistance;
-	float mBaseDistance;
 	float mDistance;
 
 	Vector3 mLookAt;
-	Vector3 mEye;
 	Vector3 mUp;
 };
