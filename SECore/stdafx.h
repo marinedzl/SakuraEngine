@@ -185,6 +185,11 @@ inline PxQuat ConvertPxQuat(const Quat& v)
 	return PxQuat(v.x, v.y, v.z, v.w);
 }
 
+inline Quat ConvertPxQuat(const PxQuat& v)
+{
+	return Quat(v.x, v.y, v.z, v.w);
+}
+
 struct GizmoMesh
 {
 	struct Vertex

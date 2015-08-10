@@ -76,9 +76,7 @@ SECore::Collider * SceneEntity::CreateCollider(Collider::Type type)
 	switch (type)
 	{
 	case Collider::eBox:
-		BoxCollider* collider = new BoxCollider(*this);
-		CHECK(collider && collider->Init());
-		mCollider = collider;
+		mCollider = new BoxCollider(*this);
 		break;
 	}
 Exit0:
@@ -89,4 +87,6 @@ void SceneEntity::Update(float deltaTime)
 {
 	if (mAnimation)
 		mAnimation->Update(deltaTime);
+	if (mCollider)
+		mCollider->Update(deltaTime);
 }

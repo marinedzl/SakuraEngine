@@ -13,20 +13,6 @@ public:
 	}
 };
 
-class MyPxAllocatorCallback : public PxAllocatorCallback
-{
-public:
-	virtual ~MyPxAllocatorCallback() {}
-	virtual void* allocate(size_t size, const char* typeName, const char* filename, int line)
-	{
-		return _aligned_malloc(size, 16);
-	}
-	virtual void deallocate(void* ptr)
-	{
-		_aligned_free(ptr);
-	}
-};
-
 PhysicsCore::PhysicsCore()
 	: mFoundation(nullptr)
 	, mPhysics(nullptr)
@@ -42,7 +28,7 @@ bool PhysicsCore::Init()
 	bool ret = false;
 
 	static MyPxErrorCallback gErrorCallback;
-	static MyPxAllocatorCallback gAllocatorCallback;
+	static PxDefaultAllocator gAllocatorCallback;
 
 	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocatorCallback, gErrorCallback);
 	CHECK(mFoundation);
@@ -51,6 +37,8 @@ bool PhysicsCore::Init()
 	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation,
 		PxTolerancesScale(), recordMemoryAllocations);
 	CHECK(mPhysics);
+
+	CHECK(PxInitExtensions(*mPhysics));
 
 	ret = true;
 Exit0:

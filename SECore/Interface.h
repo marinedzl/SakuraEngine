@@ -211,6 +211,10 @@ namespace SECore
 			eBox,
 		};
 		virtual ~Collider() {}
+		virtual bool Init(bool isDynamic) = 0;
+		virtual void Update(float deltaTime) = 0;
+		virtual void EnableGravity(bool enable) = 0;
+		virtual void SetMass(float mass) = 0;
 	};
 
 	struct BoxCollider : Collider

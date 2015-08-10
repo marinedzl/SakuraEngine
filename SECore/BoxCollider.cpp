@@ -8,7 +8,7 @@
 
 BoxCollider::BoxCollider(SceneEntity& owner)
 	: mOwner(owner)
-	, mRigid(nullptr)
+	, mActor(nullptr)
 	, mShape(nullptr)
 	, mGizmo(nullptr)
 {
@@ -16,13 +16,13 @@ BoxCollider::BoxCollider(SceneEntity& owner)
 
 BoxCollider::~BoxCollider()
 {
-	if (mRigid)
-		mRigid->release();
+	if (mActor)
+		mActor->release();
 	mOwner.GetScene().RemoveGizmo(mGizmo);
 	SAFE_DELETE(mGizmo);
 }
 
-bool BoxCollider::Init()
+bool BoxCollider::Init(bool isDynamic)
 {
 	bool ret = false;
 
@@ -37,12 +37,23 @@ bool BoxCollider::Init()
 	mMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.1f);
 	CHECK(mMaterial);
 
-	mRigid = gPhysics->createRigidStatic(PxTransform(pos, rot));
-	CHECK(mRigid);
+	if (isDynamic)
+	{
+		PxRigidDynamic* dyn = gPhysics->createRigidDynamic(PxTransform(pos, rot));
+		dyn->setLinearDamping(0.25);
+		dyn->setAngularDamping(0.25);
+		mActor = dyn;
+	}
+	else
+	{
+		mActor = gPhysics->createRigidStatic(PxTransform(pos, rot));
+	}
+
+	CHECK(mActor);
 
 	SetSize(Vector3(0.5f, 0.5f, 0.5f));
 
-	scene->addActor(*mRigid);
+	scene->addActor(*mActor);
 
 	ret = true;
 Exit0:
@@ -51,15 +62,15 @@ Exit0:
 
 void BoxCollider::SetSize(const Vector3& size)
 {
-	CHECK(mRigid);
+	CHECK(mActor);
 
 	if (mShape)
 	{
-		mRigid->detachShape(*mShape);
+		mActor->detachShape(*mShape);
 		mShape = nullptr;
 	}
 
-	mShape = mRigid->createShape(PxBoxGeometry(size.x, size.y, size.z), *mMaterial);
+	mShape = mActor->createShape(PxBoxGeometry(size.x, size.y, size.z), *mMaterial);
 	CHECK(mShape);
 
 	if (!mGizmo)
@@ -82,6 +93,33 @@ void BoxCollider::SetLocalPose(const Vector3& pos, const Quat& rot)
 	mRot = rot;
 	mShape->setLocalPose(PxTransform(ConvertPxVec3(pos), ConvertPxQuat(rot)));
 	UpdateGizmo();
+}
+
+void BoxCollider::Update(float deltaTime)
+{
+	if (mActor->isRigidDynamic())
+	{
+		PxTransform pt = mActor->getGlobalPose();
+		mOwner.GetTransform().position = ConvertPxVec3(pt.p);
+		mOwner.GetTransform().rotation = ConvertPxQuat(pt.q);
+		UpdateGizmo();
+	}
+}
+
+void BoxCollider::EnableGravity(bool enable)
+{
+	if (mActor)
+	{
+		mActor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !enable);
+	}
+}
+
+void BoxCollider::SetMass(float mass)
+{
+	if (mActor->isRigidDynamic())
+	{
+		((PxRigidDynamic*)mActor)->setMass(mass);
+	}
 }
 
 void BoxCollider::UpdateGizmo()

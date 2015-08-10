@@ -30,6 +30,7 @@ private:
 	typedef std::list<Gizmo*> Gizmos;
 private:
 	PxScene* mPxScene;
+	PxDefaultCpuDispatcher* mCpuDispatcher;
 	Camera mCamera;
 	Entities mEntities;
 	Gizmos mGizmos;

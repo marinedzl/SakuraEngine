@@ -81,6 +81,15 @@ bool Scene::Init()
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 
+	if (!sceneDesc.cpuDispatcher)
+	{
+		mCpuDispatcher = PxDefaultCpuDispatcherCreate(1);
+		CHECK(mCpuDispatcher);
+		sceneDesc.cpuDispatcher = mCpuDispatcher;
+	}
+
+	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+
 	mPxScene = gPhysics->createScene(sceneDesc);
 	CHECK(mPxScene);
 
@@ -178,7 +187,10 @@ void Scene::Update(float deltaTime)
 	}
 
 	if (mPxScene)
+	{
 		mPxScene->simulate(deltaTime);
+		mPxScene->fetchResults(true);
+	}
 }
 
 bool Scene::Raycast(const Ray& ray, RaycastHit& hit, float distance)

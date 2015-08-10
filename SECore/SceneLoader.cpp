@@ -169,6 +169,8 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 		Collider::Type type = String2ColliderShape(colliderRoot["Shape"].asCString());
 
 		Collider* collider = nullptr;
+		bool isDynamic = false;
+		bool enableGravity = false;
 
 		if (Collider* _ptr = entity->GetCollider())
 		{
@@ -177,6 +179,25 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 		else
 		{
 			collider = dynamic_cast<Collider*>(entity->CreateCollider(type));
+		}
+
+		if (colliderRoot.isMember("Dynamic"))
+		{
+			isDynamic = colliderRoot["Dynamic"].asBool();
+		}
+
+		CHECK(collider->Init(isDynamic));
+
+		if (colliderRoot.isMember("Gravity"))
+		{
+			enableGravity = colliderRoot["Gravity"].asBool();
+		}
+
+		collider->EnableGravity(enableGravity);
+
+		if (colliderRoot.isMember("Mass"))
+		{
+			collider->SetMass((float)colliderRoot["Mass"].asDouble());
 		}
 
 		switch (type)
