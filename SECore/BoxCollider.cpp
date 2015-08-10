@@ -57,6 +57,8 @@ bool BoxCollider::Init(bool isDynamic)
 
 	scene->addActor(*mActor);
 
+	SetLocalPose(Vector3(), Quat());
+
 	ret = true;
 Exit0:
 	return ret;

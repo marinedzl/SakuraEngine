@@ -47,6 +47,7 @@ Exit0:
 
 void PhysicsCore::Release()
 {
+	PxCloseExtensions();
 	if (mPhysics)
 		mPhysics->release();
 	mPhysics = nullptr;

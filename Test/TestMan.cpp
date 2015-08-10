@@ -61,6 +61,10 @@ void TestMan::Process()
 {
 	DWORD currentTime = timeGetTime();
 	DWORD dwDelta = currentTime - mLastTime;
+
+	if (dwDelta <= 0)
+		return;
+
 	mLastTime = currentTime;
 
 	float deltaTime = dwDelta / 1000.0f;

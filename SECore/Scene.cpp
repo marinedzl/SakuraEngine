@@ -18,6 +18,10 @@ Scene::~Scene()
 
 void Scene::Release()
 {
+	if (mPxScene)
+		mPxScene->release();
+	if (mCpuDispatcher)
+		mCpuDispatcher->release();
 	ClearEntities();
 	delete this;
 }
@@ -190,7 +194,7 @@ void Scene::Update(float deltaTime)
 	if (mPxScene)
 	{
 		mPxScene->simulate(deltaTime);
-		if (mPxScene->fetchResults())
+		if (mPxScene->fetchResults(true))
 		{
 			// retrieve array of actors that moved
 			PxU32 nbActiveTransforms;
