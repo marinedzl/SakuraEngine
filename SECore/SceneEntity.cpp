@@ -87,6 +87,4 @@ void SceneEntity::Update(float deltaTime)
 {
 	if (mAnimation)
 		mAnimation->Update(deltaTime);
-	if (mCollider)
-		mCollider->Update(deltaTime);
 }

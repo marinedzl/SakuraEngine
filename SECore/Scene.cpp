@@ -89,6 +89,7 @@ bool Scene::Init()
 	}
 
 	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	sceneDesc.flags |= PxSceneFlag::eENABLE_ACTIVETRANSFORMS;
 
 	mPxScene = gPhysics->createScene(sceneDesc);
 	CHECK(mPxScene);
@@ -189,7 +190,23 @@ void Scene::Update(float deltaTime)
 	if (mPxScene)
 	{
 		mPxScene->simulate(deltaTime);
-		mPxScene->fetchResults(true);
+		if (mPxScene->fetchResults())
+		{
+			// retrieve array of actors that moved
+			PxU32 nbActiveTransforms;
+			const PxActiveTransform* activeTransforms = mPxScene->getActiveTransforms(nbActiveTransforms);
+
+			// update each render object with the new transform
+			for (PxU32 i = 0; i < nbActiveTransforms; ++i)
+			{
+				const PxActiveTransform& at = activeTransforms[i];
+				SceneEntity* entity = (SceneEntity*)activeTransforms[i].userData;
+				if (Collider* collider = entity->GetCollider())
+				{
+					collider->OnPhysicsUpdateTransform(ConvertPxVec3(at.actor2World.p), ConvertPxQuat(at.actor2World.q));
+				}
+			}
+		}
 	}
 }
 
@@ -204,6 +221,7 @@ bool Scene::Raycast(const Ray& ray, RaycastHit& hit, float distance)
 		hit.point = ConvertPxVec3(pxhit.block.position);
 		hit.normal = ConvertPxVec3(pxhit.block.normal);
 		hit.distance = pxhit.block.distance;
+		hit.entity = (SceneEntity*)pxhit.block.actor->userData;
 		return true;
 	}
 

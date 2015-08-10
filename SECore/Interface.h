@@ -131,12 +131,7 @@ namespace SECore
 		Vector3 direction;
 	};
 
-	struct RaycastHit
-	{
-		Vector3 point;
-		Vector3 normal;
-		float distance;
-	};
+	struct RaycastHit;
 
 	struct Object
 	{
@@ -212,9 +207,9 @@ namespace SECore
 		};
 		virtual ~Collider() {}
 		virtual bool Init(bool isDynamic) = 0;
-		virtual void Update(float deltaTime) = 0;
 		virtual void EnableGravity(bool enable) = 0;
 		virtual void SetMass(float mass) = 0;
+		virtual void OnPhysicsUpdateTransform(const Vector3& pos, const Quat& rot) = 0;
 	};
 
 	struct BoxCollider : Collider
@@ -322,5 +317,13 @@ namespace SECore
 		virtual bool LoadAdditive(const char* filename) = 0;
 
 		virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance) = 0;
+	};
+
+	struct RaycastHit
+	{
+		Vector3 point;
+		Vector3 normal;
+		float distance;
+		const Scene::Entity* entity;
 	};
 }

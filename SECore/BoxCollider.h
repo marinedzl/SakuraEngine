@@ -7,7 +7,7 @@ public:
 	virtual void SetSize(const Vector3& size);
 	virtual void SetLocalPose(const Vector3& pos, const Quat& rot);
 	virtual bool Init(bool isDynamic);
-	virtual void Update(float deltaTime);
+	virtual void OnPhysicsUpdateTransform(const Vector3& pos, const Quat& rot);
 	virtual void EnableGravity(bool enable);
 	virtual void SetMass(float mass);
 public:

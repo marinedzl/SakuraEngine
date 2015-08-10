@@ -51,6 +51,8 @@ bool BoxCollider::Init(bool isDynamic)
 
 	CHECK(mActor);
 
+	mActor->userData = &mOwner;
+
 	SetSize(Vector3(0.5f, 0.5f, 0.5f));
 
 	scene->addActor(*mActor);
@@ -95,15 +97,11 @@ void BoxCollider::SetLocalPose(const Vector3& pos, const Quat& rot)
 	UpdateGizmo();
 }
 
-void BoxCollider::Update(float deltaTime)
+void BoxCollider::OnPhysicsUpdateTransform(const Vector3& pos, const Quat& rot)
 {
-	if (mActor->isRigidDynamic())
-	{
-		PxTransform pt = mActor->getGlobalPose();
-		mOwner.GetTransform().position = ConvertPxVec3(pt.p);
-		mOwner.GetTransform().rotation = ConvertPxQuat(pt.q);
-		UpdateGizmo();
-	}
+	mOwner.GetTransform().position = pos;
+	mOwner.GetTransform().rotation = rot;
+	UpdateGizmo();
 }
 
 void BoxCollider::EnableGravity(bool enable)

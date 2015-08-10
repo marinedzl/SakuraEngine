@@ -32,7 +32,10 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			gTestMan.scene->GetCamera()->ScreenPointToRay(ray, Vector3(pos.x, pos.y, 0));
 			if (gTestMan.scene->Raycast(ray, hit, 10000))
 			{
-				Run();
+				if (strcmp(hit.entity->GetName(), "main chara") == 0)
+				{
+					Run();
+				}
 			}
 		}
 	}
