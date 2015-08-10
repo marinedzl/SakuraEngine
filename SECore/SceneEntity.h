@@ -19,7 +19,7 @@ public:
 
 	virtual void DestroyCollider();
 	virtual SECore::Collider* GetCollider();
-	virtual SECore::Collider* CreateCollider(Collider::Type type);
+	virtual SECore::Collider* CreateBoxCollider(bool isDynamic, const Vector3& size);
 
 	virtual void SetName(const char* name) { mName = name; }
 	virtual const char* GetName() const { return mName.c_str(); }

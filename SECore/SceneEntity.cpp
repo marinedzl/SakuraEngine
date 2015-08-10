@@ -70,15 +70,13 @@ SECore::Collider * SceneEntity::GetCollider()
 	return mCollider;
 }
 
-SECore::Collider * SceneEntity::CreateCollider(Collider::Type type)
+SECore::Collider* SceneEntity::CreateBoxCollider(bool isDynamic, const Vector3& size)
 {
-	CHECK(!mCollider);
-	switch (type)
-	{
-	case Collider::eBox:
-		mCollider = new BoxCollider(*this);
-		break;
-	}
+	SAFE_DELETE(mCollider);
+	BoxCollider* collider = new BoxCollider(*this);
+	collider->SetSize(size);
+	CHECK(collider->Init(isDynamic));
+	mCollider = collider;
 Exit0:
 	return mCollider;
 }

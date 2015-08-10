@@ -1,26 +1,14 @@
 #pragma once
+#include "Collider.h"
 
-class BoxCollider : public SECore::BoxCollider
+class BoxCollider : public Collider
 {
 public:
 	virtual ~BoxCollider();
-	virtual void SetSize(const Vector3& size);
-	virtual void SetLocalPose(const Vector3& pos, const Quat& rot);
-	virtual bool Init(bool isDynamic);
-	virtual void OnPhysicsUpdateTransform(const Vector3& pos, const Quat& rot);
-	virtual void EnableGravity(bool enable);
-	virtual void SetMass(float mass);
+	virtual void OnInitShape();
 public:
 	BoxCollider(SceneEntity& owner);
+	void SetSize(const Vector3& size) { mSize = size; }
 private:
-	void UpdateGizmo();
-private:
-	SceneEntity& mOwner;
-	PxMaterial* mMaterial;
-	PxRigidActor* mActor;
-	Gizmo* mGizmo;
-	PxShape* mShape;
-private:
-	Vector3 mPos;
-	Quat mRot;
+	Vector3 mSize;
 };

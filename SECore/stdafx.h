@@ -39,12 +39,12 @@ typedef SECore::RaycastHit RaycastHit;
 typedef SECore::Object Object;
 typedef SECore::RefObject RefObject;
 
-typedef SECore::Collider Collider;
 typedef SECore::Shader Shader;
 typedef SECore::ShaderFactory ShaderFactory;
 
 class Scene;
 
+class Collider;
 class Mesh;
 class Texture;
 class Material;

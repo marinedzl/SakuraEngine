@@ -186,6 +186,7 @@
     <ClInclude Include="AnimationClip.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Gizmo.h" />
     <ClInclude Include="GizmoRenderer.h" />
@@ -218,6 +219,7 @@
     <ClCompile Include="AnimationClip.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>

@@ -74,15 +74,6 @@ SceneLoader::~SceneLoader()
 {
 }
 
-Collider::Type String2ColliderShape(const char* typeName)
-{
-	if (strcmp(typeName, "Box") == 0)
-	{
-		return Collider::eBox;
-	}
-	return Collider::eInvalid;
-}
-
 Vector3 Json2Vec3(const Json::Value& value)
 {
 	Vector3 ret;
@@ -166,28 +157,25 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 	if (entityRoot.isMember("Collider"))
 	{
 		const Json::Value& colliderRoot = entityRoot["Collider"];
-		Collider::Type type = String2ColliderShape(colliderRoot["Shape"].asCString());
 
-		Collider* collider = nullptr;
 		bool isDynamic = false;
-		bool enableGravity = false;
-
-		if (Collider* _ptr = entity->GetCollider())
-		{
-			collider = dynamic_cast<Collider*>(_ptr);
-		}
-		else
-		{
-			collider = dynamic_cast<Collider*>(entity->CreateCollider(type));
-		}
 
 		if (colliderRoot.isMember("Dynamic"))
 		{
 			isDynamic = colliderRoot["Dynamic"].asBool();
 		}
 
-		CHECK(collider->Init(isDynamic));
+		SECore::Collider* collider = nullptr;
 
+		if (strcmp(colliderRoot["Shape"].asCString(), "Box") == 0)
+		{
+			Vector3 size(1, 1, 1);
+			if (colliderRoot.isMember("Size"))
+				size = Json2Vec3(colliderRoot["Size"]);
+			collider = entity->CreateBoxCollider(isDynamic, size);
+		}
+
+		bool enableGravity = false;
 		if (colliderRoot.isMember("Gravity"))
 		{
 			enableGravity = colliderRoot["Gravity"].asBool();
@@ -200,19 +188,8 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 			collider->SetMass((float)colliderRoot["Mass"].asDouble());
 		}
 
-		switch (type)
-		{
-		case Collider::eBox:
-		{
-			SECore::BoxCollider* boxCollider = dynamic_cast<SECore::BoxCollider*>(collider);
-			CHECK(boxCollider);
-			if (colliderRoot.isMember("Size"))
-				boxCollider->SetSize(Json2Vec3(colliderRoot["Size"]));
-			if (colliderRoot.isMember("Offset"))
-				boxCollider->SetLocalPose(Json2Vec3(colliderRoot["Offset"]), Quat());
-		}
-		break;
-		}
+		if (colliderRoot.isMember("Offset"))
+			collider->SetLocalPose(Json2Vec3(colliderRoot["Offset"]), Quat());
 	}
 
 	if (entityRoot.isMember("Renderer"))

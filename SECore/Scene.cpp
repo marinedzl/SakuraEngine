@@ -6,6 +6,7 @@
 #include "SceneLoader.h"
 #include "Core.h"
 #include "Physics.h"
+#include "Collider.h"
 #include "Scene.h"
 
 Scene::Scene()
@@ -205,7 +206,7 @@ void Scene::Update(float deltaTime)
 			{
 				const PxActiveTransform& at = activeTransforms[i];
 				SceneEntity* entity = (SceneEntity*)activeTransforms[i].userData;
-				if (Collider* collider = entity->GetCollider())
+				if (Collider* collider = entity->GetComponent<Collider>())
 				{
 					collider->OnPhysicsUpdateTransform(ConvertPxVec3(at.actor2World.p), ConvertPxQuat(at.actor2World.q));
 				}

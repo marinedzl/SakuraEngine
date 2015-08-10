@@ -200,22 +200,9 @@ namespace SECore
 
 	struct Collider
 	{
-		enum Type
-		{
-			eInvalid,
-			eBox,
-		};
 		virtual ~Collider() {}
-		virtual bool Init(bool isDynamic) = 0;
 		virtual void EnableGravity(bool enable) = 0;
 		virtual void SetMass(float mass) = 0;
-		virtual void OnPhysicsUpdateTransform(const Vector3& pos, const Quat& rot) = 0;
-	};
-
-	struct BoxCollider : Collider
-	{
-		virtual ~BoxCollider() {}
-		virtual void SetSize(const Vector3& size) = 0;
 		virtual void SetLocalPose(const Vector3& pos, const Quat& rot) = 0;
 	};
 
@@ -294,7 +281,7 @@ namespace SECore
 
 			virtual void DestroyCollider() = 0;
 			virtual Collider* GetCollider() = 0;
-			virtual Collider* CreateCollider(Collider::Type type) = 0;
+			virtual Collider* CreateBoxCollider(bool isDynamic, const Vector3& size) = 0;
 
 			virtual void Update(float deltaTime) = 0;
 
