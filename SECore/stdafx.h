@@ -46,6 +46,7 @@ class Scene;
 
 class Collider;
 class RigidBody;
+class CharacterController;
 class Mesh;
 class Texture;
 class Material;

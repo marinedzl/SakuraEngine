@@ -198,6 +198,14 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 			collider->SetLocalPose(Json2Vec3(colliderRoot["Offset"]), Quat());
 	}
 
+	if (entityRoot.isMember("CharacterController"))
+	{
+		const Json::Value& cctRoot = entityRoot["CharacterController"];
+		float height = (float)cctRoot["Height"].asDouble();
+		float radius = (float)cctRoot["Radius"].asDouble();
+		entity->CreateCCT(height, radius);
+	}
+
 	if (entityRoot.isMember("Renderer"))
 	{
 		const Json::Value& rendererRoot = entityRoot["Renderer"];

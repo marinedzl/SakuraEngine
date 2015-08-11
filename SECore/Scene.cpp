@@ -10,6 +10,9 @@
 #include "Scene.h"
 
 Scene::Scene()
+	: mPxScene(nullptr)
+	, mCCTManager(nullptr)
+	, mCpuDispatcher(nullptr)
 {
 }
 
@@ -19,6 +22,8 @@ Scene::~Scene()
 
 void Scene::Release()
 {
+	if (mCCTManager)
+		mCCTManager->release();
 	if (mPxScene)
 		mPxScene->release();
 	if (mCpuDispatcher)
@@ -98,6 +103,9 @@ bool Scene::Init()
 
 	mPxScene = gPhysics->createScene(sceneDesc);
 	CHECK(mPxScene);
+
+	mCCTManager = PxCreateControllerManager(*mPxScene);
+	CHECK(mCCTManager);
 
 	ret = true;
 Exit0:

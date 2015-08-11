@@ -2,6 +2,8 @@
 #include "Renderer.h"
 #include "Animation.h"
 #include "BoxCollider.h"
+#include "CharacterController.h"
+#include "Scene.h"
 #include "SceneEntity.h"
 
 SceneEntity::SceneEntity(Scene& scene)
@@ -9,6 +11,7 @@ SceneEntity::SceneEntity(Scene& scene)
 	, mRenderer(nullptr)
 	, mAnimation(nullptr)
 	, mCollider(nullptr)
+	, mCCT(nullptr)
 {
 }
 
@@ -17,6 +20,7 @@ SceneEntity::~SceneEntity()
 	DestroyAnimation();
 	DestroyRenderer();
 	DestroyCollider();
+	DestroyCCT();
 }
 
 bool SceneEntity::GetSkinMatrix(Matrix* dst) const
@@ -79,6 +83,26 @@ SECore::Collider* SceneEntity::CreateBoxCollider(bool isDynamic, const Vector3& 
 	mCollider = collider;
 Exit0:
 	return mCollider;
+}
+
+void SceneEntity::DestroyCCT()
+{
+	delete mCCT;
+}
+
+SECore::CharacterController* SceneEntity::GetCCT()
+{
+	return mCCT;
+}
+
+SECore::CharacterController* SceneEntity::CreateCCT(float height, float radius)
+{
+	SAFE_DELETE(mCCT);
+	CharacterController* cct = new CharacterController(*this);
+	CHECK(cct->Init(mScene.GetCCTMgr(), height, radius));
+	mCCT = cct;
+Exit0:
+	return mCCT;
 }
 
 void SceneEntity::Update(float deltaTime)

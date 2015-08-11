@@ -21,6 +21,10 @@ public:
 	virtual SECore::Collider* GetCollider();
 	virtual SECore::Collider* CreateBoxCollider(bool isDynamic, const Vector3& size);
 
+	virtual void DestroyCCT();
+	virtual SECore::CharacterController* GetCCT();
+	virtual SECore::CharacterController* CreateCCT(float height, float radius);
+
 	virtual void SetName(const char* name) { mName = name; }
 	virtual const char* GetName() const { return mName.c_str(); }
 public:
@@ -38,4 +42,5 @@ private:
 	Renderer* mRenderer;
 	Animation* mAnimation;
 	Collider* mCollider;
+	CharacterController* mCCT;
 };

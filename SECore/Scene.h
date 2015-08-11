@@ -20,6 +20,7 @@ public:
 public:
 	Scene();
 	PxScene* GetPxScene() { return mPxScene; }
+	PxControllerManager* GetCCTMgr() { return mCCTManager; }
 	void AddGizmo(Gizmo* gizmo);
 	void RemoveGizmo(Gizmo* gizmo);
 private:
@@ -31,6 +32,7 @@ private:
 private:
 	PxScene* mPxScene;
 	PxDefaultCpuDispatcher* mCpuDispatcher;
+	PxControllerManager* mCCTManager;
 	Camera mCamera;
 	Entities mEntities;
 	Gizmos mGizmos;

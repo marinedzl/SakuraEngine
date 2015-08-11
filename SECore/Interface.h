@@ -198,6 +198,12 @@ namespace SECore
 		virtual void CrossFade(const char* clipname, float fade) = 0;
 	};
 
+	struct CharacterController
+	{
+		virtual ~CharacterController() {}
+		virtual bool Move(const Vector3 & offset, float elapsedTime) = 0;
+	};
+
 	struct RigidBody
 	{
 		virtual ~RigidBody() {}
@@ -290,6 +296,10 @@ namespace SECore
 			virtual void DestroyCollider() = 0;
 			virtual Collider* GetCollider() = 0;
 			virtual Collider* CreateBoxCollider(bool isDynamic, const Vector3& size) = 0;
+
+			virtual void DestroyCCT() = 0;
+			virtual CharacterController* GetCCT() = 0;
+			virtual CharacterController* CreateCCT(float height, float radius) = 0;
 
 			virtual void Update(float deltaTime) = 0;
 
