@@ -4,6 +4,7 @@
 #include "Physics.h"
 #include "Gizmo.h"
 #include "ShapeMesh.h"
+#include "RigidBody.h"
 #include "Collider.h"
 
 Collider::Collider(SceneEntity& owner)
@@ -11,6 +12,7 @@ Collider::Collider(SceneEntity& owner)
 	, mActor(nullptr)
 	, mShape(nullptr)
 	, mGizmo(nullptr)
+	, mRigidBody(nullptr)
 {
 }
 
@@ -20,6 +22,7 @@ Collider::~Collider()
 		mActor->release();
 	mOwner.GetScene().RemoveGizmo(mGizmo);
 	SAFE_DELETE(mGizmo);
+	SAFE_DELETE(mRigidBody);
 }
 
 bool Collider::Init(bool isDynamic)
@@ -40,6 +43,7 @@ bool Collider::Init(bool isDynamic)
 		dyn->setLinearDamping(0.25);
 		dyn->setAngularDamping(0.25);
 		mActor = dyn;
+		mRigidBody = new RigidBody(*dyn);
 	}
 	else
 	{
@@ -61,6 +65,11 @@ Exit0:
 	return ret;
 }
 
+SECore::RigidBody* Collider::GetRigidBody()
+{
+	return mRigidBody;
+}
+
 void Collider::SetLocalPose(const Vector3& pos, const Quat& rot)
 {
 	mPos = pos;
@@ -74,22 +83,6 @@ void Collider::OnPhysicsUpdateTransform(const Vector3& pos, const Quat& rot)
 	mOwner.GetTransform().position = pos;
 	mOwner.GetTransform().rotation = rot;
 	UpdateGizmo();
-}
-
-void Collider::EnableGravity(bool enable)
-{
-	if (mActor)
-	{
-		mActor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !enable);
-	}
-}
-
-void Collider::SetMass(float mass)
-{
-	if (mActor->isRigidDynamic())
-	{
-		((PxRigidDynamic*)mActor)->setMass(mass);
-	}
 }
 
 void Collider::UpdateGizmo()

@@ -175,17 +175,23 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 			collider = entity->CreateBoxCollider(isDynamic, size);
 		}
 
-		bool enableGravity = false;
-		if (colliderRoot.isMember("Gravity"))
+		if (isDynamic)
 		{
-			enableGravity = colliderRoot["Gravity"].asBool();
-		}
+			SECore::RigidBody* rigidBody = collider->GetRigidBody();
+			CHECK(rigidBody);
 
-		collider->EnableGravity(enableGravity);
+			bool enableGravity = false;
+			if (colliderRoot.isMember("Gravity"))
+			{
+				enableGravity = colliderRoot["Gravity"].asBool();
+			}
 
-		if (colliderRoot.isMember("Mass"))
-		{
-			collider->SetMass((float)colliderRoot["Mass"].asDouble());
+			rigidBody->EnableGravity(enableGravity);
+
+			if (colliderRoot.isMember("Mass"))
+			{
+				rigidBody->SetMass((float)colliderRoot["Mass"].asDouble());
+			}
 		}
 
 		if (colliderRoot.isMember("Offset"))

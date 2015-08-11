@@ -198,11 +198,19 @@ namespace SECore
 		virtual void CrossFade(const char* clipname, float fade) = 0;
 	};
 
+	struct RigidBody
+	{
+		virtual ~RigidBody() {}
+		virtual void SetMass(float mass) = 0;
+		virtual void EnableGravity(bool enable) = 0;
+		virtual void SetLinearVelocity(const Vector3& linVel) = 0;
+		virtual void SetAngularVelocity(const Vector3& angVel) = 0;
+	};
+
 	struct Collider
 	{
 		virtual ~Collider() {}
-		virtual void EnableGravity(bool enable) = 0;
-		virtual void SetMass(float mass) = 0;
+		virtual RigidBody* GetRigidBody() = 0;
 		virtual void SetLocalPose(const Vector3& pos, const Quat& rot) = 0;
 	};
 

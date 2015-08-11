@@ -13,4 +13,5 @@ private:
 private:
 	GameObject* gameObject;
 	Animation* animation;
+	RigidBody* mRigidBody;
 };

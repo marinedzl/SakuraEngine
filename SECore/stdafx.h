@@ -45,6 +45,7 @@ typedef SECore::ShaderFactory ShaderFactory;
 class Scene;
 
 class Collider;
+class RigidBody;
 class Mesh;
 class Texture;
 class Material;

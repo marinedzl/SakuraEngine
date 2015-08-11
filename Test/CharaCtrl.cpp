@@ -6,6 +6,7 @@ CharaCtrl::CharaCtrl(GameObject* gameObject)
 	: gameObject(gameObject)
 {
 	animation = gameObject->GetAnimation();
+	mRigidBody = gameObject->GetCollider()->GetRigidBody();
 }
 
 CharaCtrl::~CharaCtrl()
@@ -35,6 +36,7 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if (strcmp(hit.entity->GetName(), "main chara") == 0)
 				{
 					Run();
+					mRigidBody->SetLinearVelocity(Vector3(0.01f, 0, 0));
 				}
 			}
 		}
@@ -42,6 +44,7 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_LBUTTONUP:
 	{
+		mRigidBody->SetLinearVelocity(Vector3(0, 0, 0));
 		Stop();
 	}
 	break;
