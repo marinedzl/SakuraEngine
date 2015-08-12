@@ -290,6 +290,11 @@ namespace SECore
 
 	struct Scene : public Object
 	{
+		struct Config
+		{
+			virtual ~Config() {}
+			virtual void EnableGizmo(bool enable) = 0;
+		};
 		struct Entity
 		{
 			virtual ~Entity() {}
@@ -334,6 +339,8 @@ namespace SECore
 		virtual bool LoadAdditive(const char* filename) = 0;
 
 		virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance) = 0;
+
+		virtual Config* GetConfig() = 0;
 	};
 
 	struct RaycastHit

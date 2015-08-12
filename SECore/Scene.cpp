@@ -130,7 +130,9 @@ void Scene::Draw(SECore::RenderTarget* rt)
 	context->RSSetViewports(1, &viewport);
 
 	DrawScene();
-	DrawGizmos();
+
+	if (mConfig.showGizmo)
+		DrawGizmos();
 
 Exit0:
 	;

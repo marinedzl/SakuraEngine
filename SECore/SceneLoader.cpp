@@ -302,6 +302,13 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 	CHECK(scene);
 	CHECK(LoadJsonFromFile(filename, root));
 
+	if (root.isMember("Config"))
+	{
+		const Json::Value& configRoot = root["Config"];
+		if (configRoot.isMember("ShowGizmo"))
+			scene->GetConfig()->EnableGizmo(configRoot["ShowGizmo"].asBool());
+	}
+
 	CHECK(root.isMember("Entities"));
 	CHECK(root["Entities"].isArray());
 

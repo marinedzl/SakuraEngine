@@ -4,6 +4,12 @@
 class Scene : public SECore::Scene
 {
 	friend class SceneLoader;
+	struct Config : public SECore::Scene::Config
+	{
+		Config() : showGizmo(false) {}
+		virtual void EnableGizmo(bool enable) { showGizmo = enable; }
+		bool showGizmo;
+	};
 public:
 	virtual ~Scene();
 	virtual bool Init();
@@ -17,6 +23,7 @@ public:
 	virtual void Update(float deltaTime);
 	virtual SECore::Camera* GetCamera() { return &mCamera; }
 	virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance);
+	virtual SECore::Scene::Config* GetConfig() { return &mConfig; }
 public:
 	Scene();
 	PxScene* GetPxScene() { return mPxScene; }
@@ -30,6 +37,7 @@ private:
 	typedef std::list<SceneEntity*> Entities;
 	typedef std::list<Gizmo*> Gizmos;
 private:
+	Config mConfig;
 	PxScene* mPxScene;
 	PxDefaultCpuDispatcher* mCpuDispatcher;
 	PxControllerManager* mCCTManager;
