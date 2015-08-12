@@ -2,21 +2,21 @@
 #include "Core.h"
 #include "ShapeMesh.h"
 
-GizmoMesh* ShapeMesh::CreateBox(const Vector3& size)
+GizmoMesh* ShapeMesh::CreateBox(const Vector3& halfSize)
 {
 	GizmoMesh* mesh = nullptr;
 
 	const Color c(0, 1, 0, 1);
 
 	float vertices[] = {
-		-size.x, size.y, -size.z, c.r, c.g, c.b, c.a,
-		size.x, size.y, -size.z, c.r, c.g, c.b, c.a,
-		size.x, -size.y, -size.z, c.r, c.g, c.b, c.a,
-		-size.x, -size.y, -size.z, c.r, c.g, c.b, c.a,
-		-size.x, size.y, size.z, c.r, c.g, c.b, c.a,
-		size.x, size.y, size.z, c.r, c.g, c.b, c.a,
-		size.x, -size.y, size.z, c.r, c.g, c.b, c.a,
-		-size.x, -size.y, size.z, c.r, c.g, c.b, c.a,
+		-halfSize.x, halfSize.y, -halfSize.z, c.r, c.g, c.b, c.a,
+		halfSize.x, halfSize.y, -halfSize.z, c.r, c.g, c.b, c.a,
+		halfSize.x, -halfSize.y, -halfSize.z, c.r, c.g, c.b, c.a,
+		-halfSize.x, -halfSize.y, -halfSize.z, c.r, c.g, c.b, c.a,
+		-halfSize.x, halfSize.y, halfSize.z, c.r, c.g, c.b, c.a,
+		halfSize.x, halfSize.y, halfSize.z, c.r, c.g, c.b, c.a,
+		halfSize.x, -halfSize.y, halfSize.z, c.r, c.g, c.b, c.a,
+		-halfSize.x, -halfSize.y, halfSize.z, c.r, c.g, c.b, c.a,
 	};
 
 	unsigned short indices[] = {

@@ -49,6 +49,13 @@ namespace SECore
 		{
 			return Vector3(this->x - other.x, this->y - other.y, this->z - other.z);
 		}
+		Vector3& operator*=(float other)
+		{
+			this->x *= other;
+			this->y *= other;
+			this->z *= other;
+			return *this;
+		}
 	};
 
 	inline Vector3 operator+(const Vector3& a, const Vector3& b)
@@ -69,6 +76,11 @@ namespace SECore
 	inline Vector3 operator/(const Vector3& a, const Vector3& b)
 	{
 		return Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
+	}
+
+	inline Vector3 operator*(const Vector3& a, float b)
+	{
+		return Vector3(a.x * b, a.y * b, a.z * b);
 	}
 
 	struct Vector4
@@ -299,7 +311,7 @@ namespace SECore
 
 			virtual void DestroyCCT() = 0;
 			virtual CharacterController* GetCCT() = 0;
-			virtual CharacterController* CreateCCT(float height, float radius) = 0;
+			virtual CharacterController* CreateCCT(float height, float radius, const Vector3& offset) = 0;
 
 			virtual void Update(float deltaTime) = 0;
 

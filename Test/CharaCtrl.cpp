@@ -4,18 +4,60 @@
 
 CharaCtrl::CharaCtrl(GameObject* gameObject)
 	: gameObject(gameObject)
+	, mGravity(9.8f)
+	, mMoveSpeed(4.0f)
 {
 	animation = gameObject->GetAnimation();
-	mRigidBody = gameObject->GetCollider()->GetRigidBody();
+	mCCT = gameObject->GetCCT();
 }
 
 CharaCtrl::~CharaCtrl()
 {
 }
 
+XMVECTOR LookAt(const Vector3& delta)
+{
+	float angle = atan2f(delta.z, delta.x);
+	return XMQuaternionRotationRollPitchYaw(0, angle, 0);
+}
+
 void CharaCtrl::Update(float deltaTime)
 {
-
+	switch (mState)
+	{
+	case eIdle:
+	{
+		Vector3 motion(0, -mGravity, 0);
+		motion *= deltaTime;
+		mCCT->Move(motion, deltaTime);
+	}
+		break;
+	case eMove:
+	{
+		Vector3 delta = mDest - gameObject->GetTransform().position;
+		delta.y = 0;
+		XMVECTOR v = XMLoadFloat3((XMFLOAT3*)&delta);
+		XMVECTOR rot = LookAt(delta);
+		XMStoreFloat4((XMFLOAT4*)&gameObject->GetTransform().rotation, rot);
+		XMVECTOR vLength = XMVector3Length(v);
+		float distance = 0;
+		XMStoreFloat(&distance, vLength);
+		if (distance > 0.01f)
+		{
+			v = XMVector3Normalize(v);
+			v *= mMoveSpeed * deltaTime;
+			Vector3 motion;
+			XMStoreFloat3((XMFLOAT3*)&motion, v);
+			motion.y = -mGravity * deltaTime;
+			mCCT->Move(motion, deltaTime);
+		}
+		else
+		{
+			Stop();
+		}
+	}
+		break;
+	}
 }
 
 void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -33,10 +75,11 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			gTestMan.scene->GetCamera()->ScreenPointToRay(ray, Vector3(pos.x, pos.y, 0));
 			if (gTestMan.scene->Raycast(ray, hit, 10000))
 			{
-				if (strcmp(hit.entity->GetName(), "main chara") == 0)
+				if (hit.entity != gameObject)
 				{
-					Run();
-					mRigidBody->SetLinearVelocity(Vector3(0.01f, 0, 0));
+					Vector3 dest = hit.point;
+					dest.y = gameObject->GetTransform().position.y;
+					MoveTo(dest);
 				}
 			}
 		}
@@ -44,8 +87,6 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_LBUTTONUP:
 	{
-		mRigidBody->SetLinearVelocity(Vector3(0, 0, 0));
-		Stop();
 	}
 	break;
 	case WM_MOUSEMOVE:
@@ -56,12 +97,15 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-void CharaCtrl::Run()
+void CharaCtrl::MoveTo(const Vector3 & dest)
 {
+	mDest = dest;
+	mState = eMove;
 	animation->CrossFade("run", 0.2f);
 }
 
 void CharaCtrl::Stop()
 {
+	mState = eIdle;
 	animation->CrossFade("idle", 0.2f);
 }

@@ -7,11 +7,20 @@ public:
 	virtual ~CharaCtrl();
 	void Update(float deltaTime);
 	void WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-private:
-	void Run();
+	void MoveTo(const Vector3& dest);
 	void Stop();
 private:
+	enum State
+	{
+		eIdle,
+		eMove,
+	};
+private:
+	State mState;
+	Vector3 mDest;
 	GameObject* gameObject;
 	Animation* animation;
-	RigidBody* mRigidBody;
+	CharacterController* mCCT;
+	float mMoveSpeed;
+	float mGravity;
 };

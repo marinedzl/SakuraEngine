@@ -2,5 +2,5 @@
 
 struct ShapeMesh
 {
-	static GizmoMesh* CreateBox(const Vector3& size);
+	static GizmoMesh* CreateBox(const Vector3& halfSize);
 };

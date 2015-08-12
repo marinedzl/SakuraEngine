@@ -38,3 +38,4 @@ typedef SECore::Transform Transform;
 typedef SECore::Ray Ray;
 typedef SECore::RaycastHit RaycastHit;
 typedef SECore::RigidBody RigidBody;
+typedef SECore::CharacterController CharacterController;

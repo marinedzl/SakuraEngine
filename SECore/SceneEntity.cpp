@@ -95,11 +95,11 @@ SECore::CharacterController* SceneEntity::GetCCT()
 	return mCCT;
 }
 
-SECore::CharacterController* SceneEntity::CreateCCT(float height, float radius)
+SECore::CharacterController* SceneEntity::CreateCCT(float height, float radius, const Vector3& offset)
 {
 	SAFE_DELETE(mCCT);
 	CharacterController* cct = new CharacterController(*this);
-	CHECK(cct->Init(mScene.GetCCTMgr(), height, radius));
+	CHECK(cct->Init(mScene.GetCCTMgr(), height, radius, offset));
 	mCCT = cct;
 Exit0:
 	return mCCT;
@@ -109,4 +109,6 @@ void SceneEntity::Update(float deltaTime)
 {
 	if (mAnimation)
 		mAnimation->Update(deltaTime);
+	if (mCCT)
+		mCCT->Update(deltaTime);
 }

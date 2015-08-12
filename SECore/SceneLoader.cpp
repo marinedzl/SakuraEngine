@@ -200,10 +200,15 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 
 	if (entityRoot.isMember("CharacterController"))
 	{
+		Vector3 offset;
 		const Json::Value& cctRoot = entityRoot["CharacterController"];
 		float height = (float)cctRoot["Height"].asDouble();
 		float radius = (float)cctRoot["Radius"].asDouble();
-		entity->CreateCCT(height, radius);
+		if (cctRoot.isMember("Offset"))
+		{
+			offset = Json2Vec3(cctRoot["Offset"]);
+		}
+		entity->CreateCCT(height, radius, offset);
 	}
 
 	if (entityRoot.isMember("Renderer"))

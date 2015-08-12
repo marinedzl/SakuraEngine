@@ -23,7 +23,7 @@ public:
 
 	virtual void DestroyCCT();
 	virtual SECore::CharacterController* GetCCT();
-	virtual SECore::CharacterController* CreateCCT(float height, float radius);
+	virtual SECore::CharacterController* CreateCCT(float height, float radius, const Vector3& offset);
 
 	virtual void SetName(const char* name) { mName = name; }
 	virtual const char* GetName() const { return mName.c_str(); }
