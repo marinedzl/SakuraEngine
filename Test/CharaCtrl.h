@@ -8,6 +8,7 @@ public:
 	void Update(float deltaTime);
 	void WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	void MoveTo(const Vector3& dest);
+	void LookAt(const Vector3& delta, float lerp);
 	void Stop();
 private:
 	enum State
@@ -22,5 +23,6 @@ private:
 	Animation* animation;
 	CharacterController* mCCT;
 	float mMoveSpeed;
+	float mRotateSpeed;
 	float mGravity;
 };

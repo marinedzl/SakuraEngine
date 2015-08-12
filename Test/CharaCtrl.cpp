@@ -6,6 +6,7 @@ CharaCtrl::CharaCtrl(GameObject* gameObject)
 	: gameObject(gameObject)
 	, mGravity(9.8f)
 	, mMoveSpeed(4.0f)
+	, mRotateSpeed(10)
 {
 	animation = gameObject->GetAnimation();
 	mCCT = gameObject->GetCCT();
@@ -15,10 +16,13 @@ CharaCtrl::~CharaCtrl()
 {
 }
 
-XMVECTOR LookAt(const Vector3& delta)
+void CharaCtrl::LookAt(const Vector3& delta, float lerp)
 {
-	float angle = atan2f(delta.z, delta.x);
-	return XMQuaternionRotationRollPitchYaw(0, angle, 0);
+	float angle = XM_PI + XM_PIDIV2 - atan2f(delta.z, delta.x);
+	XMVECTOR dst = XMQuaternionRotationRollPitchYaw(0, angle, 0);
+	XMVECTOR src = XMLoadFloat4((XMFLOAT4*)&gameObject->GetTransform().rotation);
+	XMVECTOR rot = XMQuaternionSlerp(src, dst, lerp);
+	XMStoreFloat4((XMFLOAT4*)&gameObject->GetTransform().rotation, rot);
 }
 
 void CharaCtrl::Update(float deltaTime)
@@ -37,8 +41,7 @@ void CharaCtrl::Update(float deltaTime)
 		Vector3 delta = mDest - gameObject->GetTransform().position;
 		delta.y = 0;
 		XMVECTOR v = XMLoadFloat3((XMFLOAT3*)&delta);
-		XMVECTOR rot = LookAt(delta);
-		XMStoreFloat4((XMFLOAT4*)&gameObject->GetTransform().rotation, rot);
+		LookAt(delta, mRotateSpeed * deltaTime);
 		XMVECTOR vLength = XMVector3Length(v);
 		float distance = 0;
 		XMStoreFloat(&distance, vLength);
