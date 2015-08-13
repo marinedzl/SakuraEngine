@@ -3,7 +3,7 @@
 class CharaCtrl
 {
 public:
-	CharaCtrl(GameObject* gameObject);
+	CharaCtrl(GameObject* gameObject, GameObject* weapon);
 	virtual ~CharaCtrl();
 	void Update(float deltaTime);
 	void WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -20,6 +20,8 @@ private:
 	State mState;
 	Vector3 mDest;
 	GameObject* gameObject;
+	GameObject* weapon;
+	Transform weaponOffset;
 	Animation* animation;
 	CharacterController* mCCT;
 	float mMoveSpeed;

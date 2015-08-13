@@ -13,6 +13,7 @@ public:
 	bool AddClip(const char* name, AnimationClip* clip);
 	bool GetMatrix(Matrix* dst) const;
 	const AnimationClip* GetClip(const char* name) const;
+	bool GetBoneTM(const char* name, Matrix& mat) const;
 private:
 	typedef std::map<std::string, AnimationClip*> Clips;
 private:
@@ -20,6 +21,7 @@ private:
 	Skeleton* mSkeleton;
 	Clips mClips;
 	std::vector<Matrix> mTMs;
+	std::vector<Matrix> mBones;
 	float mElapsedTime;
 
 	float mFadeLength;

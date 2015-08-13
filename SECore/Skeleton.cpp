@@ -28,7 +28,10 @@ bool Skeleton::LoadFromFile(const char * filename)
 
 	for (size_t i = 0; i < mBoneCount; ++i)
 	{
+		const char* name = (const char*)data;
 		data += sizeof(char) * SkeletonFile::MaxBoneName;
+
+		mBoneNames.insert(std::make_pair(name, i));
 
 		const Vector3& pos = *(const Vector3*)data;
 		data += sizeof(Vector3);
@@ -47,4 +50,10 @@ bool Skeleton::LoadFromFile(const char * filename)
 	ret = true;
 Exit0:
 	return ret;
+}
+
+UINT Skeleton::GetBoneID(const char * name) const
+{
+	BoneNames::const_iterator iter = mBoneNames.find(name);
+	return iter == mBoneNames.end() ? 0 : iter->second;
 }

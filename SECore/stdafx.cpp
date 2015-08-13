@@ -123,11 +123,10 @@ void AffineTransform(XMMATRIX& mat, const Vector3& position, const Quat& rotatio
 	mat = XMMatrixAffineTransformation(s, XMQuaternionIdentity(), q, p);
 }
 
-bool MatrixDecompose(const Matrix& mat, Vector3& position, Quat& rotation, Vector3& scaling)
+bool MatrixDecompose(const XMMATRIX& mat, Vector3& position, Quat& rotation, Vector3& scaling)
 {
 	XMVECTOR p, q, s;
-	XMMATRIX m = XMLoadFloat4x4((const XMFLOAT4X4*)&mat);
-	if (XMMatrixDecompose(&s, &q, &p, m))
+	if (XMMatrixDecompose(&s, &q, &p, mat))
 	{
 		XMStoreFloat3((XMFLOAT3*)&position, p);
 		XMStoreFloat4((XMFLOAT4*)&rotation, q);
@@ -136,4 +135,10 @@ bool MatrixDecompose(const Matrix& mat, Vector3& position, Quat& rotation, Vecto
 	}
 	else
 		return false;
+}
+
+bool MatrixDecompose(const Matrix& mat, Vector3& position, Quat& rotation, Vector3& scaling)
+{
+	XMMATRIX m = XMLoadFloat4x4((const XMFLOAT4X4*)&mat);
+	return MatrixDecompose(m, position, rotation, scaling);
 }

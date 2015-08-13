@@ -42,9 +42,12 @@ void TestMan::Init()
 
 	CHECK(scene->LoadAdditive("scene.json"));
 
-	if (GameObject* mainChara = scene->FindEntity("main chara"))
+	GameObject* mainChara = scene->FindEntity("main chara");
+	GameObject* weapon = scene->FindEntity("weapon");
+
+	if (mainChara)
 	{
-		mCharaCtrl = new CharaCtrl(mainChara);
+		mCharaCtrl = new CharaCtrl(mainChara, weapon);
 	}
 
 	mLastTime = timeGetTime();

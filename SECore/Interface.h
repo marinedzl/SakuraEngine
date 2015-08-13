@@ -208,6 +208,7 @@ namespace SECore
 		virtual ~Animation() {}
 		virtual void Play(const char* clipname) = 0;
 		virtual void CrossFade(const char* clipname, float fade) = 0;
+		virtual bool GetBoneTM(const char* name, Matrix& mat) const = 0;
 	};
 
 	struct CharacterController

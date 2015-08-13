@@ -30,6 +30,7 @@ typedef SECore::Vector2 Vector2;
 typedef SECore::Vector3 Vector3;
 typedef SECore::Vector4 Vector4;
 typedef SECore::Quat Quat;
+typedef SECore::Matrix Matrix;
 typedef SECore::Texture Texture;
 typedef SECore::Camera Camera;
 typedef SECore::Scene::Entity GameObject;

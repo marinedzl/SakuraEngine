@@ -3,14 +3,20 @@
 #include "CameraController.h"
 #include "CharaCtrl.h"
 
-CharaCtrl::CharaCtrl(GameObject* gameObject)
+CharaCtrl::CharaCtrl(GameObject* gameObject, GameObject* weapon)
 	: gameObject(gameObject)
+	, weapon(weapon)
 	, mGravity(9.8f)
 	, mMoveSpeed(4.0f)
 	, mRotateSpeed(10)
 {
 	animation = gameObject->GetAnimation();
 	mCCT = gameObject->GetCCT();
+	if (weapon)
+	{
+		weaponOffset = weapon->GetTransform();
+		weaponOffset.scaling = Vector3(1, 1, 1);
+	}
 }
 
 CharaCtrl::~CharaCtrl()
@@ -24,6 +30,40 @@ void CharaCtrl::LookAt(const Vector3& delta, float lerp)
 	XMVECTOR src = XMLoadFloat4((XMFLOAT4*)&gameObject->GetTransform().rotation);
 	XMVECTOR rot = XMQuaternionSlerp(src, dst, lerp);
 	XMStoreFloat4((XMFLOAT4*)&gameObject->GetTransform().rotation, rot);
+}
+
+inline XMMATRIX AffineTransform(const Vector3& position, const Quat& rotation, const Vector3& scaling)
+{
+	XMMATRIX mat;
+	XMVECTOR p = XMLoadFloat3((const XMFLOAT3*)&position);
+	XMVECTOR q = XMLoadFloat4((const XMFLOAT4*)&rotation);
+	XMVECTOR s = XMLoadFloat3((const XMFLOAT3*)&scaling);
+	mat = XMMatrixAffineTransformation(s, XMQuaternionIdentity(), q, p);
+	return mat;
+}
+
+inline XMMATRIX AffineTransform(const Transform& transform)
+{
+	return AffineTransform(transform.position, transform.rotation, transform.scaling);
+}
+
+inline bool MatrixDecompose(const XMMATRIX& mat, Vector3& position, Quat& rotation, Vector3& scaling)
+{
+	XMVECTOR p, q, s;
+	if (XMMatrixDecompose(&s, &q, &p, mat))
+	{
+		XMStoreFloat3((XMFLOAT3*)&position, p);
+		XMStoreFloat4((XMFLOAT4*)&rotation, q);
+		XMStoreFloat3((XMFLOAT3*)&scaling, s);
+		return true;
+	}
+	else
+		return false;
+}
+
+inline bool MatrixDecompose(const XMMATRIX& mat, Transform& transform)
+{
+	return MatrixDecompose(mat, transform.position, transform.rotation, transform.scaling);
 }
 
 void CharaCtrl::Update(float deltaTime)
@@ -65,6 +105,20 @@ void CharaCtrl::Update(float deltaTime)
 
 	Vector3 offset(0, 2, 0);
 	gTestMan.GetCamera()->FocusOn(gameObject->GetTransform().position + offset);
+
+	if (weapon)
+	{
+		Transform t;
+
+		Matrix bindPos;
+		animation->GetBoneTM("wuqi_R", bindPos);
+
+		XMMATRIX world = AffineTransform(gameObject->GetTransform());
+		XMMATRIX bone = XMLoadFloat4x4((XMFLOAT4X4*)&bindPos);
+		XMMATRIX offset = AffineTransform(weaponOffset);
+		world = offset * bone * world;
+		MatrixDecompose(world, weapon->GetTransform());
+	}
 }
 
 void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

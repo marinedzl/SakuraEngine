@@ -172,6 +172,8 @@ inline void AffineTransform(XMMATRIX& mat, const Transform& transform)
 
 bool MatrixDecompose(const Matrix& mat, Vector3& position, Quat& rotation, Vector3& scaling);
 
+bool MatrixDecompose(const XMMATRIX& mat, Vector3& position, Quat& rotation, Vector3& scaling);
+
 inline PxVec3 ConvertPxVec3(const Vector3& v)
 {
 	return PxVec3(v.x, v.y, v.z);
