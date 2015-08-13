@@ -221,6 +221,7 @@
     <ClCompile Include="AnimationClip.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="CapsuleMesh.cpp" />
     <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Core.cpp" />

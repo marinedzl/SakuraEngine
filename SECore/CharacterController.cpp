@@ -27,7 +27,6 @@ bool CharacterController::Init(PxControllerManager* manager, float height, float
 
 	mOffset = offset;
 	const Vector3& pos = mOwner.GetTransform().position + mOffset;
-	Vector3 halfSize(radius, height * 0.5f + radius, radius);
 	PxCapsuleControllerDesc desc;
 	desc.height = height;
 	desc.radius = radius;
@@ -40,7 +39,7 @@ bool CharacterController::Init(PxControllerManager* manager, float height, float
 	mController->getActor()->userData = &mOwner;
 
 	mGizmo = new Gizmo();
-	mGizmo->SetMesh(ShapeMesh::CreateBox(halfSize));
+	mGizmo->SetMesh(ShapeMesh::CreateCapsule(height * 0.5f, radius));
 	mOwner.GetScene().AddGizmo(mGizmo);
 
 	ret = true;
@@ -66,4 +65,5 @@ bool CharacterController::Move(const Vector3 & offset, float elapsedTime)
 void CharacterController::UpdateGizmo()
 {
 	mGizmo->GetTransform().position = mOwner.GetTransform().position + mOffset;
+	mGizmo->GetTransform().rotation = mOwner.GetTransform().rotation;
 }

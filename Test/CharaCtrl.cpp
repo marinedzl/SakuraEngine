@@ -108,11 +108,8 @@ void CharaCtrl::Update(float deltaTime)
 
 	if (weapon)
 	{
-		Transform t;
-
 		Matrix bindPos;
 		animation->GetBoneTM("wuqi_R", bindPos);
-
 		XMMATRIX world = AffineTransform(gameObject->GetTransform());
 		XMMATRIX bone = XMLoadFloat4x4((XMFLOAT4X4*)&bindPos);
 		XMMATRIX offset = AffineTransform(weaponOffset);

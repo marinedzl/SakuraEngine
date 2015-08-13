@@ -6,17 +6,15 @@ GizmoMesh* ShapeMesh::CreateBox(const Vector3& halfSize)
 {
 	GizmoMesh* mesh = nullptr;
 
-	const Color c(0, 1, 0, 1);
-
 	float vertices[] = {
-		-halfSize.x, halfSize.y, -halfSize.z, c.r, c.g, c.b, c.a,
-		halfSize.x, halfSize.y, -halfSize.z, c.r, c.g, c.b, c.a,
-		halfSize.x, -halfSize.y, -halfSize.z, c.r, c.g, c.b, c.a,
-		-halfSize.x, -halfSize.y, -halfSize.z, c.r, c.g, c.b, c.a,
-		-halfSize.x, halfSize.y, halfSize.z, c.r, c.g, c.b, c.a,
-		halfSize.x, halfSize.y, halfSize.z, c.r, c.g, c.b, c.a,
-		halfSize.x, -halfSize.y, halfSize.z, c.r, c.g, c.b, c.a,
-		-halfSize.x, -halfSize.y, halfSize.z, c.r, c.g, c.b, c.a,
+		-halfSize.x, halfSize.y, -halfSize.z,
+		halfSize.x, halfSize.y, -halfSize.z,
+		halfSize.x, -halfSize.y, -halfSize.z,
+		-halfSize.x, -halfSize.y, -halfSize.z,
+		-halfSize.x, halfSize.y, halfSize.z,
+		halfSize.x, halfSize.y, halfSize.z,
+		halfSize.x, -halfSize.y, halfSize.z,
+		-halfSize.x, -halfSize.y, halfSize.z,
 	};
 
 	unsigned short indices[] = {

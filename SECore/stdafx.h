@@ -199,10 +199,10 @@ struct GizmoMesh
 	struct Vertex
 	{
 		Vector3 pos;
-		Color color;
 	};
 	size_t indexCount;
 	D3D_PRIMITIVE_TOPOLOGY primitive;
 	ID3D11Buffer* vb;
 	ID3D11Buffer* ib;
+	GizmoMesh() : indexCount(0), primitive(D3D11_PRIMITIVE_TOPOLOGY_LINELIST), vb(nullptr), ib(nullptr) {}
 };
