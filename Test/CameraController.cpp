@@ -20,7 +20,7 @@ CameraController::~CameraController()
 
 void CameraController::Update(float deltaTime)
 {
-	XMMATRIX rotation = XMMatrixRotationRollPitchYaw(mYawPitch.y, mYawPitch.x, 0);
+	XMMATRIX rotation = XMMatrixRotationY(mYawPitch.x) * XMMatrixRotationX(mYawPitch.y);
 	XMMATRIX invRotation = XMMatrixInverse(nullptr, rotation);
 	XMVECTOR vWorldUp, vWorldAhead;
 	XMVECTOR vLocalUp = XMLoadFloat3(&XMFLOAT3(0, 1, 0));
