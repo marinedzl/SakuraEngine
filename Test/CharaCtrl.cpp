@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "TestMan.h"
+#include "CameraController.h"
 #include "CharaCtrl.h"
 
 CharaCtrl::CharaCtrl(GameObject* gameObject)
@@ -45,7 +46,7 @@ void CharaCtrl::Update(float deltaTime)
 		XMVECTOR vLength = XMVector3Length(v);
 		float distance = 0;
 		XMStoreFloat(&distance, vLength);
-		if (distance > 0.01f)
+		if (distance > 0.1f)
 		{
 			v = XMVector3Normalize(v);
 			v *= mMoveSpeed * deltaTime;
@@ -61,6 +62,9 @@ void CharaCtrl::Update(float deltaTime)
 	}
 		break;
 	}
+
+	Vector3 offset(0, 2, 0);
+	gTestMan.GetCamera()->FocusOn(gameObject->GetTransform().position + offset);
 }
 
 void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

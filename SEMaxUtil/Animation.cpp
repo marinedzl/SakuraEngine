@@ -55,7 +55,14 @@ namespace MaxPlugin
 		case IGameObject::IGAME_BONE:
 		case IGameObject::IGAME_HELPER:
 		{
-			DumpAnim(node->GetIGameControl(), Skeleton::Instance().GetBoneId(name) - 1);
+			if (Skeleton::Instance().GetBoneId(name) != 0)
+			{
+				DumpAnim(node->GetIGameControl(), Skeleton::Instance().GetBoneId(name) - 1);
+			}
+			else
+			{
+				log(_T("Can not find bone %s in skeleton!\n"), name);
+			}
 		}
 		break;
 		}
@@ -65,14 +72,12 @@ namespace MaxPlugin
 	{
 		bool ret = false;
 		IGameKeyTab Key;
-
-		CHECK((pGameControl->IsAnimated(IGAME_POS)) ||
-			pGameControl->IsAnimated(IGAME_ROT) ||
-			pGameControl->IsAnimated(IGAME_SCALE));
 		
 		CHECK(pGameControl->GetFullSampledKeys(Key, 1, IGAME_TM, false));
 
 		int count = Key.Count();
+		CHECK(count > 0);
+
 		if (mFrames.size() == 0)
 		{
 			mFrames.resize(count);

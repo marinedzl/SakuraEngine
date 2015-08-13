@@ -12,6 +12,7 @@ public:
 	void CreateWnd(HWND hWnd);
 	void Process();
 	void WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	CameraController* GetCamera() { return mCamera; }
 public:
 	SECore::Scene* scene;
 private:

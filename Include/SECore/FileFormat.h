@@ -42,7 +42,7 @@ namespace SkeletonFile
 {
 	enum
 	{
-		MaxBoneName = 20,
+		MaxBoneName = 32,
 	};
 
 	struct Head

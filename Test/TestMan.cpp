@@ -102,14 +102,14 @@ void TestMan::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_MBUTTONDOWN:
 	{
-		mCamera->Begin(pos.x, pos.y, CameraController::eOpMove);
-		SetCapture(hWnd);
+		//mCamera->Begin(pos.x, pos.y, CameraController::eOpMove);
+		//SetCapture(hWnd);
 	}
 	break;
 	case WM_MBUTTONUP:
 	{
-		mCamera->End();
-		ReleaseCapture();
+		//mCamera->End();
+		//ReleaseCapture();
 	}
 	break;
 	case WM_RBUTTONDOWN:
