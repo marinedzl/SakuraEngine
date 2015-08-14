@@ -58,47 +58,6 @@ const AnimationClip * Animation::GetClip(const char * name) const
 	return iter == mClips.end() ? nullptr : iter->second;
 }
 
-void GetClipTM(XMMATRIX& dst, const AnimationClip* clip, float time, size_t index)
-{
-	const float interval = 1.0f / clip->GetFrameRate();
-	int frameCount = clip->GetFrameCount();
-	const float length = interval * frameCount;
-	time = fmod(time, length);
-	int frame = (int)(time / interval);
-	float lerp = (time - frame * interval) / interval;
-
-	const AnimationClip::Frame* prev = clip->GetFrame((frameCount + frame - 1) % frameCount);
-	const AnimationClip::Frame* next = clip->GetFrame(frame % frameCount);
-
-	XMVECTOR position;
-	XMVECTOR rotation;
-	XMVECTOR prevT = XMLoadFloat3(prev->tm[index].pos);
-	XMVECTOR prevR = XMLoadFloat4(prev->tm[index].rot);
-	XMVECTOR nextT = XMLoadFloat3(next->tm[index].pos);
-	XMVECTOR nextR = XMLoadFloat4(next->tm[index].rot);
-
-	if (lerp <= 0)
-	{
-		position = prevT;
-		rotation = prevR;
-	}
-	else if (lerp >= 1)
-	{
-		position = nextT;
-		rotation = nextR;
-	}
-	else
-	{
-		position = XMVectorLerp(prevT, nextT, lerp);
-		rotation = XMQuaternionSlerp(prevR, nextR, lerp);
-	}
-
-	XMMATRIX trans;
-	trans = XMMatrixTranslationFromVector(position);
-	dst = XMMatrixRotationQuaternion(rotation);
-	dst *= trans;
-}
-
 void Animation::Update(float deltaTime)
 {
 	mElapsedTime += deltaTime;
@@ -113,7 +72,7 @@ void Animation::Update(float deltaTime)
 				XMMATRIX inv, mat;
 				inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
 
-				GetClipTM(mat, mClip, mElapsedTime, i);
+				mClip->GetTM(mat, mElapsedTime, i);
 
 				XMStoreFloat4x4(mBones[i], mat);
 
@@ -135,8 +94,8 @@ void Animation::Update(float deltaTime)
 				XMMATRIX inv, mat, matNext;
 				inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
 
-				GetClipTM(mat, mClip, mElapsedTime, i);
-				GetClipTM(matNext, mNextClip, mElapsedTime, i);
+				mClip->GetTM(mat, mElapsedTime, i);
+				mNextClip->GetTM(matNext, mElapsedTime, i);
 
 				mat = mat * (1 - weight) + matNext * weight;
 
