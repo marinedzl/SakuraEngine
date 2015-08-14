@@ -54,6 +54,7 @@ class Renderer;
 class Gizmo;
 class Skeleton;
 class Animation;
+class Animatior;
 class AnimationClip;
 
 class SceneEntity;

@@ -59,7 +59,7 @@ SECore::Animation* SceneEntity::GetAnimation()
 SECore::Animation* SceneEntity::CreateAnimation()
 {
 	CHECK(!mAnimation);
-	mAnimation = new Animation(*this);
+	mAnimation = new Animation();
 Exit0:
 	return mAnimation;
 }

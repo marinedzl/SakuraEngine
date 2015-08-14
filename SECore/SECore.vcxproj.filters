@@ -120,10 +120,10 @@
     <ClInclude Include="CharacterController.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationBlender.h">
+    <ClInclude Include="AnimationState.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationState.h">
+    <ClInclude Include="Animator.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -224,10 +224,10 @@
     <ClCompile Include="CapsuleMesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationBlender.cpp">
+    <ClCompile Include="AnimationState.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationState.cpp">
+    <ClCompile Include="Animator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
 
-struct AnimationState
+class AnimationState
 {
 public:
 	AnimationState();
