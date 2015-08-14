@@ -185,6 +185,7 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationClip.h" />
     <ClInclude Include="AnimationState.h" />
+    <ClInclude Include="AnimationContainer.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="BoxCollider.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationClip.cpp" />
     <ClCompile Include="AnimationState.cpp" />
+    <ClCompile Include="AnimationContainer.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="BoxCollider.cpp" />

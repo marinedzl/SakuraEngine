@@ -123,6 +123,9 @@
     <ClInclude Include="AnimationState.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationContainer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="Animator.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -225,6 +228,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AnimationState.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationContainer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Animator.cpp">

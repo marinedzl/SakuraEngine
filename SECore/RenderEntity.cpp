@@ -43,7 +43,7 @@ const Transform& RenderEntity::GetTransform() const
 
 bool RenderEntity::IsSkinned() const
 {
-	return mOwner.GetAnimation() != nullptr;
+	return mOwner.GetAnimation() != nullptr || mOwner.GetAnimator() != nullptr;
 }
 
 bool RenderEntity::GetBoneMatrix(Matrix* dst) const

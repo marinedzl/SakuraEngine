@@ -211,6 +211,13 @@ namespace SECore
 		virtual bool GetBoneTM(const char* name, Matrix& mat) const = 0;
 	};
 
+	struct Animator 
+	{
+		virtual ~Animator() {}
+		virtual bool GetBoneTM(const char* name, Matrix& mat) const = 0;
+		virtual bool SetTrigger(const char* name) = 0;
+	};
+
 	struct CharacterController
 	{
 		virtual ~CharacterController() {}
@@ -310,6 +317,10 @@ namespace SECore
 			virtual void DestroyAnimation() = 0;
 			virtual Animation* GetAnimation() = 0;
 			virtual Animation* CreateAnimation() = 0;
+
+			virtual void DestroyAnimator() = 0;
+			virtual Animator* GetAnimator() = 0;
+			virtual Animator* CreateAnimator() = 0;
 
 			virtual void DestroyCollider() = 0;
 			virtual Collider* GetCollider() = 0;

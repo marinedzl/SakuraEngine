@@ -17,6 +17,10 @@ public:
 	virtual SECore::Animation* GetAnimation();
 	virtual SECore::Animation* CreateAnimation();
 
+	virtual void DestroyAnimator();
+	virtual SECore::Animator* GetAnimator();
+	virtual SECore::Animator* CreateAnimator();
+
 	virtual void DestroyCollider();
 	virtual SECore::Collider* GetCollider();
 	virtual SECore::Collider* CreateBoxCollider(bool isDynamic, const Vector3& size);
@@ -34,6 +38,7 @@ public:
 	template<typename T> T* GetComponent() {}
 	template<> Collider* GetComponent() { return mCollider; }
 	template<> Animation* GetComponent() { return mAnimation; }
+	template<> Animator* GetComponent() { return mAnimator; }
 	template<> Renderer* GetComponent() { return mRenderer; }
 private:
 	std::string mName;
@@ -41,6 +46,7 @@ private:
 	Scene& mScene;
 	Renderer* mRenderer;
 	Animation* mAnimation;
+	Animator* mAnimator;
 	Collider* mCollider;
 	CharacterController* mCCT;
 };

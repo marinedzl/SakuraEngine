@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Renderer.h"
+#include "Animator.h"
 #include "Animation.h"
 #include "BoxCollider.h"
 #include "CharacterController.h"
@@ -10,6 +11,7 @@ SceneEntity::SceneEntity(Scene& scene)
 	: mScene(scene)
 	, mRenderer(nullptr)
 	, mAnimation(nullptr)
+	, mAnimator(nullptr)
 	, mCollider(nullptr)
 	, mCCT(nullptr)
 {
@@ -17,6 +19,7 @@ SceneEntity::SceneEntity(Scene& scene)
 
 SceneEntity::~SceneEntity()
 {
+	DestroyAnimator();
 	DestroyAnimation();
 	DestroyRenderer();
 	DestroyCollider();
@@ -25,7 +28,7 @@ SceneEntity::~SceneEntity()
 
 bool SceneEntity::GetSkinMatrix(Matrix* dst) const
 {
-	return mAnimation->GetMatrix(dst);
+	return mAnimator ? mAnimator->GetMatrix(dst) : mAnimation->GetMatrix(dst);
 }
 
 void SceneEntity::DestroyRenderer()
@@ -62,6 +65,24 @@ SECore::Animation* SceneEntity::CreateAnimation()
 	mAnimation = new Animation();
 Exit0:
 	return mAnimation;
+}
+
+void SceneEntity::DestroyAnimator()
+{
+	SAFE_DELETE(mAnimator);
+}
+
+SECore::Animator* SceneEntity::GetAnimator()
+{
+	return mAnimator;
+}
+
+SECore::Animator* SceneEntity::CreateAnimator()
+{
+	CHECK(!mAnimator);
+	mAnimator = new Animator();
+Exit0:
+	return mAnimator;
 }
 
 void SceneEntity::DestroyCollider()
@@ -109,6 +130,8 @@ void SceneEntity::Update(float deltaTime)
 {
 	if (mAnimation)
 		mAnimation->Update(deltaTime);
+	if (mAnimator)
+		mAnimator->Update(deltaTime);
 	if (mCCT)
 		mCCT->Update(deltaTime);
 }

@@ -10,7 +10,7 @@ CharaCtrl::CharaCtrl(GameObject* gameObject, GameObject* weapon)
 	, mMoveSpeed(4.0f)
 	, mRotateSpeed(10)
 {
-	animation = gameObject->GetAnimation();
+	animator = gameObject->GetAnimator();
 	mCCT = gameObject->GetCCT();
 	if (weapon)
 	{
@@ -109,7 +109,7 @@ void CharaCtrl::Update(float deltaTime)
 	if (weapon)
 	{
 		Matrix bindPos;
-		animation->GetBoneTM("wuqi_R", bindPos);
+		animator->GetBoneTM("wuqi_R", bindPos);
 		XMMATRIX world = AffineTransform(gameObject->GetTransform());
 		XMMATRIX bone = XMLoadFloat4x4((XMFLOAT4X4*)&bindPos);
 		XMMATRIX offset = AffineTransform(weaponOffset);
@@ -159,11 +159,11 @@ void CharaCtrl::MoveTo(const Vector3 & dest)
 {
 	mDest = dest;
 	mState = eMove;
-	animation->CrossFade("run", 0.2f);
+	animator->SetTrigger("run");
 }
 
 void CharaCtrl::Stop()
 {
 	mState = eIdle;
-	animation->CrossFade("idle", 0.2f);
+	animator->SetTrigger("stop");
 }

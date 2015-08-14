@@ -22,7 +22,7 @@ private:
 	GameObject* gameObject;
 	GameObject* weapon;
 	Transform weaponOffset;
-	Animation* animation;
+	Animator* animator;
 	CharacterController* mCCT;
 	float mMoveSpeed;
 	float mRotateSpeed;
