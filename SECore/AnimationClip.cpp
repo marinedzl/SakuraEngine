@@ -14,6 +14,7 @@ struct AnimationClip::Frame
 
 AnimationClip::AnimationClip()
 	: mBoneCount(0)
+	, mLength(0)
 	, mFrameRate(30)
 {
 }
@@ -39,6 +40,9 @@ bool AnimationClip::LoadFromFile(const char * filename)
 
 	mFrames.resize(head->frameCount);
 
+	mInterval = 1.0f / mFrameRate;
+	mLength = mInterval * head->frameCount;
+
 	for (size_t i = 0; i < head->frameCount; ++i)
 	{
 		Frame* frame = new Frame();
@@ -62,12 +66,10 @@ Exit0:
 
 void AnimationClip::GetTM(XMMATRIX& dst, float time, size_t index) const
 {
-	const float interval = 1.0f / GetFrameRate();
 	int frameCount = GetFrameCount();
-	const float length = interval * frameCount;
-	time = fmod(time, length);
-	int frame = (int)(time / interval);
-	float lerp = (time - frame * interval) / interval;
+	time = fmod(time, mLength);
+	int frame = (int)(time / mInterval);
+	float lerp = (time - frame * mInterval) / mInterval;
 
 	const AnimationClip::Frame* prev = GetFrame((frameCount + frame - 1) % frameCount);
 	const AnimationClip::Frame* next = GetFrame(frame % frameCount);

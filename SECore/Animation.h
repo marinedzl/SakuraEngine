@@ -1,11 +1,12 @@
 #pragma once
+#include "AnimationBlender.h"
 
 class Animation : public SECore::Animation
 {
 public:
 	virtual ~Animation();
 	virtual void Play(const char* clipname);
-	virtual void CrossFade(const char* clipname, float fade);
+	virtual void CrossFade(const char* clipname, float fadeLength);
 public:
 	Animation(SceneEntity& owner);
 	void Update(float deltaTime);
@@ -22,10 +23,5 @@ private:
 	Clips mClips;
 	std::vector<Matrix> mTMs;
 	std::vector<Matrix> mBones;
-	float mElapsedTime;
-
-	float mFadeLength;
-	float mFadeTime;
-	const AnimationClip* mClip;
-	const AnimationClip* mNextClip;
+	AnimationBlender mBlender;
 };

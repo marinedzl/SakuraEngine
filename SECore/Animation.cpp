@@ -7,9 +7,6 @@
 Animation::Animation(SceneEntity& owner)
 	: mOwner(owner)
 	, mSkeleton(nullptr)
-	, mClip(nullptr)
-	, mNextClip(nullptr)
-	, mElapsedTime(0)
 {
 }
 
@@ -33,16 +30,12 @@ void Animation::SetSkeleton(Skeleton * skeleton)
 
 void Animation::Play(const char* clipname)
 {
-	mClip = GetClip(clipname);
-	mNextClip = nullptr;
-	mElapsedTime = 0;
+	mBlender.Play(GetClip(clipname));
 }
 
-void Animation::CrossFade(const char * clipname, float fade)
+void Animation::CrossFade(const char * clipname, float fadeLength)
 {
-	mNextClip = GetClip(clipname);
-	mFadeLength = fade;
-	mFadeTime = 0;
+	mBlender.CrossFade(GetClip(clipname), fadeLength);
 }
 
 bool Animation::GetMatrix(Matrix* dst) const
@@ -60,57 +53,49 @@ const AnimationClip * Animation::GetClip(const char * name) const
 
 void Animation::Update(float deltaTime)
 {
-	mElapsedTime += deltaTime;
+	mBlender.Update(deltaTime);
 
-	if (mClip)
+	const AnimationState* currState = mBlender.GetCurrentState();
+	const AnimationState* nextState = mBlender.GetNextState();
+
+	if (!currState)
+		return;
+
+	if (nextState)
 	{
-		if (!mNextClip)
+		size_t boneCount = mSkeleton->GetBoneCount();
+		for (size_t i = 0; i < boneCount; ++i)
 		{
-			size_t boneCount = mSkeleton->GetBoneCount();
-			for (size_t i = 0; i < boneCount; ++i)
-			{
-				XMMATRIX inv, mat;
-				inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
+			XMMATRIX inv, mat, matNext;
+			inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
 
-				mClip->GetTM(mat, mElapsedTime, i);
+			currState->GetClip()->GetTM(mat, currState->GetTime(), i);
+			nextState->GetClip()->GetTM(matNext, nextState->GetTime(), i);
 
-				XMStoreFloat4x4(mBones[i], mat);
+			mat = mat * currState->GetWeight() + matNext * nextState->GetWeight();
 
-				mat = inv * mat;
+			XMStoreFloat4x4(mBones[i], mat);
 
-				XMStoreFloat4x4(mTMs[i], mat);
-			}
+			mat = inv * mat;
+
+			XMStoreFloat4x4(mTMs[i], mat);
 		}
-		else
+	}
+	else
+	{
+		size_t boneCount = mSkeleton->GetBoneCount();
+		for (size_t i = 0; i < boneCount; ++i)
 		{
-			mFadeTime += deltaTime;
-			mFadeTime = min(mFadeTime, mFadeLength);
+			XMMATRIX inv, mat;
+			inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
 
-			float weight = mFadeTime / mFadeLength;
+			currState->GetClip()->GetTM(mat, currState->GetTime(), i);
 
-			size_t boneCount = mSkeleton->GetBoneCount();
-			for (size_t i = 0; i < boneCount; ++i)
-			{
-				XMMATRIX inv, mat, matNext;
-				inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
+			XMStoreFloat4x4(mBones[i], mat);
 
-				mClip->GetTM(mat, mElapsedTime, i);
-				mNextClip->GetTM(matNext, mElapsedTime, i);
+			mat = inv * mat;
 
-				mat = mat * (1 - weight) + matNext * weight;
-
-				XMStoreFloat4x4(mBones[i], mat);
-
-				mat = inv * mat;
-
-				XMStoreFloat4x4(mTMs[i], mat);
-			}
-
-			if (mFadeTime >= mFadeLength)
-			{
-				mClip = mNextClip;
-				mNextClip = nullptr;
-			}
+			XMStoreFloat4x4(mTMs[i], mat);
 		}
 	}
 }

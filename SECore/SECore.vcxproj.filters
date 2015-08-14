@@ -120,6 +120,12 @@
     <ClInclude Include="CharacterController.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationBlender.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationState.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -216,6 +222,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CapsuleMesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationBlender.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationState.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
