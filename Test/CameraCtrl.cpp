@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "CameraController.h"
+#include "CameraCtrl.h"
 
-CameraController::CameraController(Camera* camera)
+CameraCtrl::CameraCtrl(Camera* camera)
 	: mCamera(camera)
 	, mOp(eOpNone)
 	, mLookAt(0, 0, 0)
@@ -14,11 +14,11 @@ CameraController::CameraController(Camera* camera)
 
 }
 
-CameraController::~CameraController()
+CameraCtrl::~CameraCtrl()
 {
 }
 
-void CameraController::Update(float deltaTime)
+void CameraCtrl::Update(float deltaTime)
 {
 	XMMATRIX rotation = XMMatrixRotationY(mYawPitch.x) * XMMatrixRotationX(mYawPitch.y);
 	XMMATRIX invRotation = XMMatrixInverse(nullptr, rotation);
@@ -41,7 +41,7 @@ void CameraController::Update(float deltaTime)
 	mCamera->SetUp(mUp);
 }
 
-void CameraController::Begin(float x, float y, Operator op)
+void CameraCtrl::Begin(float x, float y, Operator op)
 {
 	mOp = op;
 	mDownPoint.x = x;
@@ -62,7 +62,7 @@ void CameraController::Begin(float x, float y, Operator op)
 	}
 }
 
-void CameraController::Move(float x, float y)
+void CameraCtrl::Move(float x, float y)
 {
 	mCurrentPoint.x = x;
 	mCurrentPoint.y = y;
@@ -87,19 +87,71 @@ void CameraController::Move(float x, float y)
 	}
 }
 
-void CameraController::End()
+void CameraCtrl::End()
 {
 	mOp = eOpNone;
 }
 
-void CameraController::Scroll(float delta)
+void CameraCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	Vector2 pos((float)(short)LOWORD(lParam), (float)(short)HIWORD(lParam));
+
+	switch (message)
+	{
+	case WM_MBUTTONDOWN:
+	{
+		//Begin(pos.x, pos.y, CameraController::eOpMove);
+		//SetCapture(hWnd);
+	}
+	break;
+	case WM_MBUTTONUP:
+	{
+		//End();
+		//ReleaseCapture();
+	}
+	break;
+	case WM_RBUTTONDOWN:
+	{
+		//Begin(pos.x, pos.y, CameraController::eOpRotate);
+		//SetCapture(hWnd);
+	}
+	break;
+	case WM_RBUTTONUP:
+	{
+		//End();
+		//ReleaseCapture();
+	}
+	break;
+	case WM_MOUSEWHEEL:
+	{
+		short zDelta = (short)HIWORD(wParam);
+		Scroll(-(float)zDelta * 0.01f);
+	}
+	break;
+	case WM_LBUTTONDOWN:
+	{
+	}
+	break;
+	case WM_LBUTTONUP:
+	{
+	}
+	break;
+	case WM_MOUSEMOVE:
+	{
+		Move(pos.x, pos.y);
+	}
+	break;
+	}
+}
+
+void CameraCtrl::Scroll(float delta)
 {
 	mDistance += delta;
 	mDistance = __min(mMaxDistance, mDistance);
 	mDistance = __max(mMinDistance, mDistance);
 }
 
-void CameraController::FocusOn(Vector3 v)
+void CameraCtrl::FocusOn(Vector3 v)
 {
 	mLookAt = v;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-class CameraController;
+class CameraCtrl;
 class CharaCtrl;
 class TestMan
 {
@@ -12,13 +12,13 @@ public:
 	void CreateWnd(HWND hWnd);
 	void Process();
 	void WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-	CameraController* GetCamera() { return mCamera; }
+	CameraCtrl* GetCameraCtrl() { return mCameraCtrl; }
 public:
 	SECore::Scene* scene;
 private:
 	SECore::RenderTarget* mRT;
 	DWORD mLastTime;
-	CameraController* mCamera;
+	CameraCtrl* mCameraCtrl;
 	CharaCtrl* mCharaCtrl;
 };
 

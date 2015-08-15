@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CharaCtrl.h"
-#include "CameraController.h"
+#include "CameraCtrl.h"
 #include "TestMan.h"
 
 TestMan gTestMan;
@@ -8,7 +8,7 @@ TestMan gTestMan;
 TestMan::TestMan()
 	: scene(nullptr)
 	, mRT(nullptr)
-	, mCamera(nullptr)
+	, mCameraCtrl(nullptr)
 	, mCharaCtrl(nullptr)
 {
 }
@@ -20,7 +20,7 @@ TestMan::~TestMan()
 void TestMan::Release()
 {
 	SAFE_DELETE(mCharaCtrl);
-	SAFE_DELETE(mCamera);
+	SAFE_DELETE(mCameraCtrl);
 	SAFE_RELEASE(mRT);
 	SAFE_RELEASE(scene);
 	SECore::ReleaseCore();
@@ -38,7 +38,7 @@ void TestMan::Init()
 	scene = SECore::CreateScene();
 	CHECK(scene);
 
-	mCamera = new CameraController(scene->GetCamera());
+	mCameraCtrl = new CameraCtrl(scene->GetCamera());
 
 	CHECK(scene->LoadAdditive("scene.json"));
 
@@ -74,8 +74,8 @@ void TestMan::Process()
 
 	//deltaTime *= 0.1f;
 
-	if (mCamera)
-		mCamera->Update(deltaTime);
+	if (mCameraCtrl)
+		mCameraCtrl->Update(deltaTime);
 
 	if (scene)
 		scene->Update(deltaTime);
@@ -96,57 +96,9 @@ void TestMan::Process()
 
 void TestMan::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	Vector2 pos((float)(short)LOWORD(lParam), (float)(short)HIWORD(lParam));
-
 	if (mCharaCtrl)
-	{
 		mCharaCtrl->WndProc(hWnd, message, wParam, lParam);
-	}
 
-	switch (message)
-	{
-	case WM_MBUTTONDOWN:
-	{
-		//mCamera->Begin(pos.x, pos.y, CameraController::eOpMove);
-		//SetCapture(hWnd);
-	}
-	break;
-	case WM_MBUTTONUP:
-	{
-		//mCamera->End();
-		//ReleaseCapture();
-	}
-	break;
-	case WM_RBUTTONDOWN:
-	{
-		mCamera->Begin(pos.x, pos.y, CameraController::eOpRotate);
-		SetCapture(hWnd);
-	}
-	break;
-	case WM_RBUTTONUP:
-	{
-		mCamera->End();
-		ReleaseCapture();
-	}
-	break;
-	case WM_MOUSEWHEEL:
-	{
-		short zDelta = (short)HIWORD(wParam);
-		mCamera->Scroll(-(float)zDelta * 0.001f);
-	}
-	break;
-	case WM_LBUTTONDOWN:
-	{
-	}
-	break;
-	case WM_LBUTTONUP:
-	{
-	}
-	break;
-	case WM_MOUSEMOVE:
-	{
-		mCamera->Move(pos.x, pos.y);
-	}
-	break;
-	}
+	if (mCameraCtrl)
+		mCameraCtrl->WndProc(hWnd, message, wParam, lParam);
 }

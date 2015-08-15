@@ -33,10 +33,10 @@
     <ClInclude Include="TestMan.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="CameraController.h">
+    <ClInclude Include="CharaCtrl.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="CharaCtrl.h">
+    <ClInclude Include="CameraCtrl.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,10 +50,10 @@
     <ClCompile Include="TestMan.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CameraController.cpp">
+    <ClCompile Include="CharaCtrl.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CharaCtrl.cpp">
+    <ClCompile Include="CameraCtrl.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

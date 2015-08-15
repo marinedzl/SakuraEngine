@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "TestMan.h"
-#include "CameraController.h"
+#include "CameraCtrl.h"
 #include "CharaCtrl.h"
 
 CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon)
@@ -117,7 +117,7 @@ void CharaCtrl::Update(float deltaTime)
 	}
 
 	Vector3 offset(0, 2, 0);
-	gTestMan.GetCamera()->FocusOn(transform.position + offset);
+	gTestMan.GetCameraCtrl()->FocusOn(transform.position + offset);
 
 	if (weapon)
 	{

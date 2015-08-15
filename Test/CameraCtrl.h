@@ -1,6 +1,6 @@
 #pragma once
 
-class CameraController
+class CameraCtrl
 {
 public:
 	enum Operator
@@ -10,12 +10,13 @@ public:
 		eOpMove,
 	};
 public:
-	CameraController(Camera* camera);
-	virtual ~CameraController();
+	CameraCtrl(Camera* camera);
+	virtual ~CameraCtrl();
 	void Update(float deltaTime);
 	void Begin(float x, float y, Operator op);
 	void Move(float x, float y);
 	void End();
+	void WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	void Scroll(float delta);
 	void FocusOn(Vector3 v);
 private:

@@ -161,7 +161,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CameraController.h" />
+    <ClInclude Include="CameraCtrl.h" />
     <ClInclude Include="CharaCtrl.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -170,7 +170,7 @@
     <ClInclude Include="TestMan.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CameraController.cpp" />
+    <ClCompile Include="CameraCtrl.cpp" />
     <ClCompile Include="CharaCtrl.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
