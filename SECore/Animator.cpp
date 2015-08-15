@@ -9,6 +9,7 @@ typedef Animator::Transition Transition;
 
 struct Animator::Transition
 {
+	bool isHide;
 	std::string name;
 	State* nextState;
 	std::vector<const Condition*> conditions;
@@ -27,6 +28,13 @@ struct Animator::State
 	float length;
 	const AnimationClip* clip;
 	std::vector<Transition*> transitions;
+	struct Event
+	{
+		float time;
+		StateCallback* callback;
+		void* data;
+	};
+	std::vector<Event> events;
 
 	State()
 		: loop(false)
@@ -37,6 +45,19 @@ struct Animator::State
 	~State()
 	{
 		DeleteList(transitions);
+	}
+
+	Transition* GetTransition(const char* name) const
+	{
+		size_t count = transitions.size();
+		for (size_t i = 0; i < count; ++i)
+		{
+			if (transitions[i]->name == name)
+			{
+				return transitions[i];
+			}
+		}
+		return nullptr;
 	}
 };
 
@@ -51,6 +72,47 @@ Animator::Animator()
 Animator::~Animator()
 {
 	DeleteMap(mStates);
+}
+
+bool Animator::AddStateEvent(const char * name, float length, StateCallback callback, void* data)
+{
+	bool ret = false;
+	State* state = GetState(name);
+	State::Event evt = { length, callback, data };
+	CHECK(state);
+	state->events.push_back(evt);
+	ret = true;
+Exit0:
+	return ret;
+}
+
+const char * Animator::GetCurrentStateName() const
+{
+	return mState->name.c_str();
+}
+
+bool Animator::DoTransition(const char * name)
+{
+	bool ret = false;
+
+	Transition* transition = mState->GetTransition(name);
+	CHECK(transition);
+
+	if (!CheckCondition(transition))
+		goto Exit0;
+
+	// start transition
+	mTransitionElapsedTime = 0;
+	mTransition = transition;
+
+	// update blend desc
+	mBlendDesc.nextClip = mTransition->nextState->clip;
+	mBlendDesc.lerp = mTransitionElapsedTime / mTransition->length;
+	mBlendDesc.nextTime = mTransition->offset;
+
+	ret = true;
+Exit0:
+	return ret;
 }
 
 void Animator::Update(float deltaTime)
@@ -94,10 +156,25 @@ void Animator::Update(float deltaTime)
 			}
 		}
 
+		if (!mState->events.empty())
+		{
+			size_t count = mState->events.size();
+			for (size_t i = 0; i < count; ++i)
+			{
+				const State::Event& evt = mState->events[i];
+				if (mBlendDesc.currTime >= evt.time * mState->length)
+				{
+					evt.callback(evt.data);
+				}
+			}
+		}
+
 		size_t tcount = mState->transitions.size();
 		for (size_t t = 0; t < tcount; ++t)
 		{
 			const Transition * transition = mState->transitions[t];
+			if (transition->isHide)
+				continue;
 			if (CheckCondition(transition))
 			{
 				// start transition
@@ -198,9 +275,10 @@ Exit0:
 	;
 }
 
-Transition * Animator::CreateTransition(State* state, const char * name, State* nextState, float offset, float length)
+Transition * Animator::CreateTransition(State* state, const char * name, State* nextState, float offset, float length, bool isHide)
 {
 	Transition* transition = new Transition();
+	transition->isHide = isHide;
 	transition->name = name;
 	transition->nextState = nextState;
 	transition->offset = offset * nextState->length;

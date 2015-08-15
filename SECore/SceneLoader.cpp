@@ -139,7 +139,10 @@ bool LoadTransition(const Json::Value& node, Animator* animator, Animator::State
 	CHECK(to);
 	float offset = (float)node["offset"].asDouble();
 	float length = (float)node["length"].asDouble();
-	Animator::Transition* transition = animator->CreateTransition(state, name, to, offset, length);
+	bool isHide = false;
+	if (node.isMember("hide"))
+		isHide = node["hide"].asBool();
+	Animator::Transition* transition = animator->CreateTransition(state, name, to, offset, length, isHide);
 	if (node.isMember("Conditions"))
 	{
 		std::vector<std::string> memberNames = node["Conditions"].getMemberNames();

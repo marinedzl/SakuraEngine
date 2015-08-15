@@ -14,6 +14,8 @@ public:
 	void Run();
 	void Dash();
 	void Land();
+	void Attack();
+	void OnAnimatorCallback();
 private:
 	void UpdateMove(float deltaTime, float factor);
 private:
@@ -23,6 +25,7 @@ private:
 		eRun,
 		eDash,
 		eJump,
+		eAttack,
 	};
 private:
 	State mState;

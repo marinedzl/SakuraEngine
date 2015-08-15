@@ -213,9 +213,15 @@ namespace SECore
 
 	struct Animator 
 	{
+		typedef void StateCallback(void* data);
+
 		virtual ~Animator() {}
 		virtual bool GetBoneTM(const char* name, Matrix& mat) const = 0;
 		virtual bool SetBool(const char* name, bool value) = 0;
+		virtual const char* GetCurrentStateName() const = 0;
+		virtual bool DoTransition(const char* name) = 0;
+		virtual bool IsTransition() const = 0;
+		virtual bool AddStateEvent(const char* name, float length, StateCallback callback, void* data) = 0;
 	};
 
 	struct CharacterController

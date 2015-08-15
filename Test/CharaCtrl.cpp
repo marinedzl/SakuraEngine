@@ -3,6 +3,14 @@
 #include "CameraCtrl.h"
 #include "CharaCtrl.h"
 
+namespace
+{
+	void OnAnimatorCallBack(void* data)
+	{
+		((CharaCtrl*)data)->OnAnimatorCallback();
+	}
+}
+
 CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon)
 	: gameObject(gameObject)
 	, transform(gameObject.GetTransform())
@@ -21,6 +29,8 @@ CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon)
 		weaponOffset = weapon->GetTransform();
 		weaponOffset.scaling = Vector3(1, 1, 1);
 	}
+
+	animator->AddStateEvent("attack", 0.9f, OnAnimatorCallBack, this);
 }
 
 CharaCtrl::~CharaCtrl()
@@ -135,6 +145,11 @@ void CharaCtrl::Update(float deltaTime)
 		}
 	}
 	break;
+	case eAttack:
+	{
+
+	}
+		break;
 	}
 
 	Vector3 offset(0, 2, 0);
@@ -175,6 +190,11 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 			}
 		}
+	}
+	break;
+	case WM_RBUTTONDOWN:
+	{
+		Attack();
 	}
 	break;
 	case WM_CHAR:
@@ -258,6 +278,7 @@ void CharaCtrl::Stop()
 	animator->SetBool("stop", true);
 	animator->SetBool("jump", false);
 	animator->SetBool("dash", false);
+	animator->SetBool("attack", false);
 }
 
 void CharaCtrl::Jump()
@@ -279,4 +300,37 @@ void CharaCtrl::Land()
 	mState = eIdle;
 	animator->SetBool("jump", false);
 	animator->SetBool("land", true);
+}
+
+void CharaCtrl::Attack()
+{
+	if (mState == eJump)
+		return;
+
+	animator->SetBool("run", false);
+	animator->SetBool("dash", false);
+	animator->SetBool("idle", false);
+
+	if (mState == eAttack)
+	{
+		if (!animator->IsTransition())
+		{
+			animator->DoTransition("to attack");
+		}
+	}
+	else
+	{
+		mState = eAttack;
+		animator->SetBool("attack", true);
+	}
+}
+
+void CharaCtrl::OnAnimatorCallback()
+{
+	mState = eIdle;
+	animator->SetBool("run", false);
+	animator->SetBool("stop", false);
+	animator->SetBool("jump", false);
+	animator->SetBool("dash", false);
+	animator->SetBool("attack", false);
 }
