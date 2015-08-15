@@ -106,9 +106,9 @@ bool LoadCondition(const Json::Value& node, Animator* animator, Animator::Transi
 	Animator::Param param = *p;
 	switch (param.type)
 	{
-	case Animator::Param::eTrigger:
+	case Animator::Param::eBool:
 	{
-		param.value.b = true;
+		param.value.b = node.asBool();
 	}
 	break;
 	case Animator::Param::eExitTime:
@@ -238,9 +238,9 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 			{
 				const char* name = memberNames[i].c_str();
 				std::string type = paramNode[memberNames[i]].asString();
-				if (type == "Trigger")
+				if (type == "Bool")
 				{
-					param.type = Animator::Param::eTrigger;
+					param.type = Animator::Param::eBool;
 					param.value.b = false;
 					animator->CreateParam(name, param);
 				}

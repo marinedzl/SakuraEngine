@@ -159,11 +159,13 @@ void CharaCtrl::MoveTo(const Vector3 & dest)
 {
 	mDest = dest;
 	mState = eMove;
-	animator->SetTrigger("run");
+	animator->SetBool("run", true);
+	animator->SetBool("stop", false);
 }
 
 void CharaCtrl::Stop()
 {
 	mState = eIdle;
-	animator->SetTrigger("stop");
+	animator->SetBool("run", false);
+	animator->SetBool("stop", true);
 }

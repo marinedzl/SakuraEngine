@@ -5,14 +5,14 @@ class Animator : public AnimationContainer
 {
 public:
 	virtual ~Animator();
-	virtual bool SetTrigger(const char* name) { Param param; param.type = Param::eTrigger; param.value.b = true; return SetParam(name, param); }
+	virtual bool SetBool(const char* name, bool value) { Param param; param.type = Param::eBool; param.value.b = value; return SetParam(name, param); }
 public:
 	struct Param
 	{
 		enum Type
 		{
 			eExitTime,
-			eTrigger,
+			eBool,
 		} type;
 		union Value
 		{

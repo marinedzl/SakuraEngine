@@ -215,7 +215,7 @@ namespace SECore
 	{
 		virtual ~Animator() {}
 		virtual bool GetBoneTM(const char* name, Matrix& mat) const = 0;
-		virtual bool SetTrigger(const char* name) = 0;
+		virtual bool SetBool(const char* name, bool value) = 0;
 	};
 
 	struct CharacterController

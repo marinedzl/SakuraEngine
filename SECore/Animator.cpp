@@ -126,7 +126,7 @@ bool Animator::CheckCondition(const Transition* transition)
 				return false;
 		}
 			break;
-		case Param::eTrigger:
+		case Param::eBool:
 		{
 			Param* param = GetParam(condition->name.c_str());
 			CHECK(param);
@@ -137,18 +137,6 @@ bool Animator::CheckCondition(const Transition* transition)
 		default:
 			CHECK(false);
 			break;
-		}
-	}
-
-	// reset trigger
-	for (size_t i = 0; i < count; ++i)
-	{
-		const Condition* condition = transition->conditions[i];
-		if (condition->param.type == Param::eTrigger)
-		{
-			Param* param = GetParam(condition->name.c_str());
-			CHECK(param);
-			param->value.b = false;
 		}
 	}
 
