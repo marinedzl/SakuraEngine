@@ -47,7 +47,7 @@ void TestMan::Init()
 
 	if (mainChara)
 	{
-		mCharaCtrl = new CharaCtrl(mainChara, weapon);
+		mCharaCtrl = new CharaCtrl(*mainChara, weapon);
 	}
 
 	mLastTime = timeGetTime();
@@ -71,6 +71,8 @@ void TestMan::Process()
 	mLastTime = currentTime;
 
 	float deltaTime = dwDelta / 1000.0f;
+
+	//deltaTime *= 0.1f;
 
 	if (mCamera)
 		mCamera->Update(deltaTime);

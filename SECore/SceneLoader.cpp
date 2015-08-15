@@ -101,9 +101,18 @@ Quat Json2Quat(const Json::Value& value)
 bool LoadCondition(const Json::Value& node, Animator* animator, Animator::Transition* transition, const char* name)
 {
 	bool ret = false;
-	Animator::Param* p = animator->GetParam(name);
-	CHECK(p);
-	Animator::Param param = *p;
+	Animator::Param param;
+	if (strcmp(name, "ExitTime") == 0)
+	{
+		param.type = Animator::Param::eExitTime;
+	}
+	else
+	{
+		Animator::Param* p = animator->GetParam(name);
+		CHECK(p);
+		param = *p;
+	}
+
 	switch (param.type)
 	{
 	case Animator::Param::eBool:

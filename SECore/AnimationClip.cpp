@@ -41,7 +41,7 @@ bool AnimationClip::LoadFromFile(const char * filename)
 	mFrames.resize(head->frameCount);
 
 	mInterval = 1.0f / mFrameRate;
-	mLength = mInterval * head->frameCount;
+	mLength = mInterval * (head->frameCount - 1);
 
 	for (size_t i = 0; i < head->frameCount; ++i)
 	{

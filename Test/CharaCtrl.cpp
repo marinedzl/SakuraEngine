@@ -3,15 +3,18 @@
 #include "CameraController.h"
 #include "CharaCtrl.h"
 
-CharaCtrl::CharaCtrl(GameObject* gameObject, GameObject* weapon)
+CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon)
 	: gameObject(gameObject)
+	, transform(gameObject.GetTransform())
 	, weapon(weapon)
 	, mGravity(9.8f)
 	, mMoveSpeed(4.0f)
 	, mRotateSpeed(10)
+	, mJumpGravity(20)
+	, mJumpInitSpeed(10)
 {
-	animator = gameObject->GetAnimator();
-	mCCT = gameObject->GetCCT();
+	animator = gameObject.GetAnimator();
+	mCCT = gameObject.GetCCT();
 	if (weapon)
 	{
 		weaponOffset = weapon->GetTransform();
@@ -27,9 +30,9 @@ void CharaCtrl::LookAt(const Vector3& delta, float lerp)
 {
 	float angle = XM_PI + XM_PIDIV2 - atan2f(delta.z, delta.x);
 	XMVECTOR dst = XMQuaternionRotationRollPitchYaw(0, angle, 0);
-	XMVECTOR src = XMLoadFloat4((XMFLOAT4*)&gameObject->GetTransform().rotation);
+	XMVECTOR src = XMLoadFloat4((XMFLOAT4*)&transform.rotation);
 	XMVECTOR rot = XMQuaternionSlerp(src, dst, lerp);
-	XMStoreFloat4((XMFLOAT4*)&gameObject->GetTransform().rotation, rot);
+	XMStoreFloat4((XMFLOAT4*)&transform.rotation, rot);
 }
 
 inline XMMATRIX AffineTransform(const Vector3& position, const Quat& rotation, const Vector3& scaling)
@@ -79,7 +82,7 @@ void CharaCtrl::Update(float deltaTime)
 		break;
 	case eMove:
 	{
-		Vector3 delta = mDest - gameObject->GetTransform().position;
+		Vector3 delta = mDest - transform.position;
 		delta.y = 0;
 		XMVECTOR v = XMLoadFloat3((XMFLOAT3*)&delta);
 		LookAt(delta, mRotateSpeed * deltaTime);
@@ -101,16 +104,26 @@ void CharaCtrl::Update(float deltaTime)
 		}
 	}
 		break;
+	case eJump:
+	{
+		mJumpSpeed.y -= mJumpGravity * deltaTime;
+		Vector3 motion = mJumpSpeed * deltaTime;
+		if (mCCT->Move(motion, deltaTime))
+		{
+			Land();
+		}
+	}
+		break;
 	}
 
 	Vector3 offset(0, 2, 0);
-	gTestMan.GetCamera()->FocusOn(gameObject->GetTransform().position + offset);
+	gTestMan.GetCamera()->FocusOn(transform.position + offset);
 
 	if (weapon)
 	{
 		Matrix bindPos;
 		animator->GetBoneTM("wuqi_R", bindPos);
-		XMMATRIX world = AffineTransform(gameObject->GetTransform());
+		XMMATRIX world = AffineTransform(transform);
 		XMMATRIX bone = XMLoadFloat4x4((XMFLOAT4X4*)&bindPos);
 		XMMATRIX offset = AffineTransform(weaponOffset);
 		world = offset * bone * world;
@@ -133,16 +146,29 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			gTestMan.scene->GetCamera()->ScreenPointToRay(ray, Vector3(pos.x, pos.y, 0));
 			if (gTestMan.scene->Raycast(ray, hit, 10000))
 			{
-				if (hit.entity != gameObject)
+				if (hit.entity != &gameObject)
 				{
 					Vector3 dest = hit.point;
-					dest.y = gameObject->GetTransform().position.y;
+					dest.y = transform.position.y;
 					MoveTo(dest);
 				}
 			}
 		}
 	}
 	break;
+	case WM_CHAR:
+	case WM_SYSCHAR:
+	{
+		switch ((char)wParam)
+		{
+		case ' ':
+		{
+			Jump();
+		}
+			break;
+		}
+	}
+		break;
 	case WM_LBUTTONUP:
 	{
 	}
@@ -157,10 +183,13 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 void CharaCtrl::MoveTo(const Vector3 & dest)
 {
+	if (mState != eMove && mState != eIdle)
+		return;
 	mDest = dest;
 	mState = eMove;
 	animator->SetBool("run", true);
 	animator->SetBool("stop", false);
+	animator->SetBool("jump", false);
 }
 
 void CharaCtrl::Stop()
@@ -168,4 +197,25 @@ void CharaCtrl::Stop()
 	mState = eIdle;
 	animator->SetBool("run", false);
 	animator->SetBool("stop", true);
+	animator->SetBool("jump", false);
+}
+
+void CharaCtrl::Jump()
+{
+	if (mState != eMove && mState != eIdle)
+		return;
+	mState = eJump;
+	mJumpSpeed = mDest - transform.position;
+	mJumpSpeed.y = mJumpInitSpeed;
+	animator->SetBool("run", false);
+	animator->SetBool("stop", false);
+	animator->SetBool("jump", true);
+	animator->SetBool("land", false);
+}
+
+void CharaCtrl::Land()
+{
+	mState = eIdle;
+	animator->SetBool("jump", false);
+	animator->SetBool("land", true);
 }

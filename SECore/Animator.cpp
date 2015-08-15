@@ -82,11 +82,15 @@ void Animator::Update(float deltaTime)
 	}
 	else
 	{
-		if (mState->loop)
+		if (mBlendDesc.currTime > mState->length)
 		{
-			if (mBlendDesc.currTime > mState->length)
+			if (mState->loop)
 			{
 				mBlendDesc.currTime = fmod(mBlendDesc.currTime, mState->length);
+			}
+			else
+			{
+				mBlendDesc.currTime = mState->length;
 			}
 		}
 
@@ -196,7 +200,7 @@ Transition * Animator::CreateTransition(State* state, const char * name, State* 
 	Transition* transition = new Transition();
 	transition->name = name;
 	transition->nextState = nextState;
-	transition->offset = offset;
+	transition->offset = offset * nextState->length;
 	transition->length = length;
 	state->transitions.push_back(transition);
 	return transition;
