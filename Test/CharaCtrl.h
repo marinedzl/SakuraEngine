@@ -11,12 +11,17 @@ public:
 	void LookAt(const Vector3& delta, float lerp);
 	void Stop();
 	void Jump();
+	void Run();
+	void Dash();
 	void Land();
+private:
+	void UpdateMove(float deltaTime, float factor);
 private:
 	enum State
 	{
 		eIdle,
-		eMove,
+		eRun,
+		eDash,
 		eJump,
 	};
 private:
@@ -29,6 +34,7 @@ private:
 	Animator* animator;
 	CharacterController* mCCT;
 	float mMoveSpeed;
+	float mDashSpeedFactor;
 	float mRotateSpeed;
 	float mGravity;
 	float mJumpInitSpeed;

@@ -34,6 +34,7 @@ public:
 public:
 	bool CreateParam(const char* name, const Param& param);
 	bool CreateState(const char* name, const AnimationClip* clip, bool loop);
+	void SetDefaultState(const char* name);
 	Transition* CreateTransition(State* state, const char* name, State* nextState, float offset, float length);
 	bool CreateCondition(Transition* transition, const char* name, const Param& param);
 	State* GetState(const char* name);

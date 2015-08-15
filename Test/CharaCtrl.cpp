@@ -8,7 +8,8 @@ CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon)
 	, transform(gameObject.GetTransform())
 	, weapon(weapon)
 	, mGravity(9.8f)
-	, mMoveSpeed(4.0f)
+	, mMoveSpeed(5.5f)
+	, mDashSpeedFactor(1.5f)
 	, mRotateSpeed(10)
 	, mJumpGravity(20)
 	, mJumpInitSpeed(10)
@@ -69,6 +70,30 @@ inline bool MatrixDecompose(const XMMATRIX& mat, Transform& transform)
 	return MatrixDecompose(mat, transform.position, transform.rotation, transform.scaling);
 }
 
+void CharaCtrl::UpdateMove(float deltaTime, float factor)
+{
+	Vector3 delta = mDest - transform.position;
+	delta.y = 0;
+	XMVECTOR v = XMLoadFloat3((XMFLOAT3*)&delta);
+	LookAt(delta, mRotateSpeed * factor * deltaTime);
+	XMVECTOR vLength = XMVector3Length(v);
+	float distance = 0;
+	XMStoreFloat(&distance, vLength);
+	if (distance > 0.1f)
+	{
+		v = XMVector3Normalize(v);
+		v *= mMoveSpeed * factor * deltaTime;
+		Vector3 motion;
+		XMStoreFloat3((XMFLOAT3*)&motion, v);
+		motion.y = -mGravity * deltaTime;
+		mCCT->Move(motion, deltaTime);
+	}
+	else
+	{
+		Stop();
+	}
+}
+
 void CharaCtrl::Update(float deltaTime)
 {
 	switch (mState)
@@ -79,31 +104,27 @@ void CharaCtrl::Update(float deltaTime)
 		motion *= deltaTime;
 		mCCT->Move(motion, deltaTime);
 	}
-		break;
-	case eMove:
+	break;
+	case eRun:
 	{
-		Vector3 delta = mDest - transform.position;
-		delta.y = 0;
-		XMVECTOR v = XMLoadFloat3((XMFLOAT3*)&delta);
-		LookAt(delta, mRotateSpeed * deltaTime);
-		XMVECTOR vLength = XMVector3Length(v);
-		float distance = 0;
-		XMStoreFloat(&distance, vLength);
-		if (distance > 0.1f)
+		UpdateMove(deltaTime, 1);
+
+		if (KEY_DOWN(VK_LSHIFT))
 		{
-			v = XMVector3Normalize(v);
-			v *= mMoveSpeed * deltaTime;
-			Vector3 motion;
-			XMStoreFloat3((XMFLOAT3*)&motion, v);
-			motion.y = -mGravity * deltaTime;
-			mCCT->Move(motion, deltaTime);
-		}
-		else
-		{
-			Stop();
+			Dash();
 		}
 	}
-		break;
+	break;
+	case eDash:
+	{
+		UpdateMove(deltaTime, mDashSpeedFactor);
+
+		if (!KEY_DOWN(VK_LSHIFT))
+		{
+			Run();
+		}
+	}
+	break;
 	case eJump:
 	{
 		mJumpSpeed.y -= mJumpGravity * deltaTime;
@@ -113,7 +134,7 @@ void CharaCtrl::Update(float deltaTime)
 			Land();
 		}
 	}
-		break;
+	break;
 	}
 
 	Vector3 offset(0, 2, 0);
@@ -165,10 +186,10 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			Jump();
 		}
-			break;
+		break;
 		}
 	}
-		break;
+	break;
 	case WM_LBUTTONUP:
 	{
 	}
@@ -183,13 +204,51 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 void CharaCtrl::MoveTo(const Vector3 & dest)
 {
-	if (mState != eMove && mState != eIdle)
-		return;
 	mDest = dest;
-	mState = eMove;
+
+	switch (mState)
+	{
+	case eIdle:
+	{
+		if (KEY_DOWN(VK_LSHIFT))
+			Dash();
+		else
+			Run();
+	}
+	break;
+	case eRun:
+	{
+		if (KEY_DOWN(VK_LSHIFT))
+			Dash();
+	}
+	break;
+	case eDash:
+	{
+		if (!KEY_DOWN(VK_LSHIFT))
+			Run();
+	}
+	break;
+	default:
+		break;
+	}
+}
+
+void CharaCtrl::Run()
+{
+	mState = eRun;
 	animator->SetBool("run", true);
 	animator->SetBool("stop", false);
 	animator->SetBool("jump", false);
+	animator->SetBool("dash", false);
+}
+
+void CharaCtrl::Dash()
+{
+	mState = eDash;
+	animator->SetBool("run", false);
+	animator->SetBool("stop", false);
+	animator->SetBool("jump", false);
+	animator->SetBool("dash", true);
 }
 
 void CharaCtrl::Stop()
@@ -198,11 +257,12 @@ void CharaCtrl::Stop()
 	animator->SetBool("run", false);
 	animator->SetBool("stop", true);
 	animator->SetBool("jump", false);
+	animator->SetBool("dash", false);
 }
 
 void CharaCtrl::Jump()
 {
-	if (mState != eMove && mState != eIdle)
+	if (mState != eRun && mState != eIdle)
 		return;
 	mState = eJump;
 	mJumpSpeed = mDest - transform.position;
@@ -211,6 +271,7 @@ void CharaCtrl::Jump()
 	animator->SetBool("stop", false);
 	animator->SetBool("jump", true);
 	animator->SetBool("land", false);
+	animator->SetBool("dash", false);
 }
 
 void CharaCtrl::Land()

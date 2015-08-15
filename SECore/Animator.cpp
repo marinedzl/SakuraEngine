@@ -185,14 +185,17 @@ bool Animator::CreateState(const char * name, const AnimationClip * clip, bool l
 	state->loop = loop;
 	state->name = name;
 	mStates.insert(std::make_pair(name, state));
-
-	if (mState == nullptr)
-	{
-		mState = state;
-		mBlendDesc.currClip = mState->clip;
-		mBlendDesc.currTime = 0;
-	}
 	return true;
+}
+
+void Animator::SetDefaultState(const char * name)
+{
+	mState = GetState(name);
+	CHECK(mState);
+	mBlendDesc.currClip = mState->clip;
+	mBlendDesc.currTime = 0;
+Exit0:
+	;
 }
 
 Transition * Animator::CreateTransition(State* state, const char * name, State* nextState, float offset, float length)

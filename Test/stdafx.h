@@ -11,6 +11,7 @@
 // Windows 头文件: 
 #include <windows.h>
 #include <timeapi.h>
+#include <WinUser.h>
 
 // C 运行时头文件
 #include <stdlib.h>
@@ -41,3 +42,6 @@ typedef SECore::Ray Ray;
 typedef SECore::RaycastHit RaycastHit;
 typedef SECore::RigidBody RigidBody;
 typedef SECore::CharacterController CharacterController;
+
+#define KEY_DOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
+#define KEY_UP(vk_code)   ((GetAsyncKeyState(vk_code) & 0x8000) ? 0 : 1)

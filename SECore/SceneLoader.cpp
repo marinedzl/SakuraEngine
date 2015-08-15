@@ -292,6 +292,8 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 				}
 			}
 		}
+
+		animator->SetDefaultState(node["State"].asCString());
 	}
 
 	if (entityRoot.isMember("Collider"))
