@@ -3,7 +3,6 @@
 #include "Texture.h"
 #include "Scene.h"
 #include "Skeleton.h"
-#include "Animator.h"
 #include "Animation.h"
 #include "AnimationClip.h"
 #include "ResourceManager.h"
@@ -98,64 +97,6 @@ Quat Json2Quat(const Json::Value& value)
 	return ret;
 }
 
-bool LoadCondition(const Json::Value& node, Animator* animator, Animator::Transition* transition, const char* name)
-{
-	bool ret = false;
-	Animator::Param param;
-	if (strcmp(name, "ExitTime") == 0)
-	{
-		param.type = Animator::Param::eExitTime;
-	}
-	else
-	{
-		Animator::Param* p = animator->GetParam(name);
-		CHECK(p);
-		param = *p;
-	}
-
-	switch (param.type)
-	{
-	case Animator::Param::eBool:
-	{
-		param.value.b = node.asBool();
-	}
-	break;
-	case Animator::Param::eExitTime:
-	{
-		param.value.r = (float)node.asDouble();
-	}
-	break;
-	}
-	animator->CreateCondition(transition, name, param);
-	ret = true;
-Exit0:
-	return ret;
-}
-
-bool LoadTransition(const Json::Value& node, Animator* animator, Animator::State* state, const char* name)
-{
-	bool ret = false;
-	Animator::State* to = animator->GetState(node["to"].asCString());
-	CHECK(to);
-	float offset = (float)node["offset"].asDouble();
-	float length = (float)node["length"].asDouble();
-	bool isHide = false;
-	if (node.isMember("hide"))
-		isHide = node["hide"].asBool();
-	Animator::Transition* transition = animator->CreateTransition(state, name, to, offset, length, isHide);
-	if (node.isMember("Conditions"))
-	{
-		std::vector<std::string> memberNames = node["Conditions"].getMemberNames();
-		for (size_t i = 0; i < memberNames.size(); ++i)
-		{
-			CHECK(LoadCondition(node["Conditions"][memberNames[i]], animator, transition, memberNames[i].c_str()));
-		}
-	}
-	ret = true;
-Exit0:
-	return ret;
-}
-
 bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 {
 	bool ret = false;
@@ -203,100 +144,10 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 		for (size_t i = 0; i < memberNames.size(); ++i)
 		{
 			AnimationClip* clip = gResourceManager.LoadClip(jsonClips[memberNames[i]].asCString());
-			animation->AddClip(memberNames[i].c_str(), clip);
+			clip->SetName(memberNames[i].c_str());
+			animation->AddClip(clip);
 			clip->Release();
 		}
-
-		if (animationRoot.isMember("Clip"))
-		{
-			animation->Play(animationRoot["Clip"].asCString());
-		}
-	}
-
-	if (entityRoot.isMember("Animator"))
-	{
-		const Json::Value& node = entityRoot["Animator"];
-
-		Animator* animator = nullptr;
-
-		if (SECore::Animator* _ptr = entity->GetAnimator())
-		{
-			animator = dynamic_cast<Animator*>(_ptr);
-		}
-		else
-		{
-			animator = dynamic_cast<Animator*>(entity->CreateAnimator());
-		}
-
-		Skeleton* skeleton = gResourceManager.LoadSkeleton(node["Skeleton"].asCString());
-		animator->SetSkeleton(skeleton);
-		skeleton->Release();
-
-		const Json::Value& jsonClips = node["Clips"];
-		std::vector<std::string> memberNames = jsonClips.getMemberNames();
-		for (size_t i = 0; i < memberNames.size(); ++i)
-		{
-			AnimationClip* clip = gResourceManager.LoadClip(jsonClips[memberNames[i]].asCString());
-			animator->AddClip(memberNames[i].c_str(), clip);
-			clip->Release();
-		}
-
-		if (node.isMember("Params"))
-		{
-			Animator::Param param;
-			const Json::Value& paramNode = node["Params"];
-			std::vector<std::string> memberNames = paramNode.getMemberNames();
-			for (size_t i = 0; i < memberNames.size(); ++i)
-			{
-				const char* name = memberNames[i].c_str();
-				std::string type = paramNode[memberNames[i]].asString();
-				if (type == "Bool")
-				{
-					param.type = Animator::Param::eBool;
-					param.value.b = false;
-					animator->CreateParam(name, param);
-				}
-				else if (type == "ExitTime")
-				{
-					param.type = Animator::Param::eExitTime;
-					param.value.r = 0.9f;
-					animator->CreateParam(name, param);
-				}
-			}
-		}
-
-		if (node.isMember("States"))
-		{
-			const Json::Value& statesNode = node["States"];
-			std::vector<std::string> memberNames = statesNode.getMemberNames();
-			for (size_t i = 0; i < memberNames.size(); ++i)
-			{
-				const Json::Value& stateNode = statesNode[memberNames[i]];
-				const AnimationClip* clip = animator->GetClip(stateNode["clip"].asCString());
-				CHECK(clip);
-				bool isLoop = stateNode["loop"].asBool();
-				animator->CreateState(memberNames[i].c_str(), clip, isLoop);
-			}
-		}
-
-		if (node.isMember("States"))
-		{
-			const Json::Value& statesNode = node["States"];
-			std::vector<std::string> stateNames = statesNode.getMemberNames();
-			for (size_t i = 0; i < stateNames.size(); ++i)
-			{
-				const Json::Value& transsNode = statesNode[stateNames[i]]["Transitions"];
-				Animator::State* state = animator->GetState(stateNames[i].c_str());
-				std::vector<std::string> transNames = transsNode.getMemberNames();
-				CHECK(state);
-				for (size_t j = 0; j < transNames.size(); ++j)
-				{
-					CHECK(LoadTransition(transsNode[transNames[j]], animator, state, transNames[j].c_str()));
-				}
-			}
-		}
-
-		animator->SetDefaultState(node["State"].asCString());
 	}
 
 	if (entityRoot.isMember("Collider"))

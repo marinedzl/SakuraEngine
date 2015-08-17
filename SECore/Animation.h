@@ -1,31 +1,36 @@
 #pragma once
+#include <queue>
+#include "AnimationContainer.h"
 
-class AnimationState;
-class Animation : public SECore::Animation
+class Animation : public AnimationContainer
 {
 public:
 	virtual ~Animation();
-	virtual void Play(const char* clipname);
-	virtual void CrossFade(const char* clipname, float fadeLength);
-	virtual bool GetBoneTM(const char* name, Matrix& mat) const;
+	virtual void Play(const char* name, bool loop = true);
+	virtual void CrossFade(const char* name, float fadeLength, bool loop = true);
+	virtual void CrossFadeQueue(const char* name, float offset, float fadeLength, bool loop = true);
+	virtual void SetClipChangedCallback(ClipChangedCallback* callback, void* userData) { 
+		mClipChangedCallback = callback, mClipChangedCallbackData = userData; }
 public:
 	Animation();
-	void Update(float deltaTime);
-	void SetSkeleton(Skeleton* skeleton);
-	bool AddClip(const char* name, AnimationClip* clip);
-	bool GetMatrix(Matrix* dst) const;
-	const AnimationClip* GetClip(const char* name) const;
+	virtual void Update(float deltaTime);
 private:
-	void UpdateTM();
+	struct FadeData
+	{
+		const AnimationClip* clip;
+		float offset;
+		float length;
+		bool loop;
+	};
 private:
-	typedef std::map<std::string, AnimationClip*> Clips;
+	void ModTime();
+	void CheckFadeQueue();
 private:
-	Skeleton* mSkeleton;
-	Clips mClips;
-	std::vector<Matrix> mTMs;
-	std::vector<Matrix> mBones;
+	ClipChangedCallback* mClipChangedCallback;
+	void* mClipChangedCallbackData;
+	std::deque<FadeData> mFadeQueue;
 	float mFadeLength;
 	float mFadeElapsedTime;
-	AnimationState* mCurrentState;
-	AnimationState* mNextState;
+	bool mIsLoop;
+	BlendDesc mBlendDesc;
 };

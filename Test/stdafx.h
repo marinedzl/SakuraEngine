@@ -36,12 +36,13 @@ typedef SECore::Texture Texture;
 typedef SECore::Camera Camera;
 typedef SECore::Scene::Entity GameObject;
 typedef SECore::Animation Animation;
-typedef SECore::Animator Animator;
 typedef SECore::Transform Transform;
 typedef SECore::Ray Ray;
 typedef SECore::RaycastHit RaycastHit;
 typedef SECore::RigidBody RigidBody;
 typedef SECore::CharacterController CharacterController;
+
+class AnimationPlayer;
 
 #define KEY_DOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
 #define KEY_UP(vk_code)   ((GetAsyncKeyState(vk_code) & 0x8000) ? 0 : 1)

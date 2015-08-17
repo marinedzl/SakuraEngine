@@ -205,23 +205,12 @@ namespace SECore
 
 	struct Animation
 	{
+		typedef void ClipChangedCallback(void* data, const char* prev, const char* curr);
 		virtual ~Animation() {}
-		virtual void Play(const char* clipname) = 0;
-		virtual void CrossFade(const char* clipname, float fade) = 0;
-		virtual bool GetBoneTM(const char* name, Matrix& mat) const = 0;
-	};
-
-	struct Animator 
-	{
-		typedef void StateCallback(void* data);
-
-		virtual ~Animator() {}
-		virtual bool GetBoneTM(const char* name, Matrix& mat) const = 0;
-		virtual bool SetBool(const char* name, bool value) = 0;
-		virtual const char* GetCurrentStateName() const = 0;
-		virtual bool DoTransition(const char* name) = 0;
-		virtual bool IsTransition() const = 0;
-		virtual bool AddStateEvent(const char* name, float length, StateCallback callback, void* data) = 0;
+		virtual void Play(const char* name, bool loop = true) = 0;
+		virtual void CrossFade(const char* name, float fadeLength, bool loop = true) = 0;
+		virtual void CrossFadeQueue(const char* name, float offset, float fadeLength, bool loop = true) = 0;
+		virtual void SetClipChangedCallback(ClipChangedCallback* callback, void* userData) = 0;
 	};
 
 	struct CharacterController
@@ -323,10 +312,6 @@ namespace SECore
 			virtual void DestroyAnimation() = 0;
 			virtual Animation* GetAnimation() = 0;
 			virtual Animation* CreateAnimation() = 0;
-
-			virtual void DestroyAnimator() = 0;
-			virtual Animator* GetAnimator() = 0;
-			virtual Animator* CreateAnimator() = 0;
 
 			virtual void DestroyCollider() = 0;
 			virtual Collider* GetCollider() = 0;

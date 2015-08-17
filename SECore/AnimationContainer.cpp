@@ -14,19 +14,6 @@ AnimationContainer::~AnimationContainer()
 	ReleaseMap(mClips);
 }
 
-const AnimationClip * AnimationContainer::GetClip(const char * name) const
-{
-	Clips::const_iterator iter = mClips.find(name);
-	return iter == mClips.end() ? nullptr : iter->second;
-}
-
-bool AnimationContainer::AddClip(const char* name, AnimationClip* clip)
-{
-	clip->AddRef();
-	mClips.insert(std::make_pair(name, clip));
-	return true;
-}
-
 void AnimationContainer::SetSkeleton(Skeleton * skeleton)
 {
 	SAFE_RELEASE(mSkeleton);
@@ -35,7 +22,6 @@ void AnimationContainer::SetSkeleton(Skeleton * skeleton)
 	{
 		mSkeleton->AddRef();
 		mTMs.resize(mSkeleton->GetBoneCount());
-		mBones.resize(mSkeleton->GetBoneCount());
 	}
 }
 
@@ -46,21 +32,24 @@ bool AnimationContainer::GetMatrix(Matrix* dst) const
 	return true;
 }
 
-bool AnimationContainer::GetBoneTM(const char* name, Matrix& mat) const
+const AnimationClip * AnimationContainer::GetClip(const char * name) const
 {
-	bool ret = false;
-	UINT id = mSkeleton->GetBoneID(name);
-	if (id < 0)
-		goto Exit0;
-	mat = mBones[id];
-	ret = true;
-Exit0:
-	return ret;
+	Clips::const_iterator iter = mClips.find(name);
+	return iter == mClips.end() ? nullptr : iter->second;
+}
+bool AnimationContainer::AddClip(AnimationClip* clip)
+{
+	clip->AddRef();
+	mClips.insert(std::make_pair(clip->GetName(), clip));
+	return true;
 }
 
-void AnimationContainer::Blend(const BlendDesc& desc)
+void AnimationContainer::Blend(const BlendDesc& blendDesc)
 {
-	if (desc.nextClip)
+	if (!blendDesc.currClip)
+		return;
+
+	if (blendDesc.nextClip)
 	{
 		size_t boneCount = mSkeleton->GetBoneCount();
 		for (size_t i = 0; i < boneCount; ++i)
@@ -68,12 +57,10 @@ void AnimationContainer::Blend(const BlendDesc& desc)
 			XMMATRIX inv, mat, matNext;
 			inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
 
-			desc.currClip->GetTM(mat, desc.currTime, i);
-			desc.nextClip->GetTM(matNext, desc.nextTime, i);
+			((AnimationClip*)blendDesc.currClip)->GetTM(mat, blendDesc.currTime, i);
+			((AnimationClip*)blendDesc.nextClip)->GetTM(matNext, blendDesc.nextTime, i);
 
-			mat = mat * (1 - desc.lerp) + matNext * desc.lerp;
-
-			XMStoreFloat4x4(mBones[i], mat);
+			mat = mat * (1 - blendDesc.lerp) + matNext * blendDesc.lerp;
 
 			mat = inv * mat;
 
@@ -88,9 +75,7 @@ void AnimationContainer::Blend(const BlendDesc& desc)
 			XMMATRIX inv, mat;
 			inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
 
-			desc.currClip->GetTM(mat, desc.currTime, i);
-
-			XMStoreFloat4x4(mBones[i], mat);
+			((AnimationClip*)blendDesc.currClip)->GetTM(mat, blendDesc.currTime, i);
 
 			mat = inv * mat;
 

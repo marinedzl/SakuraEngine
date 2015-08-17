@@ -5,32 +5,27 @@
 
 namespace
 {
-	void OnAnimatorCallBack(void* data)
+	void _ClipChangedCallback(void* data, const char* prev, const char* curr)
 	{
-		((CharaCtrl*)data)->OnAnimatorCallback();
+		((CharaCtrl*)data)->OnClipChanged(prev, curr);
 	}
 }
 
-CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon)
+CharaCtrl::CharaCtrl(GameObject& gameObject)
 	: gameObject(gameObject)
 	, transform(gameObject.GetTransform())
-	, weapon(weapon)
 	, mGravity(9.8f)
 	, mMoveSpeed(5.5f)
 	, mDashSpeedFactor(1.5f)
 	, mRotateSpeed(10)
 	, mJumpGravity(20)
 	, mJumpInitSpeed(10)
+	, animation(*gameObject.GetAnimation())
+	, mCoolDown(0)
 {
-	animator = gameObject.GetAnimator();
 	mCCT = gameObject.GetCCT();
-	if (weapon)
-	{
-		weaponOffset = weapon->GetTransform();
-		weaponOffset.scaling = Vector3(1, 1, 1);
-	}
-
-	animator->AddStateEvent("attack", 0.9f, OnAnimatorCallBack, this);
+	animation.Play("idle");
+	animation.SetClipChangedCallback(_ClipChangedCallback, this);
 }
 
 CharaCtrl::~CharaCtrl()
@@ -106,6 +101,9 @@ void CharaCtrl::UpdateMove(float deltaTime, float factor)
 
 void CharaCtrl::Update(float deltaTime)
 {
+	mCoolDown -= deltaTime;
+	mCoolDown = max(mCoolDown, 0);
+
 	switch (mState)
 	{
 	case eIdle:
@@ -154,17 +152,6 @@ void CharaCtrl::Update(float deltaTime)
 
 	Vector3 offset(0, 2, 0);
 	gTestMan.GetCameraCtrl()->FocusOn(transform.position + offset);
-
-	if (weapon)
-	{
-		Matrix bindPos;
-		animator->GetBoneTM("wuqi_R", bindPos);
-		XMMATRIX world = AffineTransform(transform);
-		XMMATRIX bone = XMLoadFloat4x4((XMFLOAT4X4*)&bindPos);
-		XMMATRIX offset = AffineTransform(weaponOffset);
-		world = offset * bone * world;
-		MatrixDecompose(world, weapon->GetTransform());
-	}
 }
 
 void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -256,29 +243,19 @@ void CharaCtrl::MoveTo(const Vector3 & dest)
 void CharaCtrl::Run()
 {
 	mState = eRun;
-	animator->SetBool("run", true);
-	animator->SetBool("stop", false);
-	animator->SetBool("jump", false);
-	animator->SetBool("dash", false);
+	animation.CrossFade("run", 0.2f);
 }
 
 void CharaCtrl::Dash()
 {
 	mState = eDash;
-	animator->SetBool("run", false);
-	animator->SetBool("stop", false);
-	animator->SetBool("jump", false);
-	animator->SetBool("dash", true);
+	animation.CrossFade("dash", 0.2f);
 }
 
 void CharaCtrl::Stop()
 {
 	mState = eIdle;
-	animator->SetBool("run", false);
-	animator->SetBool("stop", true);
-	animator->SetBool("jump", false);
-	animator->SetBool("dash", false);
-	animator->SetBool("attack", false);
+	animation.CrossFade("idle", 0.2f);
 }
 
 void CharaCtrl::Jump()
@@ -288,18 +265,15 @@ void CharaCtrl::Jump()
 	mState = eJump;
 	mJumpSpeed = mDest - transform.position;
 	mJumpSpeed.y = mJumpInitSpeed;
-	animator->SetBool("run", false);
-	animator->SetBool("stop", false);
-	animator->SetBool("jump", true);
-	animator->SetBool("land", false);
-	animator->SetBool("dash", false);
+	animation.CrossFade("jump_takeoff", 0.2f, false);
+	animation.CrossFadeQueue("jump_mid", 1, 0);
 }
 
 void CharaCtrl::Land()
 {
 	mState = eIdle;
-	animator->SetBool("jump", false);
-	animator->SetBool("land", true);
+	animation.CrossFade("jump_land", 0.1f, false);
+	animation.CrossFadeQueue("idle", 0.9f, 0.2f);
 }
 
 void CharaCtrl::Attack()
@@ -307,30 +281,20 @@ void CharaCtrl::Attack()
 	if (mState == eJump)
 		return;
 
-	animator->SetBool("run", false);
-	animator->SetBool("dash", false);
-	animator->SetBool("idle", false);
+	if (!IsCoolDown())
+		return;
 
-	if (mState == eAttack)
-	{
-		if (!animator->IsTransition())
-		{
-			animator->DoTransition("to attack");
-		}
-	}
-	else
-	{
-		mState = eAttack;
-		animator->SetBool("attack", true);
-	}
+	mCoolDown = 0.5f;
+
+	mState = eAttack;
+	animation.CrossFade("lattack1", 0.2f, false);
+	animation.CrossFadeQueue("idle", 0.9f, 0.2f);
 }
 
-void CharaCtrl::OnAnimatorCallback()
+void CharaCtrl::OnClipChanged(const char * prev, const char * curr)
 {
-	mState = eIdle;
-	animator->SetBool("run", false);
-	animator->SetBool("stop", false);
-	animator->SetBool("jump", false);
-	animator->SetBool("dash", false);
-	animator->SetBool("attack", false);
+	if (strcmp(curr, "idle") == 0)
+	{
+		mState = eIdle;
+	}
 }
