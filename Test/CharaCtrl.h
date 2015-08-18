@@ -29,6 +29,7 @@ private:
 		eAttack,
 	};
 private:
+	int mAttackStep;
 	State mState;
 	Vector3 mDest;
 	GameObject& gameObject;

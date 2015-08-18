@@ -23,6 +23,7 @@ CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon)
 	, mJumpInitSpeed(10)
 	, animation(*gameObject.GetAnimation())
 	, mCoolDown(0)
+	, mAttackStep(0)
 {
 	mCCT = gameObject.GetCCT();
 	animation.Play("idle");
@@ -293,13 +294,16 @@ void CharaCtrl::Attack()
 	if (mState == eJump)
 		return;
 
-	if (!IsCoolDown())
+	if (!IsCoolDown() || mAttackStep >= 4)
 		return;
 
-	mCoolDown = 0.5f;
+	mCoolDown = 0.6f;
 
 	mState = eAttack;
-	animation.CrossFade("lattack1", 0.2f, false);
+	char buff[32];
+	++mAttackStep;
+	sprintf_s(buff, "attack%d", mAttackStep);
+	animation.CrossFade(buff, 0.2f, false);
 	animation.CrossFadeQueue("idle", 0.7f, 0.3f);
 }
 
@@ -308,5 +312,6 @@ void CharaCtrl::OnClipChanged(const char * prev, const char * curr)
 	if (strcmp(curr, "idle") == 0)
 	{
 		mState = eIdle;
+		mAttackStep = 0;
 	}
 }
