@@ -139,6 +139,16 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 		animation->SetSkeleton(skeleton);
 		skeleton->Release();
 
+		if (animationRoot.isMember("SavedBones"))
+		{
+			const Json::Value& savedBonesRoot = animationRoot["SavedBones"];
+			size_t count = savedBonesRoot.size();
+			for (size_t i = 0; i < count; i++)
+			{
+				animation->AddSavedBoneTM(savedBonesRoot[i].asCString());
+			}
+		}
+
 		const Json::Value& jsonClips = animationRoot["Clips"];
 		std::vector<std::string> memberNames = jsonClips.getMemberNames();
 		for (size_t i = 0; i < memberNames.size(); ++i)

@@ -175,6 +175,16 @@ bool MatrixDecompose(const Matrix& mat, Vector3& position, Quat& rotation, Vecto
 
 bool MatrixDecompose(const XMMATRIX& mat, Vector3& position, Quat& rotation, Vector3& scaling);
 
+inline bool MatrixDecompose(const Matrix& mat, Transform& transform)
+{
+	return MatrixDecompose(mat, transform.position, transform.rotation, transform.scaling);
+}
+
+inline bool MatrixDecompose(const XMMATRIX& mat, Transform& transform)
+{
+	return MatrixDecompose(mat, transform.position, transform.rotation, transform.scaling);
+}
+
 inline PxVec3 ConvertPxVec3(const Vector3& v)
 {
 	return PxVec3(v.x, v.y, v.z);

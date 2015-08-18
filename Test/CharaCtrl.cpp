@@ -11,8 +11,9 @@ namespace
 	}
 }
 
-CharaCtrl::CharaCtrl(GameObject& gameObject)
+CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon)
 	: gameObject(gameObject)
+	, weapon(weapon)
 	, transform(gameObject.GetTransform())
 	, mGravity(9.8f)
 	, mMoveSpeed(5.5f)
@@ -152,6 +153,17 @@ void CharaCtrl::Update(float deltaTime)
 
 	Vector3 offset(0, 2, 0);
 	gTestMan.GetCameraCtrl()->FocusOn(transform.position + offset);
+
+	if (weapon)
+	{
+		Matrix bindPos;
+		animation.GetSavedBoneTM("wuqi_R", bindPos);
+		XMMATRIX world = AffineTransform(transform);
+		XMMATRIX bone = XMLoadFloat4x4((XMFLOAT4X4*)&bindPos);
+		XMMATRIX offset = AffineTransform(weaponOffset);
+		world = offset * bone * world;
+		MatrixDecompose(world, weapon->GetTransform());
+	}
 }
 
 void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -265,7 +277,7 @@ void CharaCtrl::Jump()
 	mState = eJump;
 	mJumpSpeed = mDest - transform.position;
 	mJumpSpeed.y = mJumpInitSpeed;
-	animation.CrossFade("jump_takeoff", 0.2f, false);
+	animation.CrossFade("jump_takeoff", 0.3f, false);
 	animation.CrossFadeQueue("jump_mid", 1, 0);
 }
 
@@ -273,7 +285,7 @@ void CharaCtrl::Land()
 {
 	mState = eIdle;
 	animation.CrossFade("jump_land", 0.1f, false);
-	animation.CrossFadeQueue("idle", 0.9f, 0.2f);
+	animation.CrossFadeQueue("idle", 1, 0);
 }
 
 void CharaCtrl::Attack()
@@ -288,7 +300,7 @@ void CharaCtrl::Attack()
 
 	mState = eAttack;
 	animation.CrossFade("lattack1", 0.2f, false);
-	animation.CrossFadeQueue("idle", 0.9f, 0.2f);
+	animation.CrossFadeQueue("idle", 0.7f, 0.3f);
 }
 
 void CharaCtrl::OnClipChanged(const char * prev, const char * curr)

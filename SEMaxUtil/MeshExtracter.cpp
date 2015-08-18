@@ -69,18 +69,22 @@ namespace MaxPlugin
 
 		// texcoord
 		Tab<int> texMaps = gMesh->GetActiveMapChannelNum();
-		mMaxMesh.CH.resize(texMaps.Count());
 		for (int i = 0; i < texMaps.Count(); ++i)
 		{
 			int chan = texMaps[i];
-			mMaxMesh.CH[i] = chan;
-			int uvCount = gMesh->GetNumberOfMapVerts(chan);
-			mMaxMesh.UV[i].resize(uvCount);
-			for (int j = 0; j < uvCount; ++j)
+			if (chan == ID_DI)
 			{
-				Point3 tv = gMesh->GetMapVertex(chan, j);
-				mMaxMesh.UV[i][j].x = tv.x;
-				mMaxMesh.UV[i][j].y = 1 - tv.y;
+				size_t chIndex = mMaxMesh.CH.size();
+				mMaxMesh.CH.push_back(chan);
+				mMaxMesh.CH[chIndex] = chan;
+				int uvCount = gMesh->GetNumberOfMapVerts(chan);
+				mMaxMesh.UV[chIndex].resize(uvCount);
+				for (int j = 0; j < uvCount; ++j)
+				{
+					Point3 tv = gMesh->GetMapVertex(chan, j);
+					mMaxMesh.UV[chIndex][j].x = tv.x;
+					mMaxMesh.UV[chIndex][j].y = 1 - tv.y;
+				}
 			}
 		}
 	}

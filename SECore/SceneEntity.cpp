@@ -107,8 +107,8 @@ Exit0:
 
 void SceneEntity::Update(float deltaTime)
 {
-	if (mAnimation)
-		mAnimation->Update(deltaTime);
 	if (mCCT)
 		mCCT->Update(deltaTime);
+	if (mAnimation)
+		mAnimation->Update(deltaTime);
 }

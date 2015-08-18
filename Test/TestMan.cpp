@@ -5,6 +5,18 @@
 
 TestMan gTestMan;
 
+void log(const char* fmt, ...)
+{
+	va_list args;
+	size_t len;
+	char buffer[1024];
+	va_start(args, fmt);
+	len = vsnprintf_s(buffer, 1024, fmt, args);
+	va_end(args);
+	printf(buffer);
+	OutputDebugStringA(buffer);
+}
+
 TestMan::TestMan()
 	: scene(nullptr)
 	, mRT(nullptr)
@@ -43,10 +55,11 @@ void TestMan::Init()
 	CHECK(scene->LoadAdditive("scene.json"));
 
 	GameObject* mainChara = scene->FindEntity("main chara");
+	GameObject* weapon = scene->FindEntity("weapon");
 
 	if (mainChara)
 	{
-		mCharaCtrl = new CharaCtrl(*mainChara);
+		mCharaCtrl = new CharaCtrl(*mainChara, weapon);
 	}
 
 	mLastTime = timeGetTime();
@@ -71,7 +84,7 @@ void TestMan::Process()
 
 	float deltaTime = dwDelta / 1000.0f;
 
-	//deltaTime *= 0.1f;
+	deltaTime *= 0.1f;
 
 	if (mCameraCtrl)
 		mCameraCtrl->Update(deltaTime);

@@ -211,6 +211,7 @@ namespace SECore
 		virtual void CrossFade(const char* name, float fadeLength, bool loop = true) = 0;
 		virtual void CrossFadeQueue(const char* name, float offset, float fadeLength, bool loop = true) = 0;
 		virtual void SetClipChangedCallback(ClipChangedCallback* callback, void* userData) = 0;
+		virtual bool GetSavedBoneTM(const char* bone, Matrix& dst) const = 0;
 	};
 
 	struct CharacterController
