@@ -78,13 +78,18 @@ void AnimationContainer::Blend(const BlendDesc& blendDesc)
 		size_t boneCount = mSkeleton->GetBoneCount();
 		for (size_t i = 0; i < boneCount; ++i)
 		{
-			XMMATRIX inv, mat, matNext;
+			XMMATRIX inv, mat;
 			inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
 
-			((AnimationClip*)blendDesc.currClip)->GetTM(mat, blendDesc.currTime, i);
-			((AnimationClip*)blendDesc.nextClip)->GetTM(matNext, blendDesc.nextTime, i);
+			XMVECTOR pos0, pos1, rot0, rot1;
 
-			mat = mat * (1 - blendDesc.lerp) + matNext * blendDesc.lerp;
+			((AnimationClip*)blendDesc.currClip)->GetTM(pos0, rot0, blendDesc.currTime, i);
+			((AnimationClip*)blendDesc.nextClip)->GetTM(pos1, rot1, blendDesc.nextTime, i);
+
+			pos0 = XMVectorLerp(pos0, pos1, blendDesc.lerp);
+			rot0 = XMQuaternionSlerp(rot0, rot1, blendDesc.lerp);
+
+			mat = XMMatrixRotationQuaternion(rot0) * XMMatrixTranslationFromVector(pos0);
 
 			XMStoreFloat4x4(savedBones[i], mat);
 
@@ -101,7 +106,10 @@ void AnimationContainer::Blend(const BlendDesc& blendDesc)
 			XMMATRIX inv, mat;
 			inv = XMLoadFloat4x4((XMFLOAT4X4*)&mSkeleton->GetInverseTM(i));
 
-			((AnimationClip*)blendDesc.currClip)->GetTM(mat, blendDesc.currTime, i);
+			XMVECTOR pos0, rot0;
+			((AnimationClip*)blendDesc.currClip)->GetTM(pos0, rot0, blendDesc.currTime, i);
+
+			mat = XMMatrixRotationQuaternion(rot0) * XMMatrixTranslationFromVector(pos0);
 
 			XMStoreFloat4x4(savedBones[i], mat);
 

@@ -84,7 +84,7 @@ void TestMan::Process()
 
 	float deltaTime = dwDelta / 1000.0f;
 
-	deltaTime *= 0.1f;
+	//deltaTime *= 0.1f;
 
 	if (mCameraCtrl)
 		mCameraCtrl->Update(deltaTime);

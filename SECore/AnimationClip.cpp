@@ -64,7 +64,7 @@ Exit0:
 	return ret;
 }
 
-void AnimationClip::GetTM(XMMATRIX& dst, float time, size_t index) const
+void AnimationClip::GetTM(XMVECTOR& position, XMVECTOR& rotation, float time, size_t index) const
 {
 	int frameCount = GetFrameCount();
 	time = fmod(time, mLength);
@@ -74,8 +74,6 @@ void AnimationClip::GetTM(XMMATRIX& dst, float time, size_t index) const
 	const AnimationClip::Frame* prev = GetFrame((frameCount + frame - 1) % frameCount);
 	const AnimationClip::Frame* next = GetFrame(frame % frameCount);
 
-	XMVECTOR position;
-	XMVECTOR rotation;
 	XMVECTOR prevT = XMLoadFloat3(prev->tm[index].pos);
 	XMVECTOR prevR = XMLoadFloat4(prev->tm[index].rot);
 	XMVECTOR nextT = XMLoadFloat3(next->tm[index].pos);
@@ -96,9 +94,4 @@ void AnimationClip::GetTM(XMMATRIX& dst, float time, size_t index) const
 		position = XMVectorLerp(prevT, nextT, lerp);
 		rotation = XMQuaternionSlerp(prevR, nextR, lerp);
 	}
-
-	XMMATRIX trans;
-	trans = XMMatrixTranslationFromVector(position);
-	dst = XMMatrixRotationQuaternion(rotation);
-	dst *= trans;
 }

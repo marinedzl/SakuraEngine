@@ -10,7 +10,7 @@ public:
 	AnimationClip();
 	size_t GetFrameCount() const { return mFrames.size(); }
 	int GetFrameRate() const { return mFrameRate; }
-	void GetTM(XMMATRIX& dst, float time, size_t index) const;
+	void GetTM(XMVECTOR& position, XMVECTOR& rotation, float time, size_t index) const;
 	void SetName(const char* name) { mName = name; }
 	virtual bool LoadFromFile(const char* filename);
 private:
