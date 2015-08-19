@@ -314,6 +314,8 @@ namespace SECore
 		virtual void Enable(bool enable) = 0;
 		virtual Data& GetData() = 0;
 		virtual const Data& GetData() const = 0;
+		virtual void SetName(const char* name) = 0;
+		virtual const char* GetName() const = 0;
 		virtual Transform& GetTransform() = 0;
 		virtual const Transform& GetTransform() const = 0;
 		virtual void Setup() = 0;
@@ -371,6 +373,8 @@ namespace SECore
 		virtual Entity* CreateEntity() = 0;
 		virtual Entity* FindEntity(const char* name) = 0;
 		virtual void RemoveEntity(Entity* entity) = 0;
+
+		virtual Light* FindLight(const char* name) = 0;
 
 		virtual bool LoadAdditive(const char* filename) = 0;
 

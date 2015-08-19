@@ -64,8 +64,6 @@ class RenderTexture;
 class SceneEntity;
 class RenderEntity;
 
-class Light;
-
 class Camera;
 
 template<class T>

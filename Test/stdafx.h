@@ -35,6 +35,7 @@ typedef SECore::Matrix Matrix;
 typedef SECore::Texture Texture;
 typedef SECore::Camera Camera;
 typedef SECore::Scene::Entity GameObject;
+typedef SECore::Light Light;
 typedef SECore::Animation Animation;
 typedef SECore::Transform Transform;
 typedef SECore::Ray Ray;

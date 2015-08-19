@@ -56,10 +56,11 @@ void TestMan::Init()
 
 	GameObject* mainChara = scene->FindEntity("main chara");
 	GameObject* weapon = scene->FindEntity("weapon");
+	Light* light = scene->FindLight("chara light");
 
 	if (mainChara)
 	{
-		mCharaCtrl = new CharaCtrl(*mainChara, weapon);
+		mCharaCtrl = new CharaCtrl(*mainChara, weapon, light);
 	}
 
 	mLastTime = timeGetTime();

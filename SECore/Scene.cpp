@@ -102,6 +102,23 @@ void Scene::ClearLights()
 	DeleteList(mLights);
 }
 
+SECore::Light * Scene::FindLight(const char * name)
+{
+	Lights::iterator iter = mLights.begin();
+	Lights::iterator iterEnd = mLights.end();
+	for (; iter != iterEnd; ++iter)
+	{
+		if (SECore::Light* light = *iter)
+		{
+			if (strcmp(light->GetName(), name) == 0)
+			{
+				return light;
+			}
+		}
+	}
+	return nullptr;
+}
+
 bool Scene::Init()
 {
 	bool ret = false;
@@ -345,6 +362,7 @@ void Scene::Draw(SECore::RenderTarget* rt)
 	}
 
 	context->VSSetConstantBuffers(0, 1, &mCBGlobal);
+	context->PSSetConstantBuffers(0, 1, &mCBGlobal);
 
 	context->PSSetShader(mGBufferPS, nullptr, 0);
 	mGBufferRT->Begin();
@@ -373,7 +391,6 @@ void Scene::Draw(SECore::RenderTarget* rt)
 			bSaved = true;
 			mGBufferRT->CaptureToFile("GBuffer.bmp");
 			mLightingRT->CaptureToFile("Lighting.bmp");
-			CHECK(false);
 		}
 	}
 

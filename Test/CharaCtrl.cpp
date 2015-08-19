@@ -11,9 +11,10 @@ namespace
 	}
 }
 
-CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon)
+CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon, Light* light)
 	: gameObject(gameObject)
 	, weapon(weapon)
+	, light(light)
 	, transform(gameObject.GetTransform())
 	, mGravity(9.8f)
 	, mMoveSpeed(5.5f)
@@ -164,6 +165,13 @@ void CharaCtrl::Update(float deltaTime)
 		XMMATRIX offset = AffineTransform(weaponOffset);
 		world = offset * bone * world;
 		MatrixDecompose(world, weapon->GetTransform());
+	}
+
+	if (light)
+	{
+		float y = light->GetTransform().position.y;
+		light->GetTransform() = transform;
+		light->GetTransform().position.y = y;
 	}
 }
 

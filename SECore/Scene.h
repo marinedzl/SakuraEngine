@@ -26,6 +26,7 @@ public:
 	virtual SECore::Scene::Config* GetConfig() { return &mConfig; }
 	virtual SECore::Light* AddPointLight();
 	virtual void ClearLights();
+	virtual SECore::Light* FindLight(const char* name);
 public:
 	Scene();
 	PxScene* GetPxScene() { return mPxScene; }
