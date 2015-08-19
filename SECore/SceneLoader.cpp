@@ -6,6 +6,7 @@
 #include "Animation.h"
 #include "AnimationClip.h"
 #include "ResourceManager.h"
+#include "PointLight.h"
 #include "SceneLoader.h"
 
 DWORD ConverColor2Dword(const Color& color)
@@ -83,6 +84,16 @@ Vector3 Json2Vec3(const Json::Value& value)
 	return ret;
 }
 
+Color Json2Color(const Json::Value& value)
+{
+	Color ret;
+	ret.r = (float)value[(size_t)0].asDouble();
+	ret.g = (float)value[1].asDouble();
+	ret.b = (float)value[2].asDouble();
+	ret.a = (float)value[3].asDouble();
+	return ret;
+}
+
 const float Angle2Radian = XM_PI / 180.0f;
 
 Quat Json2Quat(const Json::Value& value)
@@ -97,6 +108,18 @@ Quat Json2Quat(const Json::Value& value)
 	return ret;
 }
 
+void LoadTransform(Transform& transform, const Json::Value& transformRoot)
+{
+	if (transformRoot.isMember("Position"))
+		transform.position = Json2Vec3(transformRoot["Position"]);
+
+	if (transformRoot.isMember("Rotation"))
+		transform.rotation = Json2Quat(transformRoot["Rotation"]);
+
+	if (transformRoot.isMember("Scaling"))
+		transform.scaling = Json2Vec3(transformRoot["Scaling"]);
+}
+
 bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 {
 	bool ret = false;
@@ -107,18 +130,7 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 	}
 
 	if (entityRoot.isMember("Transform"))
-	{
-		const Json::Value& transformRoot = entityRoot["Transform"];
-
-		if (transformRoot.isMember("Position"))
-			entity->GetTransform().position = Json2Vec3(transformRoot["Position"]);
-
-		if (transformRoot.isMember("Rotation"))
-			entity->GetTransform().rotation = Json2Quat(transformRoot["Rotation"]);
-
-		if (transformRoot.isMember("Scaling"))
-			entity->GetTransform().scaling = Json2Vec3(transformRoot["Scaling"]);
-	}
+		LoadTransform(entity->GetTransform(), entityRoot["Transform"]);
 
 	if (entityRoot.isMember("Animation"))
 	{
@@ -301,6 +313,38 @@ Exit0:
 	return ret;
 }
 
+bool LoadLight(Scene* scene, const Json::Value& lightRoot)
+{
+	const char* type = lightRoot["Type"].asCString();
+
+	SECore::Light* light = nullptr;
+
+	if (strcmp(type, "PointLight") == 0)
+	{
+		light = scene->AddPointLight();
+	}
+
+	if (lightRoot.isMember("Transform"))
+		LoadTransform(light->GetTransform(), lightRoot["Transform"]);
+
+	if (lightRoot.isMember("Diffuse"))
+		light->GetData().diffuse = Json2Color(lightRoot["Diffuse"]);
+
+	if (lightRoot.isMember("Specular"))
+		light->GetData().specular = Json2Color(lightRoot["Specular"]);
+
+	if (lightRoot.isMember("DiffusePower"))
+		light->GetData().diffusePower = (float)(lightRoot["DiffusePower"].asDouble());
+
+	if (lightRoot.isMember("SpecularPower"))
+		light->GetData().specularPower = (float)(lightRoot["SpecularPower"].asDouble());
+
+	if (lightRoot.isMember("SpecularHardness"))
+		light->GetData().specularHardness = (float)(lightRoot["SpecularHardness"].asDouble());
+
+	return true;
+}
+
 bool SceneLoader::Load(Scene* scene, const char* filename)
 {
 	bool ret = false;
@@ -333,6 +377,12 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 		}
 		
 		LoadEntity(entity, entityRoot);
+	}
+
+	size_t lightCount = root["Lights"].size();
+	for (size_t i = 0; i < lightCount; i++)
+	{
+		LoadLight(scene, root["Lights"][i]);
 	}
 
 	ret = true;

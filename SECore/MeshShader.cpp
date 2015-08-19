@@ -118,7 +118,7 @@ bool MeshShader::SetPass(size_t passIndex) const
 		}
 	}
 
-	context->PSSetConstantBuffers(0, 1, &mCBPS);
+	context->PSSetConstantBuffers(2, 1, &mCBPS);
 
 	// set texture
 	if (mMainTexture)

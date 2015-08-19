@@ -97,12 +97,10 @@ void TestMan::Process()
 
 	if (mRT)
 	{
-		mRT->Begin();
 		if (scene)
 		{
 			scene->Draw(mRT);
 		}
-		mRT->End();
 	}
 }
 

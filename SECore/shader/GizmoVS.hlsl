@@ -1,6 +1,6 @@
 #pragma pack_matrix(row_major)
 
-cbuffer Property : register(b0)
+cbuffer CB : register(b0)
 {
 	matrix MVP;
 };

@@ -24,6 +24,8 @@ using namespace DirectX;
 #include "PxPhysicsAPI.h"
 using namespace physx;
 
+#include <FreeImage.h>
+
 void log(const TCHAR* fmt, ...);
 
 typedef SECore::Matrix Matrix;
@@ -56,9 +58,13 @@ class Skeleton;
 class Animation;
 class Animator;
 class AnimationClip;
+class RenderTarget;
+class RenderTexture;
 
 class SceneEntity;
 class RenderEntity;
+
+class Light;
 
 class Camera;
 

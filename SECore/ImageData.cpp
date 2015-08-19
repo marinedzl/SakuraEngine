@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <FreeImage.h>
 #include "ImageData.h"
 
 ImageData::ImageData()
@@ -96,5 +95,37 @@ BOOL ImageData::LoadFromFile(const char* filename)
 Exit0:
 	if (dib)
 		FreeImage_Unload(dib);
+	return ret;
+}
+
+bool SaveTextureToFile(const char* filename, const void* data,  int w, int h)
+{
+	bool ret = false;
+	FIBITMAP* bitmap = nullptr;
+
+	bitmap = FreeImage_AllocateT(FIT_BITMAP, w, h, 32);
+	CHECK(bitmap);
+
+	RGBQUAD dst;
+	const Color* imageData = (const Color*)data;
+	for (int y = 0; y < h; ++y)
+	{
+		for (int x = 0; x < w; ++x)
+		{
+			const Color& src = imageData[((h - 1 - y) * w + x)];
+			dst.rgbBlue = (BYTE)(src.b * 255);
+			dst.rgbGreen = (BYTE)(src.g * 255);
+			dst.rgbRed = (BYTE)(src.r * 255);
+			dst.rgbReserved = 255;
+			CHECK(FreeImage_SetPixelColor(bitmap, x, y, &dst));
+		}
+	}
+
+	CHECK(FreeImage_Save(FIF_BMP, bitmap, filename, BMP_DEFAULT));
+
+	ret = true;
+Exit0:
+	if (bitmap)
+		FreeImage_Unload(bitmap);
 	return ret;
 }

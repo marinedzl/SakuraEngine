@@ -24,6 +24,8 @@ public:
 	virtual SECore::Camera* GetCamera() { return &mCamera; }
 	virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance);
 	virtual SECore::Scene::Config* GetConfig() { return &mConfig; }
+	virtual SECore::Light* AddPointLight();
+	virtual void ClearLights();
 public:
 	Scene();
 	PxScene* GetPxScene() { return mPxScene; }
@@ -31,11 +33,13 @@ public:
 	void AddGizmo(Gizmo* gizmo);
 	void RemoveGizmo(Gizmo* gizmo);
 private:
-	void DrawScene();
+	void DrawObjects(bool drawingGBuffer);
+	void DrawLight();
 	void DrawGizmos();
 private:
 	typedef std::list<SceneEntity*> Entities;
 	typedef std::list<Gizmo*> Gizmos;
+	typedef std::list<SECore::Light*> Lights;
 private:
 	Config mConfig;
 	PxScene* mPxScene;
@@ -44,4 +48,18 @@ private:
 	Camera mCamera;
 	Entities mEntities;
 	Gizmos mGizmos;
+	Lights mLights;
+
+	ID3D11Buffer* mCBGlobal;
+
+	ID3D11PixelShader* mGBufferPS;
+	RenderTexture* mGBufferRT;
+	RenderTexture* mLightingRT;
+	ID3D11BlendState* mBlendState;
+	ID3D11DepthStencilState* mDepthStencilState;
+	ID3D11VertexShader* mLightingVS;
+	ID3D11Buffer* mLightingMesh;
+	ID3D11InputLayout* mInputLayout;
+
+	float mElapsedTime;
 };

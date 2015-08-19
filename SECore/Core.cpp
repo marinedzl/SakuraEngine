@@ -4,7 +4,16 @@
 #include "GizmoRenderer.h"
 #include "ResourceManager.h"
 #include "Physics.h"
+#include "PointLight.h"
 #include "Core.h"
+
+namespace
+{
+	void FreeImage_Output(FREE_IMAGE_FORMAT fif, const char *msg)
+	{
+		log(msg);
+	}
+}
 
 Core gCore;
 
@@ -22,12 +31,16 @@ bool Core::Init(const char* resourePath)
 
 	mWorkpath = resourePath;
 
+	FreeImage_Initialise(TRUE);
+	FreeImage_SetOutputMessage(FreeImage_Output);
+
 	CHECK(CreateDevice());
 	CHECK(gResourceManager.Init());
 	CHECK(gRenderStateManager.Init());
 	CHECK(gGizmosRenderer.Init());
 	CHECK(gMeshRenderer.Init());
 	CHECK(gPhysicsCore.Init());
+	CHECK(gPointLightShader.Init());
 
 	ret = true;
 Exit0:
@@ -36,11 +49,14 @@ Exit0:
 
 void Core::Release()
 {
+	gPointLightShader.Release();
 	gPhysicsCore.Release();
 	gMeshRenderer.Release();
 	gGizmosRenderer.Release();
 	gRenderStateManager.Release();
 	gResourceManager.Release();
+
+	FreeImage_DeInitialise();
 
 	SAFE_RELEASE(mDxgiFactory);
 	SAFE_RELEASE(mContext);

@@ -260,6 +260,7 @@ namespace SECore
 		virtual ~RenderTarget() {}
 		virtual bool Begin() = 0;
 		virtual void End() = 0;
+		virtual void Clear(const Color& color) = 0;
 		virtual float GetWidth() const = 0;
 		virtual float GetHeight() const = 0;
 		virtual void ClearDepth() = 0;
@@ -290,6 +291,37 @@ namespace SECore
 		virtual void ScreenToWorld(const Vector3& src, Vector3& dst) = 0;
 		virtual void WorldToScreen(const Vector3& src, Vector3& dst) = 0;
 		virtual void ScreenPointToRay(Ray& ray, const Vector3& point) = 0;
+	};
+
+	struct Light
+	{
+		struct Data
+		{
+			Color diffuse;
+			Color specular;
+			float diffusePower;
+			float specularPower;
+			float specularHardness;
+			Data()
+				: diffusePower(10)
+				, specularPower(10)
+				, specularHardness(80)
+			{
+			}
+		};
+		virtual ~Light() {}
+		virtual bool IsEnable() const = 0;
+		virtual void Enable(bool enable) = 0;
+		virtual Data& GetData() = 0;
+		virtual const Data& GetData() const = 0;
+		virtual Transform& GetTransform() = 0;
+		virtual const Transform& GetTransform() const = 0;
+		virtual void Setup() = 0;
+	};
+
+	struct PointLight : Light
+	{
+		virtual ~PointLight() {}
 	};
 
 	struct Scene : public Object
