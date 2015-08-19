@@ -302,10 +302,14 @@ namespace SECore
 			float diffusePower;
 			float specularPower;
 			float specularHardness;
+			float range;
+			float intensity;
 			Data()
 				: diffusePower(10)
 				, specularPower(10)
 				, specularHardness(80)
+				, range(10)
+				, intensity(1)
 			{
 			}
 		};
@@ -332,6 +336,7 @@ namespace SECore
 		{
 			virtual ~Config() {}
 			virtual void EnableGizmo(bool enable) = 0;
+			virtual void SetAmbientColor(const Color& color) = 0;
 		};
 		struct Entity
 		{

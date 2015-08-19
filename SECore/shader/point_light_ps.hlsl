@@ -10,6 +10,10 @@ struct Light
 
 	float3 position;
 	float specularHardness;
+
+	float range;
+	float intensity;
+	float2 nouse;
 };
 
 cbuffer CBLight : register(b1) { Light gLight; };
@@ -55,7 +59,7 @@ float4 main(float4 screenPos : SV_POSITION) : SV_TARGET
 	float distance = length(dir);
 	dir = normalize(dir);
 	
-	float factor = max(0, 1 - distance) * max(0, dot(dir, normal));
+	float factor = max(0, gLight.range - distance) * max(0, dot(dir, normal)) * gLight.intensity;
 	float3 color = 0;
 	color = gLight.diffuse * factor;
 	

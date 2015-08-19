@@ -6,9 +6,11 @@ class Scene : public SECore::Scene
 	friend class SceneLoader;
 	struct Config : public SECore::Scene::Config
 	{
-		Config() : showGizmo(false) {}
+		Config() : showGizmo(false), AmbientColor(1, 1, 1, 1) {}
 		virtual void EnableGizmo(bool enable) { showGizmo = enable; }
+		virtual void SetAmbientColor(const Color& color) { AmbientColor = color; }
 		bool showGizmo;
+		Color AmbientColor;
 	};
 public:
 	virtual ~Scene();

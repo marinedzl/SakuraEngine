@@ -347,6 +347,12 @@ bool LoadLight(Scene* scene, const Json::Value& lightRoot)
 	if (lightRoot.isMember("SpecularHardness"))
 		light->GetData().specularHardness = (float)(lightRoot["SpecularHardness"].asDouble());
 
+	if (lightRoot.isMember("Range"))
+		light->GetData().range = (float)(lightRoot["Range"].asDouble());
+
+	if (lightRoot.isMember("Intensity"))
+		light->GetData().intensity = (float)(lightRoot["Intensity"].asDouble());
+
 	return true;
 }
 
@@ -362,6 +368,10 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 		const Json::Value& configRoot = root["Config"];
 		if (configRoot.isMember("ShowGizmo"))
 			scene->GetConfig()->EnableGizmo(configRoot["ShowGizmo"].asBool());
+		if (configRoot.isMember("AmbientColor"))
+		{
+			scene->GetConfig()->SetAmbientColor(Json2Color(configRoot["AmbientColor"]));
+		}
 	}
 
 	CHECK(root.isMember("Entities"));

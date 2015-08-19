@@ -18,4 +18,5 @@ cbuffer CBGobal : register(b0)
 	matrix INV_VP;
 	float3 EYE_POS; float nouse;
 	float2 SCREEN_SIZE; float2 nouse2;
+	float4 AmbientColor;
 };

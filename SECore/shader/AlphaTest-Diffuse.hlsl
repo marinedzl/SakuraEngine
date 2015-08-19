@@ -23,6 +23,8 @@ float4 main(V2P IN) : SV_TARGET
 	float4 c = _MainTex.Sample(_MainTexS, IN.uv) * _Color;
 	clip(c.a < _CutOff ? -1 : 1);
 
+	c *= AmbientColor;
+
 	float2 uv = IN.pos.xy / SCREEN_SIZE;
 	float4 lightColor = LT.Sample(LTS, uv);
 	c += lightColor;

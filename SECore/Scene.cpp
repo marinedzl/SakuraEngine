@@ -18,6 +18,7 @@ struct CBGlobal
 	Matrix INV_VP;
 	Vector3 EYE_POS; float nouse;
 	Vector2 SCREEN_SIZE; Vector2 nouse2;
+	Color AmbientColor;
 };
 
 Scene::Scene()
@@ -358,6 +359,7 @@ void Scene::Draw(SECore::RenderTarget* rt)
 		cb->EYE_POS = mCamera.eye;
 		cb->SCREEN_SIZE.x = mCamera.rtW;
 		cb->SCREEN_SIZE.y = mCamera.rtH;
+		cb->AmbientColor = mConfig.AmbientColor;
 		context->Unmap(mCBGlobal, 0);
 	}
 

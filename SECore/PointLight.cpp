@@ -8,10 +8,16 @@ struct CBLight
 {
 	Vector3 diffuse;
 	float diffusePower;
+
 	Vector3 specular;
 	float specularPower;
+
 	Vector3 position;
 	float specularHardness;
+
+	float range;
+	float intensity;
+	Vector2 nouse;
 };
 
 PointLight::PointLight()
@@ -84,6 +90,8 @@ void PointLightShader::Setup(PointLight * light)
 		dst->diffusePower = src.diffusePower;
 		dst->specularPower = src.specularPower;
 		dst->specularHardness = src.specularHardness;
+		dst->range = src.range;
+		dst->intensity = src.intensity;
 		context->Unmap(mCB, 0);
 	}
 
