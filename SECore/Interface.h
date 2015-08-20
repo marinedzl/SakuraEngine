@@ -56,6 +56,13 @@ namespace SECore
 			this->z *= other;
 			return *this;
 		}
+		Vector3& operator/=(float other)
+		{
+			this->x /= other;
+			this->y /= other;
+			this->z /= other;
+			return *this;
+		}
 	};
 
 	inline Vector3 operator+(const Vector3& a, const Vector3& b)
@@ -295,26 +302,21 @@ namespace SECore
 
 	struct Light
 	{
-		struct Data
-		{
-			Color color;
-			float intensity;
-			float range;
-			Data()
-				: range(10)
-				, intensity(1)
-			{
-			}
-		};
 		virtual ~Light() {}
+
 		virtual bool IsEnable() const = 0;
 		virtual void Enable(bool enable) = 0;
-		virtual Data& GetData() = 0;
-		virtual const Data& GetData() const = 0;
+
+		virtual void SetIntensity(float intensity) = 0;
 		virtual void SetName(const char* name) = 0;
-		virtual const char* GetName() const = 0;
-		virtual Transform& GetTransform() = 0;
+		virtual void SetColor(const Color& color) = 0;
 		virtual const Transform& GetTransform() const = 0;
+
+		virtual float GetIntensity() const = 0;
+		virtual Transform& GetTransform() = 0;
+		virtual const char* GetName() const = 0;
+		virtual const Color& GetColor() const = 0;
+
 		virtual void Setup() = 0;
 	};
 

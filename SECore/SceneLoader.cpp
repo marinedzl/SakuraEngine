@@ -333,13 +333,10 @@ bool LoadLight(Scene* scene, const Json::Value& lightRoot)
 		LoadTransform(light->GetTransform(), lightRoot["Transform"]);
 
 	if (lightRoot.isMember("Color"))
-		light->GetData().color = Json2Color(lightRoot["Color"]);
-
-	if (lightRoot.isMember("Range"))
-		light->GetData().range = (float)(lightRoot["Range"].asDouble());
+		light->SetColor(Json2Color(lightRoot["Color"]));
 
 	if (lightRoot.isMember("Intensity"))
-		light->GetData().intensity = (float)(lightRoot["Intensity"].asDouble());
+		light->SetIntensity((float)(lightRoot["Intensity"].asDouble()));
 
 	return true;
 }

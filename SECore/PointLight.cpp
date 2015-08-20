@@ -17,6 +17,7 @@ struct CBLight
 PointLight::PointLight()
 	: mIndex(0)
 	, mEnable(true)
+	, mIntensity(1)
 {
 }
 
@@ -76,13 +77,13 @@ void PointLightShader::Setup(PointLight * light)
 	D3D11_MAPPED_SUBRESOURCE mr;
 	if (SUCCEEDED(context->Map(mCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
 	{
-		const PointLight::Data& src = light->GetData();
 		CBLight* dst = (CBLight*)mr.pData;
-		Color2Vector3(src.color, dst->color);
+		Color2Vector3(light->GetColor(), dst->color);
 		dst->position = light->GetTransform().position;
 		dst->att.x = 0;
 		dst->att.y = 0.2f;
 		dst->att.z = 0;
+		dst->att /= light->GetIntensity();
 		context->Unmap(mCB, 0);
 	}
 

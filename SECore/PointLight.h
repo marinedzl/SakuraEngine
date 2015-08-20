@@ -11,15 +11,18 @@ public:
 	virtual const Transform& GetTransform() const { return mTransform; }
 	virtual bool IsEnable() const { return mEnable; }
 	virtual void Enable(bool enable) { mEnable = enable; }
-	virtual Data& GetData() { return mData; }
-	virtual const Data& GetData() const { return mData; }
+	virtual float GetIntensity() const { return mIntensity; }
+	virtual void SetIntensity(float intensity) { mIntensity = intensity; }
+	virtual const Color& GetColor() const { return mColor; }
+	virtual void SetColor(const Color& color) { mColor = color; }
 	virtual void Setup();
 private:
 	std::string mName;
 	Transform mTransform;
 	UINT mIndex;
 	bool mEnable;
-	Data mData;
+	float mIntensity;
+	Color mColor;
 };
 
 class PointLightShader
