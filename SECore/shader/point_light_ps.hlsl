@@ -2,21 +2,17 @@
 
 struct Light
 {
-	float3 diffuse;
-	float diffusePower;
-
-	float3 specular;
-	float specularPower;
-
+	float3 color;
+	float pad;
 	float3 position;
-	float specularHardness;
-
-	float range;
-	float intensity;
-	float2 nouse;
+	float pad2;
+	float3 att;
+	float pad3;
 };
 
-cbuffer CBLight : register(b1) { Light gLight; };
+cbuffer CBLight : register(b1) { Light light; };
+
+DecalTexture(_GBuffer, 0);
 
 float computerSpecLight(float3 V, float3 N, float3 L, float shininess)
 {
@@ -31,20 +27,17 @@ float computerSpecLight(float3 V, float3 N, float3 L, float shininess)
 	return specularLight;
 }
 
-Texture2D normalDepthTexture : register(t0);
-SamplerState Sampler : register(s0);
-
 float4 main(float4 screenPos : SV_POSITION) : SV_TARGET
 {
 	float2 uv = screenPos.xy / SCREEN_SIZE;
-	float4 dlColor = normalDepthTexture.Sample(Sampler, uv);
-	float3 normal = dlColor.rgb * 2.0f - 1.0f;
+	float4 dlColor = tex2D(_GBuffer, uv);
+	float3 N = dlColor.rgb * 2.0f - 1.0f;
 	float depth = dlColor.w;
 	
 	if(depth == 0)
 		return float4(0, 0, 0, 0);
 	
-	normal.b = 1.0f - sqrt(normal.r * normal.r + normal.g * normal.g);
+	N.b = 1.0f - sqrt(N.r * N.r + N.g * N.g);
 	
 	float4 screenPosition;
 	screenPosition.x = 2.0f * uv.x - 1.0f;
@@ -54,18 +47,18 @@ float4 main(float4 screenPos : SV_POSITION) : SV_TARGET
 	
 	float4 pos = mul(screenPosition, INV_VP);
 	pos.xyz = pos.xyz / pos.w;
-	
-	float3 dir = gLight.position - pos.xyz;
-	float distance = length(dir);
-	dir = normalize(dir);
-	
-	float factor = max(0, gLight.range - distance) * max(0, dot(dir, normal)) * gLight.intensity;
-	float3 color = 0;
-	color = gLight.diffuse * factor;
-	
-	float shadowmask = 1;
-	float spec = computerSpecLight(normalize(EYE_POS.xyz - pos.xyz), normal, dir, dlColor.b) * min(gLight.specularPower, shadowmask);
-	color += spec * color.rgb;
+
+	float3 L = normalize(light.position - pos.xyz); // light direction
+	float3 V = normalize(EYE_POS - pos.xyz); // view direction
+
+	float LdotN = max(0, dot(L, N));
+
+	float3 diffuse = light.color * LdotN;
+
+	float d = distance(light.position, pos.xyz);
+	float att = 1.0 / (light.att[0] + d * light.att[1] + d * d * light.att[2]);
+
+	float3 color = att * diffuse;
 	
 	return float4(color.rgb, 1.0f);
 }

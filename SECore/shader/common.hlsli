@@ -1,5 +1,10 @@
 #pragma pack_matrix(row_major)
 
+#define DecalTexture(name, slot) \
+Texture2D name : register(t##[slot]);\
+SamplerState name##S : register(s##[slot])
+#define tex2D(tex, uv) tex.Sample(tex##S, uv)
+
 struct Vertex
 {
 	float4 pos : POSITION;
@@ -18,5 +23,5 @@ cbuffer CBGobal : register(b0)
 	matrix INV_VP;
 	float3 EYE_POS; float nouse;
 	float2 SCREEN_SIZE; float2 nouse2;
-	float4 AmbientColor;
+	float3 AmbientColor; float nouse3;
 };

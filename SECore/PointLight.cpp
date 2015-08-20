@@ -6,18 +6,12 @@ PointLightShader gPointLightShader;
 
 struct CBLight
 {
-	Vector3 diffuse;
-	float diffusePower;
-
-	Vector3 specular;
-	float specularPower;
-
+	Vector3 color;
+	float pad;
 	Vector3 position;
-	float specularHardness;
-
-	float range;
-	float intensity;
-	Vector2 nouse;
+	float pad2;
+	Vector3 att;
+	float pad3;
 };
 
 PointLight::PointLight()
@@ -84,14 +78,11 @@ void PointLightShader::Setup(PointLight * light)
 	{
 		const PointLight::Data& src = light->GetData();
 		CBLight* dst = (CBLight*)mr.pData;
-		Color2Vector3(src.diffuse, dst->diffuse);
-		Color2Vector3(src.specular, dst->specular);
+		Color2Vector3(src.color, dst->color);
 		dst->position = light->GetTransform().position;
-		dst->diffusePower = src.diffusePower;
-		dst->specularPower = src.specularPower;
-		dst->specularHardness = src.specularHardness;
-		dst->range = src.range;
-		dst->intensity = src.intensity;
+		dst->att.x = 0;
+		dst->att.y = 0.2f;
+		dst->att.z = 0;
 		context->Unmap(mCB, 0);
 	}
 

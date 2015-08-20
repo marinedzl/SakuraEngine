@@ -23,11 +23,13 @@ float4 main(V2P IN) : SV_TARGET
 	float4 c = _MainTex.Sample(_MainTexS, IN.uv) * _Color;
 	clip(c.a < _CutOff ? -1 : 1);
 
-	c *= AmbientColor;
+	float3 albedo = c.rgb;
+	float alpha = c.a;
 
 	float2 uv = IN.pos.xy / SCREEN_SIZE;
-	float4 lightColor = LT.Sample(LTS, uv);
-	c += lightColor;
+	float3 lightColor = LT.Sample(LTS, uv).rgb;
 
-	return c;
+	float3 finalColor = albedo * (AmbientColor + lightColor);
+
+	return float4(finalColor, alpha);
 }

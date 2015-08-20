@@ -297,18 +297,11 @@ namespace SECore
 	{
 		struct Data
 		{
-			Color diffuse;
-			Color specular;
-			float diffusePower;
-			float specularPower;
-			float specularHardness;
-			float range;
+			Color color;
 			float intensity;
+			float range;
 			Data()
-				: diffusePower(10)
-				, specularPower(10)
-				, specularHardness(80)
-				, range(10)
+				: range(10)
 				, intensity(1)
 			{
 			}

@@ -332,20 +332,8 @@ bool LoadLight(Scene* scene, const Json::Value& lightRoot)
 	if (lightRoot.isMember("Transform"))
 		LoadTransform(light->GetTransform(), lightRoot["Transform"]);
 
-	if (lightRoot.isMember("Diffuse"))
-		light->GetData().diffuse = Json2Color(lightRoot["Diffuse"]);
-
-	if (lightRoot.isMember("Specular"))
-		light->GetData().specular = Json2Color(lightRoot["Specular"]);
-
-	if (lightRoot.isMember("DiffusePower"))
-		light->GetData().diffusePower = (float)(lightRoot["DiffusePower"].asDouble());
-
-	if (lightRoot.isMember("SpecularPower"))
-		light->GetData().specularPower = (float)(lightRoot["SpecularPower"].asDouble());
-
-	if (lightRoot.isMember("SpecularHardness"))
-		light->GetData().specularHardness = (float)(lightRoot["SpecularHardness"].asDouble());
+	if (lightRoot.isMember("Color"))
+		light->GetData().color = Json2Color(lightRoot["Color"]);
 
 	if (lightRoot.isMember("Range"))
 		light->GetData().range = (float)(lightRoot["Range"].asDouble());

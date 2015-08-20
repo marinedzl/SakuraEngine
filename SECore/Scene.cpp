@@ -10,6 +10,7 @@
 #include "RenderTexture.h"
 #include "PointLight.h"
 #include "RenderStateManager.h"
+#include "Texture.h"
 #include "Scene.h"
 
 struct CBGlobal
