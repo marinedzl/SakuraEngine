@@ -324,6 +324,11 @@ bool LoadLight(Scene* scene, const Json::Value& lightRoot)
 		light = scene->AddPointLight();
 	}
 
+	if (lightRoot.isMember("Enable"))
+	{
+		light->Enable(lightRoot["Enable"].asBool());
+	}
+
 	if (lightRoot.isMember("Name"))
 	{
 		light->SetName(lightRoot["Name"].asCString());

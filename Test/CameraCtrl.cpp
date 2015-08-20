@@ -9,7 +9,7 @@ CameraCtrl::CameraCtrl(Camera* camera)
 	, mDistance(10)
 	, mMinDistance(0.1f)
 	, mMaxDistance(100.0f)
-	, mYawPitch(0, -0.5f)
+	, mYawPitch(XM_PIDIV4, -0.5f)
 {
 
 }

@@ -421,7 +421,8 @@ void Scene::DrawLight()
 
 	for (std::list<SECore::Light*>::iterator iter = mLights.begin(); iter != mLights.end(); ++iter)
 	{
-		if (SECore::Light* light = *iter)
+		SECore::Light* light = *iter;
+		if (light && light->IsEnable())
 		{
 			light->Setup();
 			context->Draw(4, 0);
