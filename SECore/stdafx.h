@@ -209,6 +209,13 @@ inline Quat ConvertPxQuat(const PxQuat& v)
 	return Quat(v.x, v.y, v.z, v.w);
 }
 
+inline void Color2Vector3(const Color& color, Vector3& dst)
+{
+	dst.x = color.r;
+	dst.y = color.g;
+	dst.z = color.b;
+}
+
 struct GizmoMesh
 {
 	struct Vertex

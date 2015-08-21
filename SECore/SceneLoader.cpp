@@ -319,9 +319,13 @@ bool LoadLight(Scene* scene, const Json::Value& lightRoot)
 
 	SECore::Light* light = nullptr;
 
-	if (strcmp(type, "PointLight") == 0)
+	if (strcmp(type, "Point") == 0)
 	{
 		light = scene->AddPointLight();
+	}
+	else if (strcmp(type, "Directional") == 0)
+	{
+		light = scene->AddDirectionalLight();
 	}
 
 	if (lightRoot.isMember("Enable"))

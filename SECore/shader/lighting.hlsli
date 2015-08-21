@@ -1,5 +1,14 @@
 #include <common.hlsli>
 
+#if defined(DIRECTION)
+struct Light
+{
+	float3 color;
+	float att;
+	float3 dir;
+	float pad;
+};
+#elif defined(POINT)
 struct Light
 {
 	float3 color;
@@ -9,6 +18,7 @@ struct Light
 	float3 att;
 	float pad3;
 };
+#endif
 
 cbuffer CBLight : register(b1) { Light light; };
 
@@ -48,17 +58,25 @@ float4 main(float4 screenPos : SV_POSITION) : SV_TARGET
 	float4 pos = mul(screenPosition, INV_VP);
 	pos.xyz = pos.xyz / pos.w;
 
+	float3 color = (float3)0;
+
+#if defined(DIRECTION)
+	float LdotN = max(0, dot(normalize(light.dir), N));
+
+	color = light.color * LdotN * light.att;
+#endif
+
+#if defined(POINT)
 	float3 L = normalize(light.position - pos.xyz); // light direction
 	float3 V = normalize(EYE_POS - pos.xyz); // view direction
 
 	float LdotN = max(0, dot(L, N));
 
-	float3 diffuse = light.color * LdotN;
-
 	float d = distance(light.position, pos.xyz);
 	float att = 1.0 / (light.att[0] + d * light.att[1] + d * d * light.att[2]);
 
-	float3 color = att * diffuse;
+	color = light.color * LdotN * att;
+#endif
 	
 	return float4(color.rgb, 1.0f);
 }

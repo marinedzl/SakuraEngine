@@ -27,6 +27,7 @@ public:
 	virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance);
 	virtual SECore::Scene::Config* GetConfig() { return &mConfig; }
 	virtual SECore::Light* AddPointLight();
+	virtual SECore::Light* AddDirectionalLight();
 	virtual void ClearLights();
 	virtual SECore::Light* FindLight(const char* name);
 public:

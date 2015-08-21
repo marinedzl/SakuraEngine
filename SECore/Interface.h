@@ -325,6 +325,11 @@ namespace SECore
 		virtual ~PointLight() {}
 	};
 
+	struct Directional : Light
+	{
+		virtual ~Directional() {}
+	};
+
 	struct Scene : public Object
 	{
 		struct Config

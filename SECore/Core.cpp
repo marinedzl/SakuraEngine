@@ -5,6 +5,7 @@
 #include "ResourceManager.h"
 #include "Physics.h"
 #include "PointLight.h"
+#include "DirectionalLight.h"
 #include "Core.h"
 
 namespace
@@ -41,6 +42,7 @@ bool Core::Init(const char* resourePath)
 	CHECK(gMeshRenderer.Init());
 	CHECK(gPhysicsCore.Init());
 	CHECK(gPointLightShader.Init());
+	CHECK(gDirectionalLightShader.Init());
 
 	ret = true;
 Exit0:
@@ -49,6 +51,7 @@ Exit0:
 
 void Core::Release()
 {
+	gDirectionalLightShader.Release();
 	gPointLightShader.Release();
 	gPhysicsCore.Release();
 	gMeshRenderer.Release();

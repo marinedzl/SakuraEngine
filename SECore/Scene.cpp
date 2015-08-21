@@ -9,6 +9,7 @@
 #include "Collider.h"
 #include "RenderTexture.h"
 #include "PointLight.h"
+#include "DirectionalLight.h"
 #include "RenderStateManager.h"
 #include "Texture.h"
 #include "Scene.h"
@@ -311,6 +312,13 @@ bool Scene::Raycast(const Ray& ray, RaycastHit& hit, float distance)
 SECore::Light * Scene::AddPointLight()
 {
 	PointLight* light = new PointLight();
+	mLights.push_back(light);
+	return light;
+}
+
+SECore::Light * Scene::AddDirectionalLight()
+{
+	DirectionalLight* light = new DirectionalLight();
 	mLights.push_back(light);
 	return light;
 }

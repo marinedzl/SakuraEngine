@@ -129,6 +129,12 @@
     <ClInclude Include="PointLight.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="BaseLight.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -236,6 +242,9 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\Mesh.hlsl" />
@@ -247,9 +256,11 @@
     <FxCompile Include="shader\MeshG.hlsl" />
     <FxCompile Include="shader\SkinnedMeshG.hlsl" />
     <FxCompile Include="shader\deferred_lighting_vs.hlsl" />
-    <FxCompile Include="shader\point_light_ps.hlsl" />
+    <FxCompile Include="shader\point_light.hlsl" />
+    <FxCompile Include="shader\directional_light.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\common.hlsli" />
+    <None Include="shader\lighting.hlsli" />
   </ItemGroup>
 </Project>

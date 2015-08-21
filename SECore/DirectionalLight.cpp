@@ -1,44 +1,42 @@
 #include "stdafx.h"
 #include "Core.h"
-#include "PointLight.h"
+#include "DirectionalLight.h"
 
-PointLightShader gPointLightShader;
+DirectionalLightShader gDirectionalLightShader;
 
 struct CBLight
 {
 	Vector3 color;
+	float att;
+	Vector3 dir;
 	float pad;
-	Vector3 position;
-	float pad2;
-	Vector3 att;
-	float pad3;
 };
 
-PointLight::PointLight()
+DirectionalLight::DirectionalLight()
 {
 }
 
-PointLight::~PointLight()
+DirectionalLight::~DirectionalLight()
 {
 
 }
 
-void PointLight::Setup()
+void DirectionalLight::Setup()
 {
-	gPointLightShader.Setup(this);
+	gDirectionalLightShader.Setup(this);
 }
 
-PointLightShader::PointLightShader()
+DirectionalLightShader::DirectionalLightShader()
 {
 }
 
-bool PointLightShader::Init()
+bool DirectionalLightShader::Init()
 {
 	bool ret = false;
 
 	ID3D11Device* device = gCore.GetDevice();
 	buffer file;
-	CHECK(LoadBinaryFile(file, "point_light.cso"));
+	CHECK(LoadBinaryFile(file, "directional_light.cso"));
 	CHECK(SUCCEEDED(device->CreatePixelShader(file.ptr(), file.size(), nullptr, &mPS)));
 
 	D3D11_BUFFER_DESC buffDesc;
@@ -54,13 +52,13 @@ Exit0:
 	return ret;
 }
 
-void PointLightShader::Release()
+void DirectionalLightShader::Release()
 {
 	SAFE_RELEASE(mPS);
 	SAFE_RELEASE(mCB);
 }
 
-void PointLightShader::Setup(PointLight * light)
+void DirectionalLightShader::Setup(DirectionalLight * light)
 {
 	ID3D11DeviceContext* context = gCore.GetContext();
 
@@ -69,11 +67,8 @@ void PointLightShader::Setup(PointLight * light)
 	{
 		CBLight* dst = (CBLight*)mr.pData;
 		Color2Vector3(light->GetColor(), dst->color);
-		dst->position = light->GetTransform().position;
-		dst->att.x = 0;
-		dst->att.y = 0.2f;
-		dst->att.z = 0;
-		dst->att /= light->GetIntensity();
+		dst->dir = light->GetTransform().position;
+		dst->att = light->GetIntensity();
 		context->Unmap(mCB, 0);
 	}
 
