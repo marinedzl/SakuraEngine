@@ -258,6 +258,12 @@
     <FxCompile Include="shader\deferred_lighting_vs.hlsl" />
     <FxCompile Include="shader\point_light.hlsl" />
     <FxCompile Include="shader\directional_light.hlsl" />
+    <FxCompile Include="shader\SkinnedMeshShadow.hlsl" />
+    <FxCompile Include="shader\SkinnedMeshGBuffer.hlsl" />
+    <FxCompile Include="shader\ShadowPS.hlsl" />
+    <FxCompile Include="shader\MeshShadow.hlsl" />
+    <FxCompile Include="shader\MeshGBuffer.hlsl" />
+    <FxCompile Include="shader\GBufferPS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\common.hlsli" />

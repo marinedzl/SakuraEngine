@@ -37,13 +37,22 @@ public:
 	void AddGizmo(Gizmo* gizmo);
 	void RemoveGizmo(Gizmo* gizmo);
 private:
-	void DrawObjects(bool drawingGBuffer);
+	void DrawObjects(RenderPass renderPass);
 	void DrawLight();
 	void DrawGizmos();
+	void CommitGlobal();
 private:
 	typedef std::list<SceneEntity*> Entities;
 	typedef std::list<Gizmo*> Gizmos;
 	typedef std::list<SECore::Light*> Lights;
+	struct CBGlobal
+	{
+		Matrix MATRIX_VP;
+		Matrix INV_VP;
+		Vector3 EYE_POS; float nouse;
+		Vector2 SCREEN_SIZE; Vector2 nouse2;
+		Color AmbientColor;
+	};
 private:
 	Config mConfig;
 	PxScene* mPxScene;
@@ -57,13 +66,17 @@ private:
 	ID3D11Buffer* mCBGlobal;
 
 	ID3D11PixelShader* mGBufferPS;
+	ID3D11PixelShader* mShadowPS;
 	RenderTexture* mGBufferRT;
+	RenderTexture* mShadowRT;
 	RenderTexture* mLightingRT;
 	ID3D11BlendState* mBlendState;
 	ID3D11DepthStencilState* mDepthStencilState;
 	ID3D11VertexShader* mLightingVS;
 	ID3D11Buffer* mLightingMesh;
 	ID3D11InputLayout* mInputLayout;
+
+	CBGlobal mSBGloal;
 
 	float mElapsedTime;
 };

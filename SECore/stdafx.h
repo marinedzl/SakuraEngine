@@ -228,3 +228,16 @@ struct GizmoMesh
 	ID3D11Buffer* ib;
 	GizmoMesh() : indexCount(0), primitive(D3D11_PRIMITIVE_TOPOLOGY_LINELIST), vb(nullptr), ib(nullptr) {}
 };
+
+enum RenderPass
+{
+	eNormalRenderPass,
+	eGBufferRenderPass,
+	eShadowRenderPass,
+	eRenderPassCount
+};
+
+enum
+{
+	ShadowMapSize = 512,
+};

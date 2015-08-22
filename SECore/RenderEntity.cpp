@@ -6,6 +6,7 @@
 
 RenderEntity::RenderEntity(SceneEntity& owner)
 	: mOwner(owner)
+	, mCastShadow(true)
 {
 	mMaterial = new Material();
 }

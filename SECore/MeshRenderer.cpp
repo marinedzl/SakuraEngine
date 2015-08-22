@@ -34,7 +34,7 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Release()
 {
-	for (size_t i = 0; i < eModeCount; i++)
+	for (size_t i = 0; i < eRenderPassCount; i++)
 	{
 		SAFE_RELEASE(mMeshVS[i]);
 		SAFE_RELEASE(mSkinnedMeshVS[i]);
@@ -68,17 +68,23 @@ bool MeshRenderer::Init()
 
 		CHECK(LoadBinaryFile(file, "Mesh.cso"));
 		CHECK(SUCCEEDED(device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), file.ptr(), file.size(), &mInputLayout)));
-		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS[eNormalPass])));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS[eNormalRenderPass])));
 
 		CHECK(LoadBinaryFile(file, "SkinnedMesh.cso"));
 		CHECK(SUCCEEDED(device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), file.ptr(), file.size(), &mSkinnedInputLayout)));
-		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS[eNormalPass])));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS[eNormalRenderPass])));
 
-		CHECK(LoadBinaryFile(file, "MeshG.cso"));
-		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS[eGBufferPass])));
+		CHECK(LoadBinaryFile(file, "MeshGBuffer.cso"));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS[eGBufferRenderPass])));
 
-		CHECK(LoadBinaryFile(file, "SkinnedMeshG.cso"));
-		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS[eGBufferPass])));
+		CHECK(LoadBinaryFile(file, "SkinnedMeshGBuffer.cso"));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS[eGBufferRenderPass])));
+
+		CHECK(LoadBinaryFile(file, "MeshShadow.cso"));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS[eShadowRenderPass])));
+
+		CHECK(LoadBinaryFile(file, "SkinnedMeshShadow.cso"));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS[eShadowRenderPass])));
 	}
 
 	// CreateDepthStencilState
@@ -132,10 +138,8 @@ Exit0:
 	return ret;
 }
 
-void MeshRenderer::Begin(bool drawingGBuffer)
+void MeshRenderer::Begin()
 {
-	mMode = drawingGBuffer ? eGBufferPass : eNormalPass;
-
 	if (ID3D11DeviceContext* context = gCore.GetContext())
 	{
 		float factor[4] = { 0 };
@@ -152,7 +156,7 @@ void MeshRenderer::End()
 
 }
 
-void MeshRenderer::Draw(RenderEntity* entity)
+void MeshRenderer::Draw(RenderEntity* entity, RenderPass mode)
 {
 	if (!entity)
 		return;
@@ -173,7 +177,7 @@ void MeshRenderer::Draw(RenderEntity* entity)
 			context->Unmap(mCBModel, 0);
 		}
 
-		context->VSSetShader(mSkinnedMeshVS[mMode], nullptr, 0);
+		context->VSSetShader(mSkinnedMeshVS[mode], nullptr, 0);
 		context->IASetInputLayout(mSkinnedInputLayout);
 	}
 	else
@@ -185,7 +189,7 @@ void MeshRenderer::Draw(RenderEntity* entity)
 			context->Unmap(mCBModel, 0);
 		}
 
-		context->VSSetShader(mMeshVS[mMode], nullptr, 0);
+		context->VSSetShader(mMeshVS[mode], nullptr, 0);
 		context->IASetInputLayout(mInputLayout);
 	}
 
@@ -196,7 +200,7 @@ void MeshRenderer::Draw(RenderEntity* entity)
 
 	mesh->Setup();
 
-	if (mMode == eNormalPass)
+	if (mode == eNormalRenderPass)
 	{
 		Material* material = entity->GetMaterialInternal();
 		if (material)

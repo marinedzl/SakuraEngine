@@ -3,6 +3,7 @@
 #include "MeshRenderer.h"
 #include "GizmoRenderer.h"
 #include "SceneEntity.h"
+#include "RenderEntity.h"
 #include "SceneLoader.h"
 #include "Core.h"
 #include "Physics.h"
@@ -13,15 +14,6 @@
 #include "RenderStateManager.h"
 #include "Texture.h"
 #include "Scene.h"
-
-struct CBGlobal
-{
-	Matrix MATRIX_VP;
-	Matrix INV_VP;
-	Vector3 EYE_POS; float nouse;
-	Vector2 SCREEN_SIZE; Vector2 nouse2;
-	Color AmbientColor;
-};
 
 Scene::Scene()
 	: mPxScene(nullptr)
@@ -52,8 +44,10 @@ void Scene::Release()
 	SAFE_RELEASE(mCBGlobal);
 
 	SAFE_RELEASE(mGBufferRT);
+	SAFE_RELEASE(mShadowRT);
 	SAFE_RELEASE(mLightingRT);
 	SAFE_RELEASE(mGBufferPS);
+	SAFE_RELEASE(mShadowPS);
 
 	SAFE_RELEASE(mLightingVS);
 	SAFE_RELEASE(mLightingMesh);
@@ -144,8 +138,10 @@ bool Scene::Init()
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 
 	buffer file;
-	CHECK(LoadBinaryFile(file, "GBuffer.cso"));
+	CHECK(LoadBinaryFile(file, "GBufferPS.cso"));
 	CHECK(SUCCEEDED(gCore.GetDevice()->CreatePixelShader(file.ptr(), file.size(), nullptr, &mGBufferPS)));
+	CHECK(LoadBinaryFile(file, "ShadowPS.cso"));
+	CHECK(SUCCEEDED(gCore.GetDevice()->CreatePixelShader(file.ptr(), file.size(), nullptr, &mShadowPS)));
 
 	if (!sceneDesc.cpuDispatcher)
 	{
@@ -351,34 +347,53 @@ void Scene::Draw(SECore::RenderTarget* rt)
 		mGBufferRT->Create((int)rt->GetWidth(), (int)rt->GetHeight());
 	}
 
+	if (!mShadowRT)
+	{
+		mShadowRT = new RenderTexture();
+		mShadowRT->Create(ShadowMapSize, ShadowMapSize);
+	}
+
 	if (!mLightingRT)
 	{
 		mLightingRT = new RenderTexture();
 		mLightingRT->Create((int)rt->GetWidth(), (int)rt->GetHeight());
 	}
 
-	D3D11_MAPPED_SUBRESOURCE mr;
-	if (SUCCEEDED(context->Map(mCBGlobal, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
-	{
-		CBGlobal* cb = (CBGlobal*)mr.pData;
-		mCamera.GetViewProjMatrix(cb->MATRIX_VP);
-		XMMATRIX invVP = XMLoadFloat4x4((XMFLOAT4X4*)&cb->MATRIX_VP);
-		invVP = XMMatrixInverse(nullptr, invVP);
-		XMStoreFloat4x4((XMFLOAT4X4*)&cb->INV_VP, invVP);
-		cb->EYE_POS = mCamera.eye;
-		cb->SCREEN_SIZE.x = mCamera.rtW;
-		cb->SCREEN_SIZE.y = mCamera.rtH;
-		cb->AmbientColor = mConfig.AmbientColor;
-		context->Unmap(mCBGlobal, 0);
-	}
-
 	context->VSSetConstantBuffers(0, 1, &mCBGlobal);
 	context->PSSetConstantBuffers(0, 1, &mCBGlobal);
+
+	context->PSSetShader(mShadowPS, nullptr, 0);
+	mShadowRT->Begin();
+	mShadowRT->Clear(Color(1, 1, 1, 1));
+	for (std::list<SECore::Light*>::iterator iter = mLights.begin(); iter != mLights.end(); ++iter)
+	{
+		SECore::Light* light = *iter;
+		if (light && light->IsEnable())
+		{
+			light->GetVP(mSBGloal.MATRIX_VP);
+			CommitGlobal();
+			DrawObjects(eShadowRenderPass);
+		}
+	}
+	mShadowRT->End();
+
+	mCamera.GetViewProjMatrix(mSBGloal.MATRIX_VP);
+	{
+		XMMATRIX invVP = XMLoadFloat4x4((XMFLOAT4X4*)&mSBGloal.MATRIX_VP);
+		invVP = XMMatrixInverse(nullptr, invVP);
+		XMStoreFloat4x4((XMFLOAT4X4*)&mSBGloal.INV_VP, invVP);
+	}
+	mSBGloal.EYE_POS = mCamera.eye;
+	mSBGloal.SCREEN_SIZE.x = mCamera.rtW;
+	mSBGloal.SCREEN_SIZE.y = mCamera.rtH;
+	mSBGloal.AmbientColor = mConfig.AmbientColor;
+
+	CommitGlobal();
 
 	context->PSSetShader(mGBufferPS, nullptr, 0);
 	mGBufferRT->Begin();
 	mGBufferRT->Clear(Color(0, 0, 0, 0));
-	DrawObjects(true);
+	DrawObjects(eGBufferRenderPass);
 	mGBufferRT->End();
 
 	mLightingRT->Begin();
@@ -388,7 +403,9 @@ void Scene::Draw(SECore::RenderTarget* rt)
 
 	rt->Begin();
 	rt->Clear(Color(0.278f, 0.278f, 0.278f, 1));
-	DrawObjects(false);
+	mLightingRT->SetSlot(3);
+	DrawObjects(eNormalRenderPass);
+	mLightingRT->SetSlot(3, true);
 	rt->End();
 
 	if (mConfig.showGizmo)
@@ -402,6 +419,7 @@ void Scene::Draw(SECore::RenderTarget* rt)
 			bSaved = true;
 			mGBufferRT->CaptureToFile("GBuffer.bmp");
 			mLightingRT->CaptureToFile("Lighting.bmp");
+			mShadowRT->CaptureToFile("ShadowMap.bmp");
 		}
 	}
 
@@ -426,6 +444,7 @@ void Scene::DrawLight()
 	context->RSSetState(gRenderStateManager.GetRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID));
 
 	mGBufferRT->SetSlot(0);
+	mShadowRT->SetSlot(1);
 
 	for (std::list<SECore::Light*>::iterator iter = mLights.begin(); iter != mLights.end(); ++iter)
 	{
@@ -436,16 +455,15 @@ void Scene::DrawLight()
 			context->Draw(4, 0);
 		}
 	}
+
+	mShadowRT->SetSlot(1, true);
 }
 
-void Scene::DrawObjects(bool drawingGBuffer)
+void Scene::DrawObjects(RenderPass renderPass)
 {
 	if (!mEntities.empty())
 	{
-		gMeshRenderer.Begin(drawingGBuffer);
-
-		if (!drawingGBuffer)
-			mLightingRT->SetSlot(3);
+		gMeshRenderer.Begin();
 
 		Entities::iterator iter = mEntities.begin();
 		Entities::iterator iterEnd = mEntities.end();
@@ -464,13 +482,13 @@ void Scene::DrawObjects(bool drawingGBuffer)
 			{
 				if (RenderEntity* renderEntity = renderer->GetEntityInternal(i))
 				{
-					gMeshRenderer.Draw(renderEntity);
+					if (renderPass != eShadowRenderPass || renderEntity->IsCastShadow())
+					{
+						gMeshRenderer.Draw(renderEntity, renderPass);
+					}
 				}
 			}
 		}
-
-		if (!drawingGBuffer)
-			mLightingRT->SetSlot(3, true);
 
 		gMeshRenderer.End();
 	}
@@ -490,5 +508,16 @@ void Scene::DrawGizmos()
 		}
 
 		gGizmosRenderer.End();
+	}
+}
+
+void Scene::CommitGlobal()
+{
+	ID3D11DeviceContext* context = gCore.GetContext();
+	D3D11_MAPPED_SUBRESOURCE mr;
+	if (SUCCEEDED(context->Map(mCBGlobal, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
+	{
+		memcpy(mr.pData, &mSBGloal, sizeof(CBGlobal));
+		context->Unmap(mCBGlobal, 0);
 	}
 }

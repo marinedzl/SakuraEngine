@@ -253,6 +253,8 @@ namespace SECore
 			virtual void SetMesh(Mesh* mesh) = 0;
 			virtual const Transform& GetTransform() const = 0;
 			virtual bool IsSkinned() const = 0;
+			virtual bool IsCastShadow() const = 0;
+			virtual void SetCastShadow(bool enable) = 0;
 		};
 
 		virtual ~Renderer() {}
@@ -316,6 +318,8 @@ namespace SECore
 		virtual Transform& GetTransform() = 0;
 		virtual const char* GetName() const = 0;
 		virtual const Color& GetColor() const = 0;
+
+		virtual void GetVP(Matrix& vp) const = 0;
 
 		virtual void Setup() = 0;
 	};

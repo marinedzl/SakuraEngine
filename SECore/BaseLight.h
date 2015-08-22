@@ -16,6 +16,7 @@ public:
 	virtual void SetIntensity(float intensity) { mIntensity = intensity; }
 	virtual const Color& GetColor() const { return mColor; }
 	virtual void SetColor(const Color& color) { mColor = color; }
+	virtual void GetVP(Matrix& vp) const {}
 private:
 	std::string mName;
 	Transform mTransform;

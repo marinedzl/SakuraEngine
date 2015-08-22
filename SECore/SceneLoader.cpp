@@ -246,6 +246,10 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 		{
 			SECore::Renderer::Entity* re = renderer->CreateEntity();
 			const Json::Value& reRoot = rendererRoot[i];
+			if (reRoot.isMember("CastShadow"))
+			{
+				re->SetCastShadow(reRoot["CastShadow"].asBool());
+			}
 			if (reRoot.isMember("Mesh"))
 			{
 				Mesh* mesh = gResourceManager.LoadMesh(reRoot["Mesh"].asCString());

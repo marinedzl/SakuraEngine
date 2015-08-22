@@ -7,6 +7,7 @@ public:
 	DirectionalLight();
 	virtual ~DirectionalLight();
 	virtual void Setup();
+	void GetVP(Matrix& vp) const;
 private:
 };
 

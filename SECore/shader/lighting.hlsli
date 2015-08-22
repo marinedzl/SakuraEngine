@@ -7,6 +7,7 @@ struct Light
 	float att;
 	float3 dir;
 	float pad;
+	matrix vp;
 };
 #elif defined(POINT)
 struct Light
@@ -17,12 +18,14 @@ struct Light
 	float pad2;
 	float3 att;
 	float pad3;
+	matrix vp;
 };
 #endif
 
 cbuffer CBLight : register(b1) { Light light; };
 
 DecalTexture(_GBuffer, 0);
+DecalTexture(ShadowMap, 1);
 
 float computerSpecLight(float3 V, float3 N, float3 L, float shininess)
 {
@@ -56,13 +59,40 @@ float4 main(float4 screenPos : SV_POSITION) : SV_TARGET
 	screenPosition.w = 1.0f;
 	
 	float4 pos = mul(screenPosition, INV_VP);
+	float4 lightViewPosition = mul(pos, light.vp);
+
 	pos.xyz = pos.xyz / pos.w;
 
 	float3 color = (float3)0;
 
+	float shadowValue = 1;
+
+#if defined(DIRECTION)
+
+	float bias = 0.001f; // Set the bias value for fixing the floating point precision issues.
+
+
+	float2 projectTexCoord;
+
+	projectTexCoord.x = lightViewPosition.x / lightViewPosition.w * 0.5f + 0.5f;
+	projectTexCoord.y = -lightViewPosition.y / lightViewPosition.w * 0.5f + 0.5f;
+
+	if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
+	{
+		float shadowDepth = tex2D(ShadowMap, projectTexCoord).r;
+		float lightDepthValue = lightViewPosition.z / lightViewPosition.w;
+
+		lightDepthValue = lightDepthValue - bias;
+
+		if (lightDepthValue < shadowDepth)
+			shadowValue = 1;
+		else
+			shadowValue = 0;
+	}
+#endif
+
 #if defined(DIRECTION)
 	float LdotN = max(0, dot(normalize(light.dir), N));
-
 	color = light.color * LdotN * light.att;
 #endif
 
@@ -77,6 +107,8 @@ float4 main(float4 screenPos : SV_POSITION) : SV_TARGET
 
 	color = light.color * LdotN * att;
 #endif
+
+	color *= shadowValue;
 	
 	return float4(color.rgb, 1.0f);
 }

@@ -10,6 +10,7 @@ struct CBLight
 	float att;
 	Vector3 dir;
 	float pad;
+	Matrix vp;
 };
 
 DirectionalLight::DirectionalLight()
@@ -24,6 +25,17 @@ DirectionalLight::~DirectionalLight()
 void DirectionalLight::Setup()
 {
 	gDirectionalLightShader.Setup(this);
+}
+
+void DirectionalLight::GetVP(Matrix& vp) const
+{
+	XMVECTOR eye = XMVectorSet(0, 0, 0, 0);
+	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
+	XMVECTOR lookat = XMLoadFloat3((XMFLOAT3*)&GetTransform().position);
+	XMMATRIX v, p;
+	v = XMMatrixLookAtLH(eye, lookat, up);
+	p = XMMatrixOrthographicLH(ShadowMapSize / 20, ShadowMapSize/ 20, 1, 100);
+	XMStoreFloat4x4((XMFLOAT4X4*)&vp, v * p);
 }
 
 DirectionalLightShader::DirectionalLightShader()
@@ -69,6 +81,7 @@ void DirectionalLightShader::Setup(DirectionalLight * light)
 		Color2Vector3(light->GetColor(), dst->color);
 		dst->dir = light->GetTransform().position;
 		dst->att = light->GetIntensity();
+		light->GetVP(dst->vp);
 		context->Unmap(mCB, 0);
 	}
 
