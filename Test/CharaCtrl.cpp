@@ -286,7 +286,7 @@ void CharaCtrl::Jump()
 	mState = eJump;
 	mJumpSpeed = mDest - transform.position;
 	mJumpSpeed.y = mJumpInitSpeed;
-	animation.CrossFade("jump_takeoff", 0.3f, false);
+	animation.CrossFade("jump_takeoff", 0.1f, false);
 	animation.CrossFadeQueue("jump_mid", 1, 0);
 }
 
