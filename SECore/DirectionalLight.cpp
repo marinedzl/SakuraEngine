@@ -29,12 +29,18 @@ void DirectionalLight::Setup()
 
 void DirectionalLight::GetVP(Matrix& vp) const
 {
-	XMVECTOR eye = XMVectorSet(0, 0, 0, 0);
+	float halfDistance = 10;
+	XMVECTOR to = XMVectorSet(0, 0, 0, 0);
+	XMVECTOR from = XMLoadFloat3((XMFLOAT3*)&GetTransform().position);
+
+	XMVECTOR eye = XMVectorLerp(to, from, halfDistance);
+	XMVECTOR lookat = XMVectorLerp(from, to, halfDistance);
+
 	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
-	XMVECTOR lookat = XMLoadFloat3((XMFLOAT3*)&GetTransform().position);
+
 	XMMATRIX v, p;
 	v = XMMatrixLookAtLH(eye, lookat, up);
-	p = XMMatrixOrthographicLH(ShadowMapSize / 20, ShadowMapSize/ 20, 1, 100);
+	p = XMMatrixOrthographicLH(20, 20, 1, 100);
 	XMStoreFloat4x4((XMFLOAT4X4*)&vp, v * p);
 }
 

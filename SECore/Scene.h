@@ -38,6 +38,7 @@ public:
 	void RemoveGizmo(Gizmo* gizmo);
 private:
 	void DrawObjects(RenderPass renderPass);
+	void DrawShadow(SECore::Light* light);
 	void DrawLight();
 	void DrawGizmos();
 	void CommitGlobal();

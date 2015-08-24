@@ -338,9 +338,6 @@ void Scene::Draw(SECore::RenderTarget* rt)
 	ID3D11DeviceContext* context = gCore.GetContext();
 	CHECK(context);
 
-	mCamera.GetViewport(viewport);
-	context->RSSetViewports(1, &viewport);
-
 	if (!mGBufferRT)
 	{
 		mGBufferRT = new RenderTexture();
@@ -363,20 +360,17 @@ void Scene::Draw(SECore::RenderTarget* rt)
 	context->PSSetConstantBuffers(0, 1, &mCBGlobal);
 
 	context->PSSetShader(mShadowPS, nullptr, 0);
-	mShadowRT->Begin();
-	mShadowRT->Clear(Color(1, 1, 1, 1));
 	for (std::list<SECore::Light*>::iterator iter = mLights.begin(); iter != mLights.end(); ++iter)
 	{
 		SECore::Light* light = *iter;
 		if (light && light->IsEnable())
 		{
-			light->GetVP(mSBGloal.MATRIX_VP);
-			CommitGlobal();
-			DrawObjects(eShadowRenderPass);
+			DrawShadow(light);
 		}
 	}
-	mShadowRT->End();
 
+	mCamera.GetViewport(viewport);
+	context->RSSetViewports(1, &viewport);
 	mCamera.GetViewProjMatrix(mSBGloal.MATRIX_VP);
 	{
 		XMMATRIX invVP = XMLoadFloat4x4((XMFLOAT4X4*)&mSBGloal.MATRIX_VP);
@@ -492,6 +486,27 @@ void Scene::DrawObjects(RenderPass renderPass)
 
 		gMeshRenderer.End();
 	}
+}
+
+void Scene::DrawShadow(SECore::Light * light)
+{
+	mShadowRT->Begin();
+	mShadowRT->Clear(Color(1, 1, 1, 1));
+
+	D3D11_VIEWPORT viewport;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = ShadowMapSize;
+	viewport.Height = ShadowMapSize;
+	viewport.MinDepth = 0;
+	viewport.MaxDepth = 1.0f;
+	gCore.GetContext()->RSSetViewports(1, &viewport);
+	light->GetVP(mSBGloal.MATRIX_VP);
+	CommitGlobal();
+
+	DrawObjects(eShadowRenderPass);
+
+	mShadowRT->End();
 }
 
 void Scene::DrawGizmos()

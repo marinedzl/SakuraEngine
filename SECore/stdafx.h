@@ -239,5 +239,5 @@ enum RenderPass
 
 enum
 {
-	ShadowMapSize = 512,
+	ShadowMapSize = 1024,
 };
