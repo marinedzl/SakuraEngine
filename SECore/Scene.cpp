@@ -380,7 +380,7 @@ void Scene::Draw(SECore::RenderTarget* rt)
 	mSBGloal.EYE_POS = mCamera.eye;
 	mSBGloal.SCREEN_SIZE.x = mCamera.rtW;
 	mSBGloal.SCREEN_SIZE.y = mCamera.rtH;
-	mSBGloal.AmbientColor = mConfig.AmbientColor;
+	mSBGloal.AmbientColor = mConfig.ambientColor;
 
 	CommitGlobal();
 
@@ -405,15 +405,18 @@ void Scene::Draw(SECore::RenderTarget* rt)
 	if (mConfig.showGizmo)
 		DrawGizmos();
 
-	if (mElapsedTime > 1)
+	if (mConfig.captureBuffer)
 	{
-		static bool bSaved = false;
-		if (!bSaved)
+		if (mElapsedTime > 1)
 		{
-			bSaved = true;
-			mGBufferRT->CaptureToFile("GBuffer.bmp");
-			mLightingRT->CaptureToFile("Lighting.bmp");
-			mShadowRT->CaptureToFile("ShadowMap.bmp");
+			static bool bSaved = false;
+			if (!bSaved)
+			{
+				bSaved = true;
+				mGBufferRT->CaptureToFile("GBuffer.bmp");
+				mLightingRT->CaptureToFile("Lighting.bmp");
+				mShadowRT->CaptureToFile("ShadowMap.bmp");
+			}
 		}
 	}
 

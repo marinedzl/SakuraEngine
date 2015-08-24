@@ -366,6 +366,8 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 		const Json::Value& configRoot = root["Config"];
 		if (configRoot.isMember("ShowGizmo"))
 			scene->GetConfig()->EnableGizmo(configRoot["ShowGizmo"].asBool());
+		if (configRoot.isMember("CaptureBuffer"))
+			scene->GetConfig()->CaptureBuffer(configRoot["CaptureBuffer"].asBool());
 		if (configRoot.isMember("AmbientColor"))
 		{
 			scene->GetConfig()->SetAmbientColor(Json2Color(configRoot["AmbientColor"]));

@@ -341,6 +341,7 @@ namespace SECore
 			virtual ~Config() {}
 			virtual void EnableGizmo(bool enable) = 0;
 			virtual void SetAmbientColor(const Color& color) = 0;
+			virtual void CaptureBuffer(bool value) = 0;
 		};
 		struct Entity
 		{
