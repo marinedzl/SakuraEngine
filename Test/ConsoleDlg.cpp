@@ -21,6 +21,7 @@ BOOL ConsoleDlg::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND:
 	{
+		int highWord HIWORD(wParam);
 		int wmId = LOWORD(wParam);
 		switch (wmId)
 		{
@@ -36,19 +37,22 @@ BOOL ConsoleDlg::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			m_Console.Print(buff);
 			SetWindowText(m_hInput, _T(""));
 			delete buff;
+			SetFocus(m_hInput);
 		}
-			break;
+		break;
 		}
 	}
-		break;
+	break;
 
 	case WM_CLOSE:
 	{
 		Close();
 	}
 	break;
+	default:
+		return FALSE;
 	}
-	return FALSE;
+	return TRUE;
 }
 
 BOOL ConsoleDlg::Create(HINSTANCE hInst, HWND hParent)
