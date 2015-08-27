@@ -3,7 +3,6 @@
 // stdafx.obj 将包含预编译类型信息
 
 #include "stdafx.h"
-#include "Core.h"
 
 // TODO: 在 STDAFX.H 中引用任何所需的附加头文件，
 //而不是在此文件中引用
@@ -78,12 +77,9 @@ bool LoadDataFromFile(buffer& buff, const char* filename, bool text)
 
 	CHECK(filename);
 
-	fullpath = gCore.GetWorkpath();
-	fullpath += filename;
-
 	buff.clear();
 
-	fopen_s(&file, fullpath.c_str(), text ? "r" : "rb");
+	fopen_s(&file, filename, text ? "r" : "rb");
 	CHECK(file);
 
 	fseek(file, 0L, SEEK_SET);

@@ -8,14 +8,6 @@
 #include "DirectionalLight.h"
 #include "Core.h"
 
-namespace
-{
-	void FreeImage_Output(FREE_IMAGE_FORMAT fif, const char *msg)
-	{
-		log(msg);
-	}
-}
-
 Core gCore;
 
 Core::Core()
@@ -30,10 +22,7 @@ bool Core::Init(const char* resourePath)
 {
 	bool ret = false;
 
-	mWorkpath = resourePath;
-
 	FreeImage_Initialise(TRUE);
-	FreeImage_SetOutputMessage(FreeImage_Output);
 
 	CHECK(CreateDevice());
 	CHECK(gResourceManager.Init());

@@ -28,22 +28,22 @@ bool ResourceManager::Init()
 	return true;
 }
 
-Texture* ResourceManager::LoadTexture(const char* name)
+SECore::Texture* ResourceManager::LoadTexture(const char* name)
 {
 	return LoadResource<Texture>(name);
 }
 
-Mesh* ResourceManager::LoadMesh(const char* name)
+SECore::Mesh* ResourceManager::LoadMesh(const char* name)
 {
 	return LoadResource<Mesh>(name);
 }
 
-AnimationClip* ResourceManager::LoadClip(const char* name)
+SECore::AnimationClip* ResourceManager::LoadClip(const char* name)
 {
 	return LoadResource<AnimationClip>(name);
 }
 
-Skeleton* ResourceManager::LoadSkeleton(const char* name)
+SECore::Skeleton* ResourceManager::LoadSkeleton(const char* name)
 {
 	return LoadResource<Skeleton>(name);
 }
@@ -60,9 +60,9 @@ ShaderFactory * ResourceManager::FindShaderFactory(const char * name)
 	return iter == mShaderFactories.end() ? nullptr : iter->second;
 }
 
-Shader * ResourceManager::CreateShader(const char * name)
+SECore::Shader * ResourceManager::CreateShader(const char * name)
 {
-	Shader* ret = nullptr;
+	SECore::Shader* ret = nullptr;
 	if (ShaderFactory* factory = FindShaderFactory(name))
 	{
 		ret = factory->CreateNew();

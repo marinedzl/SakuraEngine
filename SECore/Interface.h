@@ -210,6 +210,19 @@ namespace SECore
 		virtual void SetTexture(const char* name, Texture* texture) = 0;
 	};
 
+	struct AnimationClip : RefObject
+	{
+		virtual ~AnimationClip() {}
+		virtual float GetLength() const = 0;
+		virtual const char* GetName() const = 0;
+		virtual void SetName(const char* name) = 0;
+	};
+
+	struct Skeleton : RefObject
+	{
+		virtual ~Skeleton() {}
+	};
+
 	struct Animation
 	{
 		typedef void ClipChangedCallback(void* data, const char* prev, const char* curr);
@@ -218,7 +231,10 @@ namespace SECore
 		virtual void CrossFade(const char* name, float fadeLength, bool loop = true) = 0;
 		virtual void CrossFadeQueue(const char* name, float offset, float fadeLength, bool loop = true) = 0;
 		virtual void SetClipChangedCallback(ClipChangedCallback* callback, void* userData) = 0;
+		virtual bool AddSavedBoneTM(const char* bone) = 0;
 		virtual bool GetSavedBoneTM(const char* bone, Matrix& dst) const = 0;
+		virtual void SetSkeleton(SECore::Skeleton* skeleton) = 0;
+		virtual bool AddClip(SECore::AnimationClip* clip) = 0;
 	};
 
 	struct CharacterController
@@ -384,9 +400,10 @@ namespace SECore
 		virtual Entity* FindEntity(const char* name) = 0;
 		virtual void RemoveEntity(Entity* entity) = 0;
 
+		virtual Light* AddPointLight() = 0;
+		virtual Light* AddDirectionalLight() = 0;
+		virtual void ClearLights() = 0;
 		virtual Light* FindLight(const char* name) = 0;
-
-		virtual bool LoadAdditive(const char* filename) = 0;
 
 		virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance) = 0;
 

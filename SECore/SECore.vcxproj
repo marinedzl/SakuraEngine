@@ -213,7 +213,6 @@
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneEntity.h" />
-    <ClInclude Include="SceneLoader.h" />
     <ClInclude Include="SECore.h" />
     <ClInclude Include="ShapeMesh.h" />
     <ClInclude Include="Skeleton.h" />
@@ -265,7 +264,6 @@
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneEntity.cpp" />
-    <ClCompile Include="SceneLoader.cpp" />
     <ClCompile Include="SECore.cpp" />
     <ClCompile Include="ShapeMesh.cpp" />
     <ClCompile Include="Skeleton.cpp" />
@@ -276,11 +274,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Texture.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\json\json.vcxproj">
-      <Project>{5b400ff7-3faf-42ac-8955-98700e65c387}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\AlphaTest-Diffuse.hlsl">

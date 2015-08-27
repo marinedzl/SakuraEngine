@@ -78,9 +78,6 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SceneLoader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -191,9 +188,6 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SceneLoader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -252,9 +246,6 @@
     <FxCompile Include="shader\AlphaTest-Diffuse.hlsl" />
     <FxCompile Include="shader\GizmoVS.hlsl" />
     <FxCompile Include="shader\GizmoPS.hlsl" />
-    <FxCompile Include="shader\GBuffer.hlsl" />
-    <FxCompile Include="shader\MeshG.hlsl" />
-    <FxCompile Include="shader\SkinnedMeshG.hlsl" />
     <FxCompile Include="shader\deferred_lighting_vs.hlsl" />
     <FxCompile Include="shader\point_light.hlsl" />
     <FxCompile Include="shader\directional_light.hlsl" />

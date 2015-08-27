@@ -4,7 +4,6 @@
 #include "GizmoRenderer.h"
 #include "SceneEntity.h"
 #include "RenderEntity.h"
-#include "SceneLoader.h"
 #include "Core.h"
 #include "Physics.h"
 #include "Collider.h"
@@ -242,11 +241,6 @@ Exit0:
 	return ret;
 }
 
-bool Scene::LoadAdditive(const char * filename)
-{
-	return SceneLoader::Load(this, filename);
-}
-
 void Scene::Update(float deltaTime)
 {
 	mElapsedTime += deltaTime;
@@ -383,7 +377,6 @@ void Scene::Draw(SECore::RenderTarget* rt)
 	mSBGloal.AmbientColor = mConfig.ambientColor;
 
 	CommitGlobal();
-
 	context->PSSetShader(mGBufferPS, nullptr, 0);
 	mGBufferRT->Begin();
 	mGBufferRT->Clear(Color(0, 0, 0, 0));
@@ -453,6 +446,7 @@ void Scene::DrawLight()
 		}
 	}
 
+	mGBufferRT->SetSlot(0, true);
 	mShadowRT->SetSlot(1, true);
 }
 

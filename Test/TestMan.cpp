@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CharaCtrl.h"
 #include "CameraCtrl.h"
+#include "SceneLoader.h"
 #include "TestMan.h"
 
 TestMan gTestMan;
@@ -52,7 +53,7 @@ void TestMan::Init()
 
 	mCameraCtrl = new CameraCtrl(scene->GetCamera());
 
-	CHECK(scene->LoadAdditive("scene.json"));
+	CHECK(SceneLoader::Load(scene, "scene.json"));
 
 	GameObject* mainChara = scene->FindEntity("main chara");
 	GameObject* weapon = scene->FindEntity("weapon");

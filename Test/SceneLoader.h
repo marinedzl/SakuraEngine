@@ -5,5 +5,5 @@ class SceneLoader
 public:
 	SceneLoader();
 	virtual ~SceneLoader();
-	static bool Load(Scene* scene, const char* filename);
+	static bool Load(SECore::Scene* scene, const char* filename);
 };

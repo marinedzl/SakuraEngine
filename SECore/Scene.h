@@ -22,7 +22,6 @@ public:
 	virtual Entity* CreateEntity();
 	virtual void RemoveEntity(Entity* entity);
 	virtual Entity* FindEntity(const char* name);
-	virtual bool LoadAdditive(const char* filename);
 	virtual void Draw(SECore::RenderTarget* rt);
 	virtual void Update(float deltaTime);
 	virtual SECore::Camera* GetCamera() { return &mCamera; }
