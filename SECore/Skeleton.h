@@ -1,6 +1,6 @@
 #pragma once
 
-class Skeleton : public TRefObject<RefObject>
+class Skeleton : public TRefObject<SECore::Skeleton>
 {
 public:
 	Skeleton();

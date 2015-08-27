@@ -8,13 +8,15 @@ cbuffer CBModel : register(b1)
 struct V2P
 {
 	float4 pos : SV_POSITION;
-	float2 uv : TEXCOORD;
+	float3 normal : NORMAL;
+	float4 depth : TEXCOORD;
 };
 
 V2P main(Vertex IN)
 {
 	V2P o;
 	o.pos = mul(mul(IN.pos, MATRIX_M), MATRIX_VP);
-	o.uv = IN.uv0;
+	o.normal = mul(IN.normal.xyz, (float3x3)MATRIX_M);
+	o.depth = o.pos;
 	return o;
 }

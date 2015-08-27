@@ -163,7 +163,10 @@
   <ItemGroup>
     <ClInclude Include="CameraCtrl.h" />
     <ClInclude Include="CharaCtrl.h" />
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="ConsoleDlg.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SceneLoader.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Test.h" />
@@ -172,6 +175,9 @@
   <ItemGroup>
     <ClCompile Include="CameraCtrl.cpp" />
     <ClCompile Include="CharaCtrl.cpp" />
+    <ClCompile Include="Console.cpp" />
+    <ClCompile Include="ConsoleDlg.cpp" />
+    <ClCompile Include="SceneLoader.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -189,6 +195,9 @@
     <Image Include="Test.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\json\json.vcxproj">
+      <Project>{5b400ff7-3faf-42ac-8955-98700e65c387}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\SECore\SECore.vcxproj">
       <Project>{95affe09-f026-4825-95b9-9e001ea7db25}</Project>
     </ProjectReference>

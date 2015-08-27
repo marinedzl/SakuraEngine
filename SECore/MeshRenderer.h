@@ -7,28 +7,19 @@ public:
 	virtual ~MeshRenderer();
 	virtual void Release();
 	bool Init();
-	void Begin(const Camera& camera);
+	void Begin();
 	void End();
-	void Draw(RenderEntity* entity);
+	void Draw(RenderEntity* entity, RenderPass mode);
 private:
-	ID3D11VertexShader* mMeshVS;
-	ID3D11VertexShader* mSkinnedMeshVS;
+	ID3D11VertexShader* mMeshVS[eRenderPassCount];
+	ID3D11VertexShader* mSkinnedMeshVS[eRenderPassCount];
 	ID3D11InputLayout* mInputLayout;
 	ID3D11InputLayout* mSkinnedInputLayout;
 
 	ID3D11BlendState* mBlendState;
 	ID3D11DepthStencilState* mDepthStencilState;
 
-	enum CBType
-	{
-		eCBGlobal, // vs 1
-		eCBModel, // vs 2
-		eCBSkinned, // vs 3
-
-		eCBCount,
-	};
-
-	ID3D11Buffer* mCB[eCBCount];
+	ID3D11Buffer* mCBModel;
 };
 
 extern MeshRenderer gMeshRenderer;

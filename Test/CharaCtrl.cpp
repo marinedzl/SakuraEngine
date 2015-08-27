@@ -11,9 +11,10 @@ namespace
 	}
 }
 
-CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon)
+CharaCtrl::CharaCtrl(GameObject& gameObject, GameObject* weapon, Light* light)
 	: gameObject(gameObject)
 	, weapon(weapon)
+	, light(light)
 	, transform(gameObject.GetTransform())
 	, mGravity(9.8f)
 	, mMoveSpeed(5.5f)
@@ -165,6 +166,13 @@ void CharaCtrl::Update(float deltaTime)
 		world = offset * bone * world;
 		MatrixDecompose(world, weapon->GetTransform());
 	}
+
+	if (light)
+	{
+		float y = light->GetTransform().position.y;
+		light->GetTransform() = transform;
+		light->GetTransform().position.y = y;
+	}
 }
 
 void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -278,7 +286,7 @@ void CharaCtrl::Jump()
 	mState = eJump;
 	mJumpSpeed = mDest - transform.position;
 	mJumpSpeed.y = mJumpInitSpeed;
-	animation.CrossFade("jump_takeoff", 0.3f, false);
+	animation.CrossFade("jump_takeoff", 0.1f, false);
 	animation.CrossFadeQueue("jump_mid", 1, 0);
 }
 

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CharaCtrl.h"
 #include "CameraCtrl.h"
+#include "SceneLoader.h"
 #include "TestMan.h"
 
 TestMan gTestMan;
@@ -52,14 +53,15 @@ void TestMan::Init()
 
 	mCameraCtrl = new CameraCtrl(scene->GetCamera());
 
-	CHECK(scene->LoadAdditive("scene.json"));
+	CHECK(SceneLoader::Load(scene, "scene.json"));
 
 	GameObject* mainChara = scene->FindEntity("main chara");
 	GameObject* weapon = scene->FindEntity("weapon");
+	Light* light = scene->FindLight("chara light");
 
 	if (mainChara)
 	{
-		mCharaCtrl = new CharaCtrl(*mainChara, weapon);
+		mCharaCtrl = new CharaCtrl(*mainChara, weapon, light);
 	}
 
 	mLastTime = timeGetTime();
@@ -97,12 +99,10 @@ void TestMan::Process()
 
 	if (mRT)
 	{
-		mRT->Begin();
 		if (scene)
 		{
 			scene->Draw(mRT);
 		}
-		mRT->End();
 	}
 }
 

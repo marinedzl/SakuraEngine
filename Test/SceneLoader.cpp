@@ -1,11 +1,4 @@
 #include "stdafx.h"
-#include "mesh.h"
-#include "Texture.h"
-#include "Scene.h"
-#include "Skeleton.h"
-#include "Animation.h"
-#include "AnimationClip.h"
-#include "ResourceManager.h"
 #include "SceneLoader.h"
 
 DWORD ConverColor2Dword(const Color& color)
@@ -83,6 +76,16 @@ Vector3 Json2Vec3(const Json::Value& value)
 	return ret;
 }
 
+Color Json2Color(const Json::Value& value)
+{
+	Color ret;
+	ret.r = (float)value[(size_t)0].asDouble();
+	ret.g = (float)value[1].asDouble();
+	ret.b = (float)value[2].asDouble();
+	ret.a = (float)value[3].asDouble();
+	return ret;
+}
+
 const float Angle2Radian = XM_PI / 180.0f;
 
 Quat Json2Quat(const Json::Value& value)
@@ -97,7 +100,19 @@ Quat Json2Quat(const Json::Value& value)
 	return ret;
 }
 
-bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
+void LoadTransform(Transform& transform, const Json::Value& transformRoot)
+{
+	if (transformRoot.isMember("Position"))
+		transform.position = Json2Vec3(transformRoot["Position"]);
+
+	if (transformRoot.isMember("Rotation"))
+		transform.rotation = Json2Quat(transformRoot["Rotation"]);
+
+	if (transformRoot.isMember("Scaling"))
+		transform.scaling = Json2Vec3(transformRoot["Scaling"]);
+}
+
+bool LoadEntity(SECore::Scene::Entity* entity, const Json::Value& entityRoot)
 {
 	bool ret = false;
 
@@ -107,35 +122,18 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 	}
 
 	if (entityRoot.isMember("Transform"))
-	{
-		const Json::Value& transformRoot = entityRoot["Transform"];
-
-		if (transformRoot.isMember("Position"))
-			entity->GetTransform().position = Json2Vec3(transformRoot["Position"]);
-
-		if (transformRoot.isMember("Rotation"))
-			entity->GetTransform().rotation = Json2Quat(transformRoot["Rotation"]);
-
-		if (transformRoot.isMember("Scaling"))
-			entity->GetTransform().scaling = Json2Vec3(transformRoot["Scaling"]);
-	}
+		LoadTransform(entity->GetTransform(), entityRoot["Transform"]);
 
 	if (entityRoot.isMember("Animation"))
 	{
 		const Json::Value& animationRoot = entityRoot["Animation"];
 
-		Animation* animation = nullptr;
+		SECore::Animation* animation = entity->GetAnimation();
 
-		if (SECore::Animation* _ptr = entity->GetAnimation())
-		{
-			animation = dynamic_cast<Animation*>(_ptr);
-		}
-		else
-		{
-			animation = dynamic_cast<Animation*>(entity->CreateAnimation());
-		}
+		if (!animation)
+			animation = entity->CreateAnimation();
 
-		Skeleton* skeleton = gResourceManager.LoadSkeleton(animationRoot["Skeleton"].asCString());
+		SECore::Skeleton* skeleton = SECore::LoadSkeleton(animationRoot["Skeleton"].asCString());
 		animation->SetSkeleton(skeleton);
 		skeleton->Release();
 
@@ -153,7 +151,7 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 		std::vector<std::string> memberNames = jsonClips.getMemberNames();
 		for (size_t i = 0; i < memberNames.size(); ++i)
 		{
-			AnimationClip* clip = gResourceManager.LoadClip(jsonClips[memberNames[i]].asCString());
+			SECore::AnimationClip* clip = SECore::LoadClip(jsonClips[memberNames[i]].asCString());
 			clip->SetName(memberNames[i].c_str());
 			animation->AddClip(clip);
 			clip->Release();
@@ -234,9 +232,13 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 		{
 			SECore::Renderer::Entity* re = renderer->CreateEntity();
 			const Json::Value& reRoot = rendererRoot[i];
+			if (reRoot.isMember("CastShadow"))
+			{
+				re->SetCastShadow(reRoot["CastShadow"].asBool());
+			}
 			if (reRoot.isMember("Mesh"))
 			{
-				Mesh* mesh = gResourceManager.LoadMesh(reRoot["Mesh"].asCString());
+				SECore::Mesh* mesh = SECore::LoadMesh(reRoot["Mesh"].asCString());
 				re->SetMesh(mesh);
 				mesh->Release();
 			}
@@ -245,14 +247,14 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 				SECore::Material* material = re->GetMaterial();
 				const Json::Value& mtlRoot = reRoot["Material"];
 
-				Shader* shader = nullptr;
+				SECore::Shader* shader = nullptr;
 				if (mtlRoot.isMember("Shader"))
 				{
-					shader = gResourceManager.CreateShader(mtlRoot["Shader"].asCString());
+					shader = SECore::CreateShader(mtlRoot["Shader"].asCString());
 				}
 				else
 				{
-					shader = gResourceManager.CreateShader("AlphaTest-Diffuse");
+					shader = SECore::CreateShader("AlphaTest-Diffuse");
 				}
 
 				CHECK(shader);
@@ -264,15 +266,15 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 				for (size_t pi = 0; pi < propCount; pi++)
 				{
 					const std::string& propName = propNames[pi];
-					Shader::PropertyType propType = shader->GetPropertyType(propName.c_str());
+					SECore::Shader::PropertyType propType = shader->GetPropertyType(propName.c_str());
 					switch (propType)
 					{
-					case Shader::eFloat:
+					case SECore::Shader::eFloat:
 					{
 						material->SetFloat(propName.c_str(), (float)mtlRoot[propName].asDouble());
 					}
 					break;
-					case Shader::eColor:
+					case SECore::Shader::eColor:
 					{
 						const char* str = mtlRoot[propName].asCString();
 						DWORD dwColor = strtoul(str, NULL, 16);
@@ -280,9 +282,9 @@ bool LoadEntity(Scene::Entity* entity, const Json::Value& entityRoot)
 						material->SetColor(propName.c_str(), color);
 					}
 					break;
-					case Shader::eTexture:
+					case SECore::Shader::eTexture:
 					{
-						Texture* texture = gResourceManager.LoadTexture(mtlRoot[propName].asCString());
+						SECore::Texture* texture = SECore::LoadTexture(mtlRoot[propName].asCString());
 						material->SetTexture(propName.c_str(), texture);
 						texture->Release();
 					}
@@ -301,7 +303,44 @@ Exit0:
 	return ret;
 }
 
-bool SceneLoader::Load(Scene* scene, const char* filename)
+bool LoadLight(SECore::Scene* scene, const Json::Value& lightRoot)
+{
+	const char* type = lightRoot["Type"].asCString();
+
+	SECore::Light* light = nullptr;
+
+	if (strcmp(type, "Point") == 0)
+	{
+		light = scene->AddPointLight();
+	}
+	else if (strcmp(type, "Directional") == 0)
+	{
+		light = scene->AddDirectionalLight();
+	}
+
+	if (lightRoot.isMember("Enable"))
+	{
+		light->Enable(lightRoot["Enable"].asBool());
+	}
+
+	if (lightRoot.isMember("Name"))
+	{
+		light->SetName(lightRoot["Name"].asCString());
+	}
+
+	if (lightRoot.isMember("Transform"))
+		LoadTransform(light->GetTransform(), lightRoot["Transform"]);
+
+	if (lightRoot.isMember("Color"))
+		light->SetColor(Json2Color(lightRoot["Color"]));
+
+	if (lightRoot.isMember("Intensity"))
+		light->SetIntensity((float)(lightRoot["Intensity"].asDouble()));
+
+	return true;
+}
+
+bool SceneLoader::Load(SECore::Scene* scene, const char* filename)
 {
 	bool ret = false;
 	Json::Value root;
@@ -313,6 +352,12 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 		const Json::Value& configRoot = root["Config"];
 		if (configRoot.isMember("ShowGizmo"))
 			scene->GetConfig()->EnableGizmo(configRoot["ShowGizmo"].asBool());
+		if (configRoot.isMember("CaptureBuffer"))
+			scene->GetConfig()->CaptureBuffer(configRoot["CaptureBuffer"].asBool());
+		if (configRoot.isMember("AmbientColor"))
+		{
+			scene->GetConfig()->SetAmbientColor(Json2Color(configRoot["AmbientColor"]));
+		}
 	}
 
 	CHECK(root.isMember("Entities"));
@@ -322,7 +367,7 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 
 	for (size_t i = 0; i < entityCount; ++i)
 	{
-		Scene::Entity* entity = scene->CreateEntity();
+		SECore::Scene::Entity* entity = scene->CreateEntity();
 		const Json::Value& entityRoot = root["Entities"][i];
 
 		if (entityRoot.isMember("Prefab"))
@@ -333,6 +378,12 @@ bool SceneLoader::Load(Scene* scene, const char* filename)
 		}
 		
 		LoadEntity(entity, entityRoot);
+	}
+
+	size_t lightCount = root["Lights"].size();
+	for (size_t i = 0; i < lightCount; i++)
+	{
+		LoadLight(scene, root["Lights"][i]);
 	}
 
 	ret = true;

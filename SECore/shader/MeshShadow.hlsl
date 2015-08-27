@@ -7,14 +7,14 @@ cbuffer CBModel : register(b1)
 
 struct V2P
 {
-	float4 pos : SV_POSITION;
-	float2 uv : TEXCOORD;
+	float4 position : SV_POSITION;
+	float4 depthPosition : TEXTURE0;
 };
 
 V2P main(Vertex IN)
 {
 	V2P o;
-	o.pos = mul(mul(IN.pos, MATRIX_M), MATRIX_VP);
-	o.uv = IN.uv0;
+	o.position = mul(mul(IN.pos, MATRIX_M), MATRIX_VP);
+	o.depthPosition = o.position;
 	return o;
 }

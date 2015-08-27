@@ -9,7 +9,7 @@ CameraCtrl::CameraCtrl(Camera* camera)
 	, mDistance(10)
 	, mMinDistance(0.1f)
 	, mMaxDistance(100.0f)
-	, mYawPitch(0, -0.5f)
+	, mYawPitch(XM_PIDIV4, -0.5f)
 {
 
 }
@@ -100,45 +100,32 @@ void CameraCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_MBUTTONDOWN:
 	{
-		//Begin(pos.x, pos.y, CameraController::eOpMove);
-		//SetCapture(hWnd);
-	}
-	break;
-	case WM_MBUTTONUP:
-	{
-		//End();
-		//ReleaseCapture();
+		//Begin(pos.x, pos.y, eOpMove);
+		//SetCapture(hWnd);s
+		Begin(pos.x, pos.y, eOpRotate);
+		SetCapture(hWnd);
 	}
 	break;
 	case WM_RBUTTONDOWN:
-	{
-		//Begin(pos.x, pos.y, CameraController::eOpRotate);
-		//SetCapture(hWnd);
-	}
-	break;
-	case WM_RBUTTONUP:
-	{
-		//End();
-		//ReleaseCapture();
-	}
-	break;
-	case WM_MOUSEWHEEL:
-	{
-		short zDelta = (short)HIWORD(wParam);
-		Scroll(-(float)zDelta * 0.01f);
-	}
-	break;
-	case WM_LBUTTONDOWN:
-	{
-	}
-	break;
-	case WM_LBUTTONUP:
 	{
 	}
 	break;
 	case WM_MOUSEMOVE:
 	{
 		Move(pos.x, pos.y);
+	}
+	break;
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+	{
+		End();
+		ReleaseCapture();
+	}
+	break;
+	case WM_MOUSEWHEEL:
+	{
+		short zDelta = (short)HIWORD(wParam);
+		Scroll(-(float)zDelta * 0.01f);
 	}
 	break;
 	}

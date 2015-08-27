@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "Core.h"
 #include "RenderWindow.h"
+#include "ResourceManager.h"
 #include "SECore.h"
 
 namespace SECore
@@ -48,5 +49,30 @@ namespace SECore
 			}
 		}
 		return nullptr;
+	}
+
+	SECORE_API Texture * LoadTexture(const char * name)
+	{
+		return gResourceManager.LoadTexture(name);
+	}
+
+	SECORE_API Mesh * LoadMesh(const char * name)
+	{
+		return gResourceManager.LoadMesh(name);
+	}
+
+	SECORE_API AnimationClip * LoadClip(const char * name)
+	{
+		return gResourceManager.LoadClip(name);
+	}
+
+	SECORE_API Skeleton * LoadSkeleton(const char * name)
+	{
+		return gResourceManager.LoadSkeleton(name);
+	}
+
+	SECORE_API Shader * CreateShader(const char * name)
+	{
+		return gResourceManager.CreateShader(name);
 	}
 }

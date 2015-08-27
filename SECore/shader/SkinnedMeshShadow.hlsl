@@ -8,8 +8,8 @@ cbuffer CBSkinned : register(b1)
 
 struct V2P
 {
-	float4 pos : SV_POSITION;
-	float2 uv : TEXCOORD;
+	float4 position : SV_POSITION;
+	float4 depthPosition : TEXTURE0;
 };
 
 V2P main(Vertex IN)
@@ -23,7 +23,7 @@ V2P main(Vertex IN)
 		+ MATRIX_M_SKIN[IN.boneIndices[3]] * weight;
 	m = mul(m, MATRIX_M);
 	m = mul(m, MATRIX_VP);
-	o.pos = mul(IN.pos, m);
-	o.uv = IN.uv0;
+	o.position = mul(IN.pos, m);
+	o.depthPosition = o.position;
 	return o;
 }

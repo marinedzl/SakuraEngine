@@ -24,6 +24,8 @@ using namespace DirectX;
 #include "PxPhysicsAPI.h"
 using namespace physx;
 
+#include <FreeImage.h>
+
 void log(const TCHAR* fmt, ...);
 
 typedef SECore::Matrix Matrix;
@@ -56,6 +58,8 @@ class Skeleton;
 class Animation;
 class Animator;
 class AnimationClip;
+class RenderTarget;
+class RenderTexture;
 
 class SceneEntity;
 class RenderEntity;
@@ -205,6 +209,13 @@ inline Quat ConvertPxQuat(const PxQuat& v)
 	return Quat(v.x, v.y, v.z, v.w);
 }
 
+inline void Color2Vector3(const Color& color, Vector3& dst)
+{
+	dst.x = color.r;
+	dst.y = color.g;
+	dst.z = color.b;
+}
+
 struct GizmoMesh
 {
 	struct Vertex
@@ -216,4 +227,17 @@ struct GizmoMesh
 	ID3D11Buffer* vb;
 	ID3D11Buffer* ib;
 	GizmoMesh() : indexCount(0), primitive(D3D11_PRIMITIVE_TOPOLOGY_LINELIST), vb(nullptr), ib(nullptr) {}
+};
+
+enum RenderPass
+{
+	eNormalRenderPass,
+	eGBufferRenderPass,
+	eShadowRenderPass,
+	eRenderPassCount
+};
+
+enum
+{
+	ShadowMapSize = 1024,
 };

@@ -56,6 +56,13 @@ namespace SECore
 			this->z *= other;
 			return *this;
 		}
+		Vector3& operator/=(float other)
+		{
+			this->x /= other;
+			this->y /= other;
+			this->z /= other;
+			return *this;
+		}
 	};
 
 	inline Vector3 operator+(const Vector3& a, const Vector3& b)
@@ -203,6 +210,19 @@ namespace SECore
 		virtual void SetTexture(const char* name, Texture* texture) = 0;
 	};
 
+	struct AnimationClip : RefObject
+	{
+		virtual ~AnimationClip() {}
+		virtual float GetLength() const = 0;
+		virtual const char* GetName() const = 0;
+		virtual void SetName(const char* name) = 0;
+	};
+
+	struct Skeleton : RefObject
+	{
+		virtual ~Skeleton() {}
+	};
+
 	struct Animation
 	{
 		typedef void ClipChangedCallback(void* data, const char* prev, const char* curr);
@@ -211,7 +231,10 @@ namespace SECore
 		virtual void CrossFade(const char* name, float fadeLength, bool loop = true) = 0;
 		virtual void CrossFadeQueue(const char* name, float offset, float fadeLength, bool loop = true) = 0;
 		virtual void SetClipChangedCallback(ClipChangedCallback* callback, void* userData) = 0;
+		virtual bool AddSavedBoneTM(const char* bone) = 0;
 		virtual bool GetSavedBoneTM(const char* bone, Matrix& dst) const = 0;
+		virtual void SetSkeleton(SECore::Skeleton* skeleton) = 0;
+		virtual bool AddClip(SECore::AnimationClip* clip) = 0;
 	};
 
 	struct CharacterController
@@ -246,6 +269,8 @@ namespace SECore
 			virtual void SetMesh(Mesh* mesh) = 0;
 			virtual const Transform& GetTransform() const = 0;
 			virtual bool IsSkinned() const = 0;
+			virtual bool IsCastShadow() const = 0;
+			virtual void SetCastShadow(bool enable) = 0;
 		};
 
 		virtual ~Renderer() {}
@@ -260,6 +285,7 @@ namespace SECore
 		virtual ~RenderTarget() {}
 		virtual bool Begin() = 0;
 		virtual void End() = 0;
+		virtual void Clear(const Color& color) = 0;
 		virtual float GetWidth() const = 0;
 		virtual float GetHeight() const = 0;
 		virtual void ClearDepth() = 0;
@@ -292,12 +318,46 @@ namespace SECore
 		virtual void ScreenPointToRay(Ray& ray, const Vector3& point) = 0;
 	};
 
+	struct Light
+	{
+		virtual ~Light() {}
+
+		virtual bool IsEnable() const = 0;
+		virtual void Enable(bool enable) = 0;
+
+		virtual void SetIntensity(float intensity) = 0;
+		virtual void SetName(const char* name) = 0;
+		virtual void SetColor(const Color& color) = 0;
+		virtual const Transform& GetTransform() const = 0;
+
+		virtual float GetIntensity() const = 0;
+		virtual Transform& GetTransform() = 0;
+		virtual const char* GetName() const = 0;
+		virtual const Color& GetColor() const = 0;
+
+		virtual void GetVP(Matrix& vp) const = 0;
+
+		virtual void Setup() = 0;
+	};
+
+	struct PointLight : Light
+	{
+		virtual ~PointLight() {}
+	};
+
+	struct Directional : Light
+	{
+		virtual ~Directional() {}
+	};
+
 	struct Scene : public Object
 	{
 		struct Config
 		{
 			virtual ~Config() {}
 			virtual void EnableGizmo(bool enable) = 0;
+			virtual void SetAmbientColor(const Color& color) = 0;
+			virtual void CaptureBuffer(bool value) = 0;
 		};
 		struct Entity
 		{
@@ -340,7 +400,10 @@ namespace SECore
 		virtual Entity* FindEntity(const char* name) = 0;
 		virtual void RemoveEntity(Entity* entity) = 0;
 
-		virtual bool LoadAdditive(const char* filename) = 0;
+		virtual Light* AddPointLight() = 0;
+		virtual Light* AddDirectionalLight() = 0;
+		virtual void ClearLights() = 0;
+		virtual Light* FindLight(const char* name) = 0;
 
 		virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance) = 0;
 

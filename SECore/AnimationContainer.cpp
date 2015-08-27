@@ -14,8 +14,10 @@ AnimationContainer::~AnimationContainer()
 	ReleaseMap(mClips);
 }
 
-void AnimationContainer::SetSkeleton(Skeleton * skeleton)
+void AnimationContainer::SetSkeleton(SECore::Skeleton * ske)
 {
+	Skeleton* skeleton = dynamic_cast<Skeleton*>(ske);
+	CHECK(skeleton);
 	SAFE_RELEASE(mSkeleton);
 	mSkeleton = skeleton;
 	if (mSkeleton)
@@ -23,6 +25,8 @@ void AnimationContainer::SetSkeleton(Skeleton * skeleton)
 		mSkeleton->AddRef();
 		mTMs.resize(mSkeleton->GetBoneCount());
 	}
+Exit0:
+	;
 }
 
 bool AnimationContainer::GetMatrix(Matrix* dst) const
@@ -59,11 +63,16 @@ bool AnimationContainer::GetSavedBoneTM(const char * bone, Matrix& dst) const
 	}
 }
 
-bool AnimationContainer::AddClip(AnimationClip* clip)
+bool AnimationContainer::AddClip(SECore::AnimationClip* _clip)
 {
+	bool ret = false;
+	AnimationClip* clip = dynamic_cast<AnimationClip*>(_clip);
+	CHECK(clip);
 	clip->AddRef();
 	mClips.insert(std::make_pair(clip->GetName(), clip));
-	return true;
+	ret = true;
+Exit0:
+	return ret;
 }
 
 void AnimationContainer::Blend(const BlendDesc& blendDesc)

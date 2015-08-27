@@ -21,10 +21,10 @@ public:
 	virtual const AnimationClip* GetClip(const char* name) const;
 	virtual bool AddSavedBoneTM(const char* bone);
 	virtual bool GetSavedBoneTM(const char* bone, Matrix& dst) const;
+	virtual void SetSkeleton(SECore::Skeleton* skeleton);
+	virtual bool AddClip(SECore::AnimationClip* clip);
 public:
 	AnimationContainer();
-	void SetSkeleton(Skeleton* skeleton);
-	bool AddClip(AnimationClip* clip);
 	bool GetMatrix(Matrix* dst) const;
 private:
 	typedef std::map<std::string, AnimationClip*> Clips;

@@ -16,3 +16,5 @@ private:
 	UINT mBPP; // 8, 24, 32
 	BYTE* mBits;
 };
+
+bool SaveTextureToFile(const char* filename, const void* data, int w, int h);

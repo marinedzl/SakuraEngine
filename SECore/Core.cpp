@@ -4,6 +4,8 @@
 #include "GizmoRenderer.h"
 #include "ResourceManager.h"
 #include "Physics.h"
+#include "PointLight.h"
+#include "DirectionalLight.h"
 #include "Core.h"
 
 Core gCore;
@@ -20,7 +22,7 @@ bool Core::Init(const char* resourePath)
 {
 	bool ret = false;
 
-	mWorkpath = resourePath;
+	FreeImage_Initialise(TRUE);
 
 	CHECK(CreateDevice());
 	CHECK(gResourceManager.Init());
@@ -28,6 +30,8 @@ bool Core::Init(const char* resourePath)
 	CHECK(gGizmosRenderer.Init());
 	CHECK(gMeshRenderer.Init());
 	CHECK(gPhysicsCore.Init());
+	CHECK(gPointLightShader.Init());
+	CHECK(gDirectionalLightShader.Init());
 
 	ret = true;
 Exit0:
@@ -36,11 +40,15 @@ Exit0:
 
 void Core::Release()
 {
+	gDirectionalLightShader.Release();
+	gPointLightShader.Release();
 	gPhysicsCore.Release();
 	gMeshRenderer.Release();
 	gGizmosRenderer.Release();
 	gRenderStateManager.Release();
 	gResourceManager.Release();
+
+	FreeImage_DeInitialise();
 
 	SAFE_RELEASE(mDxgiFactory);
 	SAFE_RELEASE(mContext);

@@ -37,12 +37,18 @@ bool RenderTarget::Begin()
 {
 	if (ID3D11DeviceContext* context = gCore.GetContext())
 	{
-		float ClearColor[4] = { 0.278f, 0.278f, 0.278f, 1 };
 		context->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
-		context->ClearRenderTargetView(mRenderTargetView, ClearColor);
-		context->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 	return true;
+}
+
+void RenderTarget::Clear(const Color & color)
+{
+	if (ID3D11DeviceContext* context = gCore.GetContext())
+	{
+		context->ClearRenderTargetView(mRenderTargetView, (float*)&color);
+		context->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	}
 }
 
 void RenderTarget::End()
@@ -92,7 +98,9 @@ bool RenderTarget::Rebuild()
 	CHECK(SUCCEEDED(gCore.GetDevice()->CreateTexture2D(&depthDesc, NULL, &mDepthStencilBuffer)));
 
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
-	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	D3D11_TEXTURE2D_DESC texDesc;
+	mRenderTargetBuffer->GetDesc(&texDesc);
+	rtvDesc.Format = texDesc.Format;
 	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 	rtvDesc.Texture2D.MipSlice = 0;
 	CHECK(SUCCEEDED(gCore.GetDevice()->CreateRenderTargetView(mRenderTargetBuffer, &rtvDesc, &mRenderTargetView)));

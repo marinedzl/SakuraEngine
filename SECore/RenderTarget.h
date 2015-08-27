@@ -7,11 +7,13 @@ public:
 	virtual ~RenderTarget();
 	virtual void Release();
 	virtual bool Begin();
+	virtual void Clear(const Color& color);
 	virtual void End();
 	virtual void ClearDepth();
 	virtual float GetWidth() const { return mWidth; }
 	virtual float GetHeight() const { return mHeight; }
 	bool Create(ID3D11Texture2D* target);
+	ID3D11Texture2D* GetTarget() { return mRenderTargetBuffer; }
 private:
 	bool Rebuild();
 private:

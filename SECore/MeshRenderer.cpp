@@ -13,23 +13,18 @@ struct CBModel
 	Matrix MATRIX_M;
 };
 
-struct CBGlobal
-{
-	Matrix MATRIX_VP;
-};
-
 struct CBSkinned
 {
+	Matrix MATRIX_M;
 	Matrix MATRIX_M_SKIN[MAX_BONE];
 };
 
 MeshRenderer gMeshRenderer;
 
 MeshRenderer::MeshRenderer()
-	: mMeshVS(nullptr)
-	, mSkinnedMeshVS(nullptr)
-	, mInputLayout(nullptr)
+	: mInputLayout(nullptr)
 	, mSkinnedInputLayout(nullptr)
+	, mCBModel(nullptr)
 {
 }
 
@@ -39,12 +34,14 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Release()
 {
-	SAFE_RELEASE(mMeshVS);
-	SAFE_RELEASE(mSkinnedMeshVS);
+	for (size_t i = 0; i < eRenderPassCount; i++)
+	{
+		SAFE_RELEASE(mMeshVS[i]);
+		SAFE_RELEASE(mSkinnedMeshVS[i]);
+	}
 	SAFE_RELEASE(mInputLayout);
 	SAFE_RELEASE(mSkinnedInputLayout);
-	for (size_t i = 0; i < eCBCount; ++i)
-		SAFE_RELEASE(mCB[i]);
+	SAFE_RELEASE(mCBModel);
 }
 
 bool MeshRenderer::Init()
@@ -71,11 +68,23 @@ bool MeshRenderer::Init()
 
 		CHECK(LoadBinaryFile(file, "Mesh.cso"));
 		CHECK(SUCCEEDED(device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), file.ptr(), file.size(), &mInputLayout)));
-		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS)));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS[eNormalRenderPass])));
 
 		CHECK(LoadBinaryFile(file, "SkinnedMesh.cso"));
 		CHECK(SUCCEEDED(device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), file.ptr(), file.size(), &mSkinnedInputLayout)));
-		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS)));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS[eNormalRenderPass])));
+
+		CHECK(LoadBinaryFile(file, "MeshGBuffer.cso"));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS[eGBufferRenderPass])));
+
+		CHECK(LoadBinaryFile(file, "SkinnedMeshGBuffer.cso"));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS[eGBufferRenderPass])));
+
+		CHECK(LoadBinaryFile(file, "MeshShadow.cso"));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS[eShadowRenderPass])));
+
+		CHECK(LoadBinaryFile(file, "SkinnedMeshShadow.cso"));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS[eShadowRenderPass])));
 	}
 
 	// CreateDepthStencilState
@@ -120,14 +129,8 @@ bool MeshRenderer::Init()
 		buffDesc.Usage = D3D11_USAGE_DYNAMIC;
 		buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-		buffDesc.ByteWidth = sizeof(CBGlobal);
-		CHECK(SUCCEEDED(device->CreateBuffer(&buffDesc, nullptr, &mCB[eCBGlobal])));
-
-		buffDesc.ByteWidth = sizeof(CBModel);
-		CHECK(SUCCEEDED(device->CreateBuffer(&buffDesc, nullptr, &mCB[eCBModel])));
-
 		buffDesc.ByteWidth = sizeof(CBSkinned);
-		CHECK(SUCCEEDED(device->CreateBuffer(&buffDesc, nullptr, &mCB[eCBSkinned])));
+		CHECK(SUCCEEDED(device->CreateBuffer(&buffDesc, nullptr, &mCBModel)));
 	}
 
 	ret = true;
@@ -135,7 +138,7 @@ Exit0:
 	return ret;
 }
 
-void MeshRenderer::Begin(const Camera& camera)
+void MeshRenderer::Begin()
 {
 	if (ID3D11DeviceContext* context = gCore.GetContext())
 	{
@@ -144,15 +147,7 @@ void MeshRenderer::Begin(const Camera& camera)
 		context->OMSetBlendState(mBlendState, factor, 0xFFFFFFFF);
 		context->OMSetDepthStencilState(mDepthStencilState, 1);
 		context->RSSetState(gRenderStateManager.GetRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID));
-		context->VSSetConstantBuffers(1, 3, mCB);
-
-		D3D11_MAPPED_SUBRESOURCE mr;
-		if (SUCCEEDED(context->Map(mCB[eCBGlobal], 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
-		{
-			CBGlobal* cb = (CBGlobal*)mr.pData;
-			camera.GetViewProjMatrix(cb->MATRIX_VP);
-			context->Unmap(mCB[eCBGlobal], 0);
-		}
+		context->VSSetConstantBuffers(1, 1, &mCBModel);
 	}
 }
 
@@ -161,7 +156,7 @@ void MeshRenderer::End()
 
 }
 
-void MeshRenderer::Draw(RenderEntity* entity)
+void MeshRenderer::Draw(RenderEntity* entity, RenderPass mode)
 {
 	if (!entity)
 		return;
@@ -170,45 +165,56 @@ void MeshRenderer::Draw(RenderEntity* entity)
 	if (!context)
 		return;
 
-	Mesh* mesh = entity->GetMeshInternal();
-	Material* material = entity->GetMaterialInternal();
-
-	if (!mesh || !material)
-		return;
-
 	D3D11_MAPPED_SUBRESOURCE mr;
-
-	if (SUCCEEDED(context->Map(mCB[eCBModel], 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
-	{
-		CBModel* cb = (CBModel*)mr.pData;
-		AffineTransform(cb->MATRIX_M, entity->GetTransform());
-		context->Unmap(mCB[eCBModel], 0);
-	}
 
 	if (entity->IsSkinned())
 	{
-		if (SUCCEEDED(context->Map(mCB[eCBSkinned], 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
+		if (SUCCEEDED(context->Map(mCBModel, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
 		{
 			CBSkinned* cb = (CBSkinned*)mr.pData;
+			AffineTransform(cb->MATRIX_M, entity->GetTransform());
 			entity->GetBoneMatrix(cb->MATRIX_M_SKIN);
-			context->Unmap(mCB[eCBSkinned], 0);
+			context->Unmap(mCBModel, 0);
 		}
 
-		context->VSSetShader(mSkinnedMeshVS, nullptr, 0);
+		context->VSSetShader(mSkinnedMeshVS[mode], nullptr, 0);
 		context->IASetInputLayout(mSkinnedInputLayout);
 	}
 	else
 	{
-		context->VSSetShader(mMeshVS, nullptr, 0);
+		if (SUCCEEDED(context->Map(mCBModel, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
+		{
+			CBModel* cb = (CBModel*)mr.pData;
+			AffineTransform(cb->MATRIX_M, entity->GetTransform());
+			context->Unmap(mCBModel, 0);
+		}
+
+		context->VSSetShader(mMeshVS[mode], nullptr, 0);
 		context->IASetInputLayout(mInputLayout);
 	}
 
+	Mesh* mesh = entity->GetMeshInternal();
+
+	if (!mesh)
+		return;
+
 	mesh->Setup();
 
-	size_t passCount = material->GetPassCount();
-	for (size_t i = 0; i < passCount; ++i)
+	if (mode == eNormalRenderPass)
 	{
-		material->SetPass(i);
+		Material* material = entity->GetMaterialInternal();
+		if (material)
+		{
+			size_t passCount = material->GetPassCount();
+			for (size_t i = 0; i < passCount; ++i)
+			{
+				material->SetPass(i);
+				mesh->Draw();
+			}
+		}
+	}
+	else
+	{
 		mesh->Draw();
 	}
 }

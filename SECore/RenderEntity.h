@@ -11,6 +11,8 @@ public:
 	virtual void SetMesh(SECore::Mesh* mesh);
 	virtual const Transform& GetTransform() const;
 	virtual bool IsSkinned() const;
+	virtual bool IsCastShadow() const { return mCastShadow; }
+	virtual void SetCastShadow(bool enable) { mCastShadow = enable; }
 public:
 	bool GetBoneMatrix(Matrix* dst) const;
 	virtual Mesh* GetMeshInternal() { return mMesh; }
@@ -19,4 +21,5 @@ private:
 	SceneEntity& mOwner;
 	Material* mMaterial;
 	Mesh* mMesh;
+	bool mCastShadow;
 };
