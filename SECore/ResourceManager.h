@@ -20,8 +20,8 @@ private:
 	typedef std::map<std::string, RefObject*> Resources;
 	typedef std::map<std::string, ShaderFactory*> ShaderFactories;
 private:
-	Resources mResources;
-	ShaderFactories mShaderFactories;
+	Resources* mResources;
+	ShaderFactories* mShaderFactories;
 };
 
 extern ResourceManager gResourceManager;

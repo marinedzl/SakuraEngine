@@ -10,6 +10,8 @@ ResourceManager gResourceManager;
 
 ResourceManager::ResourceManager()
 {
+	mResources = new Resources();
+	mShaderFactories = new ShaderFactories();
 }
 
 ResourceManager::~ResourceManager()
@@ -18,13 +20,15 @@ ResourceManager::~ResourceManager()
 
 void ResourceManager::Release()
 {
-	DeleteMap(mShaderFactories);
-	DeleteMap(mResources);
+	DeleteMap(*mShaderFactories);
+	DeleteMap(*mResources);
+	SAFE_DELETE(mShaderFactories);
+	SAFE_DELETE(mResources);
 }
 
 bool ResourceManager::Init()
 {
-	mShaderFactories.insert(std::make_pair(std::string("AlphaTest-Diffuse"), new MeshShaderFactory()));
+	mShaderFactories->insert(std::make_pair(std::string("AlphaTest-Diffuse"), new MeshShaderFactory()));
 	return true;
 }
 
@@ -50,14 +54,14 @@ SECore::Skeleton* ResourceManager::LoadSkeleton(const char* name)
 
 bool ResourceManager::AddShaderFactory(const char * name, ShaderFactory * factory)
 {
-	mShaderFactories.insert(std::make_pair(name, factory));
+	mShaderFactories->insert(std::make_pair(name, factory));
 	return true;
 }
 
 ShaderFactory * ResourceManager::FindShaderFactory(const char * name)
 {
-	ShaderFactories::iterator iter = mShaderFactories.find(name);
-	return iter == mShaderFactories.end() ? nullptr : iter->second;
+	ShaderFactories::iterator iter = mShaderFactories->find(name);
+	return iter == mShaderFactories->end() ? nullptr : iter->second;
 }
 
 SECore::Shader * ResourceManager::CreateShader(const char * name)
@@ -86,8 +90,8 @@ T* ResourceManager::LoadResource(const char* name)
 
 	CHECK(name);
 
-	iter = mResources.find(name);
-	if (iter != mResources.end())
+	iter = mResources->find(name);
+	if (iter != mResources->end())
 	{
 		res = dynamic_cast<T*>(iter->second);
 	}
@@ -96,7 +100,7 @@ T* ResourceManager::LoadResource(const char* name)
 		res = new T();
 		if (res->LoadFromFile(name))
 		{
-			mResources.insert(std::make_pair(name, res));
+			mResources->insert(std::make_pair(name, res));
 		}
 		else
 		{
