@@ -9,6 +9,7 @@
 class CEditorApp : public CWinApp
 {
 public:
+	DWORD mLastTime;
 	SECore::Scene* scene;
 public:
 	CEditorApp();

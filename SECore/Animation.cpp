@@ -31,6 +31,9 @@ void Animation::Update(float deltaTime)
 	mBlendDesc.currTime += deltaTime;
 	mBlendDesc.nextTime += deltaTime;
 
+	if (!mBlendDesc.currClip)
+		return;
+
 	ModTime();
 
 	if (mBlendDesc.nextClip)

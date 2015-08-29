@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Editor.h"
+#include "SceneLoader.h"
 #include "EditorDlg.h"
 
 #ifdef _DEBUG
@@ -12,6 +13,8 @@ END_MESSAGE_MAP()
 
 CEditorApp::CEditorApp()
 {
+	scene = nullptr;
+	mLastTime = 0;
 }
 
 CEditorApp theApp;
@@ -44,6 +47,8 @@ BOOL CEditorApp::InitInstance()
 	scene = SECore::CreateScene();
 	CHECK(scene);
 
+	CHECK(SceneLoader::Load(scene, _T("scene.json")));
+
 	ret = TRUE;
 Exit0:
 	return ret;
@@ -59,7 +64,20 @@ int CEditorApp::ExitInstance()
 
 BOOL CEditorApp::OnIdle(LONG lCount)
 {
-	
+	DWORD currentTime = timeGetTime();
+	DWORD dwDelta = currentTime - mLastTime;
+
+	if (dwDelta > 0)
+	{
+		mLastTime = currentTime;
+
+		float deltaTime = dwDelta / 1000.0f;
+
+		//deltaTime *= 0.1f;
+
+		if (scene)
+			scene->Update(deltaTime);
+	}
 
 	return CWinApp::OnIdle(lCount);
 }
