@@ -18,6 +18,7 @@ public:
 	virtual ~Scene();
 	virtual bool Init();
 	virtual void Release();
+	virtual SECore::Core* GetCore();
 	virtual void ClearEntities();
 	virtual Entity* CreateEntity();
 	virtual void RemoveEntity(Entity* entity);

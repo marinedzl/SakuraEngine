@@ -30,9 +30,10 @@ BOOL CEditorApp::InitInstance()
 
 	SetRegistryKey(_T("Sakura Engine Editor"));
 
-	CHECK(SECore::InitCore(""));
+	core = SECore::CreateCore();
+	CHECK(core);
 
-	scene = SECore::CreateScene();
+	scene = core->CreateScene();
 	CHECK(scene);
 
 	CHECK(SceneLoader::Load(scene, _T("scene.json")));
@@ -60,7 +61,7 @@ int CEditorApp::ExitInstance()
 	SAFE_DELETE(pSceneView);
 	SAFE_DELETE(pGameView);
 	SAFE_RELEASE(scene);
-	SECore::ReleaseCore();
+	SAFE_RELEASE(core);
 	return CWinApp::ExitInstance();
 }
 
@@ -91,5 +92,7 @@ BOOL CEditorApp::OnIdle(LONG lCount)
 		}
 	}
 
-	return CWinApp::OnIdle(lCount);
+	CWinApp::OnIdle(lCount);
+
+	return TRUE;
 }

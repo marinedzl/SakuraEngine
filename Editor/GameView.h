@@ -1,4 +1,5 @@
 #pragma once
+#include "IGame.h"
 
 class CameraCtrl;
 class CGameView : public CDialogEx, public IIdleProcesser
@@ -6,7 +7,7 @@ class CGameView : public CDialogEx, public IIdleProcesser
 	DECLARE_DYNAMIC(CGameView)
 private:
 	RenderTarget* m_pRenderTarget;
-	CameraCtrl* mCameraCtrl;
+	IGame* m_pGame;
 
 public:
 	CGameView(CWnd* pParent = NULL);
@@ -24,5 +25,5 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnClose();
-	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

@@ -14,6 +14,7 @@ private:
 	DWORD mLastTime;
 	std::list<IIdleProcesser*> m_processers;
 public:
+	SECore::Core* core;
 	SECore::Scene* scene;
 	CEditorDlg* pSceneView;
 	CGameView* pGameView;

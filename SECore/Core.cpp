@@ -6,6 +6,8 @@
 #include "Physics.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
+#include "Scene.h"
+#include "RenderWindow.h"
 #include "Core.h"
 
 Core gCore;
@@ -18,7 +20,7 @@ Core::~Core()
 {
 }
 
-bool Core::Init(const char* resourePath)
+bool Core::Init()
 {
 	bool ret = false;
 
@@ -113,4 +115,63 @@ bool Core::CreateDevice()
 	ret = true;
 Exit0:
 	return true;
+}
+
+SECore::Scene* Core::CreateScene(void)
+{
+	if (Scene* scene = new Scene())
+	{
+		if (!scene->Init())
+		{
+			delete scene;
+			scene = nullptr;
+		}
+		else
+		{
+			return scene;
+		}
+	}
+	return nullptr;
+}
+
+SECore::RenderTarget* Core::CreateRenderTarget(HWND hWnd)
+{
+	if (RenderWindow* wnd = new RenderWindow())
+	{
+		if (!wnd->Create(hWnd))
+		{
+			delete wnd;
+			wnd = nullptr;
+		}
+		else
+		{
+			return wnd;
+		}
+	}
+	return nullptr;
+}
+
+SECore::Texture* Core::LoadTexture(const char* name)
+{
+	return gResourceManager.LoadTexture(name);
+}
+
+SECore::Mesh* Core::LoadMesh(const char* name)
+{
+	return gResourceManager.LoadMesh(name);
+}
+
+SECore::AnimationClip* Core::LoadClip(const char* name)
+{
+	return gResourceManager.LoadClip(name);
+}
+
+SECore::Skeleton* Core::LoadSkeleton(const char* name)
+{
+	return gResourceManager.LoadSkeleton(name);
+}
+
+SECore::Shader* Core::CreateShader(const char* name)
+{
+	return gResourceManager.CreateShader(name);
 }

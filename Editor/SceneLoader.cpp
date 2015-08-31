@@ -112,7 +112,7 @@ void LoadTransform(Transform& transform, const Json::Value& transformRoot)
 		transform.scaling = Json2Vec3(transformRoot["Scaling"]);
 }
 
-bool LoadEntity(SECore::Scene::Entity* entity, const Json::Value& entityRoot)
+bool LoadEntity(SECore::Core* core, SECore::Scene::Entity* entity, const Json::Value& entityRoot)
 {
 	bool ret = false;
 
@@ -133,7 +133,7 @@ bool LoadEntity(SECore::Scene::Entity* entity, const Json::Value& entityRoot)
 		if (!animation)
 			animation = entity->CreateAnimation();
 
-		SECore::Skeleton* skeleton = SECore::LoadSkeleton(animationRoot["Skeleton"].asCString());
+		SECore::Skeleton* skeleton = core->LoadSkeleton(animationRoot["Skeleton"].asCString());
 		animation->SetSkeleton(skeleton);
 		skeleton->Release();
 
@@ -151,7 +151,7 @@ bool LoadEntity(SECore::Scene::Entity* entity, const Json::Value& entityRoot)
 		std::vector<std::string> memberNames = jsonClips.getMemberNames();
 		for (size_t i = 0; i < memberNames.size(); ++i)
 		{
-			SECore::AnimationClip* clip = SECore::LoadClip(jsonClips[memberNames[i]].asCString());
+			SECore::AnimationClip* clip = core->LoadClip(jsonClips[memberNames[i]].asCString());
 			clip->SetName(memberNames[i].c_str());
 			animation->AddClip(clip);
 			clip->Release();
@@ -238,7 +238,7 @@ bool LoadEntity(SECore::Scene::Entity* entity, const Json::Value& entityRoot)
 			}
 			if (reRoot.isMember("Mesh"))
 			{
-				SECore::Mesh* mesh = SECore::LoadMesh(reRoot["Mesh"].asCString());
+				SECore::Mesh* mesh = core->LoadMesh(reRoot["Mesh"].asCString());
 				re->SetMesh(mesh);
 				mesh->Release();
 			}
@@ -250,11 +250,11 @@ bool LoadEntity(SECore::Scene::Entity* entity, const Json::Value& entityRoot)
 				SECore::Shader* shader = nullptr;
 				if (mtlRoot.isMember("Shader"))
 				{
-					shader = SECore::CreateShader(mtlRoot["Shader"].asCString());
+					shader = core->CreateShader(mtlRoot["Shader"].asCString());
 				}
 				else
 				{
-					shader = SECore::CreateShader("AlphaTest-Diffuse");
+					shader = core->CreateShader("AlphaTest-Diffuse");
 				}
 
 				CHECK(shader);
@@ -284,7 +284,7 @@ bool LoadEntity(SECore::Scene::Entity* entity, const Json::Value& entityRoot)
 					break;
 					case SECore::Shader::eTexture:
 					{
-						SECore::Texture* texture = SECore::LoadTexture(mtlRoot[propName].asCString());
+						SECore::Texture* texture = core->LoadTexture(mtlRoot[propName].asCString());
 						material->SetTexture(propName.c_str(), texture);
 						texture->Release();
 					}
@@ -375,10 +375,10 @@ bool SceneLoader::Load(SECore::Scene* scene, const TCHAR* filename)
 			CString filename = MStr2WStr(entityRoot["Prefab"].asCString());
 			Json::Value prefab;
 			LoadJsonFromFile(filename, prefab);
-			LoadEntity(entity, prefab);
+			LoadEntity(scene->GetCore(), entity, prefab);
 		}
 		
-		LoadEntity(entity, entityRoot);
+		LoadEntity(scene->GetCore(), entity, entityRoot);
 	}
 
 	size_t lightCount = root["Lights"].size();

@@ -9,16 +9,16 @@ IMPLEMENT_DYNAMIC(CGameView, CDialogEx)
 CGameView::CGameView(CWnd* pParent)
 	: CDialogEx(IDD_GAMEVIEW, pParent)
 {
-	mCameraCtrl = NULL;
 	m_pRenderTarget = NULL;
+	m_pGame = NULL;
 }
 
 CGameView::~CGameView()
 {
+	SAFE_RELEASE(m_pGame);
 	theApp.pGameView = NULL;
 	theApp.RemoveProcesser(this);
 	DestroyWindow();
-	SAFE_DELETE(mCameraCtrl);
 	SAFE_RELEASE(m_pRenderTarget);
 }
 
@@ -29,20 +29,32 @@ void CGameView::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CGameView, CDialogEx)
 	ON_WM_CLOSE()
-	ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
 
 BOOL CGameView::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	m_pRenderTarget = SECore::CreateRenderTarget(GetSafeHwnd());
+	m_pRenderTarget = theApp.core->CreateRenderTarget(GetSafeHwnd());
 	theApp.AddProcesser(this);
-
-	mCameraCtrl = new CameraCtrl(theApp.scene->GetCamera());
 
 	theApp.pGameView = this;
 
+	typedef IGame*(*CreateGame)();
+
+	HMODULE hm = LoadLibrary(_T("Game.dll"));
+	CHECK(hm);
+
+	CreateGame func;
+	func = (CreateGame)GetProcAddress(hm, "CreateGame");
+	CHECK(func);
+
+	m_pGame = func();
+	CHECK(m_pGame);
+	CHECK(m_pGame->Init(theApp.core));
+	m_pGame->EditorPlay(theApp.scene);
+
+Exit0:
 	return TRUE;
 }
 
@@ -51,16 +63,13 @@ void CGameView::Update(float deltaTime)
 	if (!IsWindow(GetSafeHwnd()) || !IsWindowVisible())
 		return;
 
-	if (mCameraCtrl)
-		mCameraCtrl->Update(deltaTime);
-
-	theApp.scene->GetConfig()->EnableGizmo(false);
+	if (m_pGame)
+		m_pGame->Update(deltaTime);
 
 	m_pRenderTarget->Begin();
 	theApp.scene->Draw(m_pRenderTarget);
 	m_pRenderTarget->End();
 }
-
 
 void CGameView::OnClose()
 {
@@ -68,12 +77,9 @@ void CGameView::OnClose()
 	delete this;
 }
 
-
-BOOL CGameView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+LRESULT CGameView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (mCameraCtrl)
-	{
-		mCameraCtrl->Scroll(-(float)zDelta * 0.01f);
-	}
-	return __super::OnMouseWheel(nFlags, zDelta, pt);
+	if (m_pGame)
+		m_pGame->WndProc(GetSafeHwnd(), message, wParam, lParam);
+	return __super::WindowProc(message, wParam, lParam);
 }

@@ -136,6 +136,8 @@ namespace SECore
 		{}
 	};
 
+	struct Core;
+
 	struct Transform 
 	{
 		Vector3 position;
@@ -233,8 +235,8 @@ namespace SECore
 		virtual void SetClipChangedCallback(ClipChangedCallback* callback, void* userData) = 0;
 		virtual bool AddSavedBoneTM(const char* bone) = 0;
 		virtual bool GetSavedBoneTM(const char* bone, Matrix& dst) const = 0;
-		virtual void SetSkeleton(SECore::Skeleton* skeleton) = 0;
-		virtual bool AddClip(SECore::AnimationClip* clip) = 0;
+		virtual void SetSkeleton(Skeleton* skeleton) = 0;
+		virtual bool AddClip(AnimationClip* clip) = 0;
 	};
 
 	struct CharacterController
@@ -390,6 +392,8 @@ namespace SECore
 
 		virtual ~Scene() {}
 
+		virtual Core* GetCore() = 0;
+
 		virtual Camera* GetCamera() = 0;
 
 		virtual void Draw(RenderTarget* rt) = 0;
@@ -416,5 +420,18 @@ namespace SECore
 		Vector3 normal;
 		float distance;
 		const Scene::Entity* entity;
+	};
+
+	struct Core
+	{
+		virtual ~Core() {}
+		virtual void Release() = 0;
+		virtual Scene* CreateScene(void) = 0;
+		virtual RenderTarget* CreateRenderTarget(HWND hWnd) = 0;
+		virtual Texture* LoadTexture(const char* name) = 0;
+		virtual Mesh* LoadMesh(const char* name) = 0;
+		virtual AnimationClip* LoadClip(const char* name) = 0;
+		virtual Skeleton* LoadSkeleton(const char* name) = 0;
+		virtual Shader* CreateShader(const char* name) = 0;
 	};
 }

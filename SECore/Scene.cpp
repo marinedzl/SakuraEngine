@@ -55,6 +55,11 @@ void Scene::Release()
 	delete this;
 }
 
+SECore::Core* Scene::GetCore()
+{
+	return &gCore;
+}
+
 Scene::Entity* Scene::CreateEntity()
 {
 	SceneEntity* entity = new SceneEntity(*this);

@@ -46,7 +46,7 @@ BOOL CEditorDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	m_pRenderTarget = SECore::CreateRenderTarget(GetSafeHwnd());
+	m_pRenderTarget = theApp.core->CreateRenderTarget(GetSafeHwnd());
 	theApp.AddProcesser(this);
 
 	mCameraCtrl = new CameraCtrl(theApp.scene->GetCamera());
@@ -94,6 +94,8 @@ void CEditorDlg::Update(float deltaTime)
 	m_pRenderTarget->Begin();
 	theApp.scene->Draw(m_pRenderTarget);
 	m_pRenderTarget->End();
+
+	theApp.scene->GetConfig()->EnableGizmo(false);
 }
 
 
