@@ -34,6 +34,9 @@
 
 #include <timeapi.h>
 
+#include <list>
+#include <vector>
+#include <map>
 
 #include "../SECore/SECore.h"
 #include <json\json.h>
@@ -93,6 +96,7 @@ typedef SECore::Ray Ray;
 typedef SECore::RaycastHit RaycastHit;
 typedef SECore::RigidBody RigidBody;
 typedef SECore::CharacterController CharacterController;
+typedef SECore::RenderTarget RenderTarget;
 
 class buffer
 {
@@ -114,3 +118,9 @@ bool LoadTextFile(buffer& buff, const TCHAR* filename);
 
 std::string WStr2MStr(const TCHAR* src);
 CString MStr2WStr(const char* src);
+
+struct IIdleProcesser
+{
+	virtual ~IIdleProcesser() {}
+	virtual void Update(float deltaTime) = 0;
+};

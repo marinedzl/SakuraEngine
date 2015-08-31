@@ -2,6 +2,7 @@
 #include "Editor.h"
 #include "SceneLoader.h"
 #include "EditorDlg.h"
+#include "GameView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -29,6 +30,13 @@ BOOL CEditorApp::InitInstance()
 
 	SetRegistryKey(_T("Sakura Engine Editor"));
 
+	CHECK(SECore::InitCore(""));
+
+	scene = SECore::CreateScene();
+	CHECK(scene);
+
+	CHECK(SceneLoader::Load(scene, _T("scene.json")));
+
 	CEditorDlg* dlg = new CEditorDlg();
 	CHECK(dlg);
 
@@ -41,13 +49,6 @@ BOOL CEditorApp::InitInstance()
 
 	m_pMainWnd = dlg;
 	m_pMainWnd->ShowWindow(SW_SHOW);
-	
-	CHECK(SECore::InitCore(""));
-
-	scene = SECore::CreateScene();
-	CHECK(scene);
-
-	CHECK(SceneLoader::Load(scene, _T("scene.json")));
 
 	ret = TRUE;
 Exit0:
@@ -56,7 +57,8 @@ Exit0:
 
 int CEditorApp::ExitInstance()
 {
-	SAFE_DELETE(m_pMainWnd);
+	SAFE_DELETE(pSceneView);
+	SAFE_DELETE(pGameView);
 	SAFE_RELEASE(scene);
 	SECore::ReleaseCore();
 	return CWinApp::ExitInstance();
@@ -77,6 +79,16 @@ BOOL CEditorApp::OnIdle(LONG lCount)
 
 		if (scene)
 			scene->Update(deltaTime);
+
+		if (!m_processers.empty())
+		{
+			std::list<IIdleProcesser*>::iterator iter = m_processers.begin();
+			std::list<IIdleProcesser*>::iterator iterEnd = m_processers.end();
+			for (; iter !=	iterEnd; ++iter)
+			{
+				(*iter)->Update(deltaTime);
+			}
+		}
 	}
 
 	return CWinApp::OnIdle(lCount);

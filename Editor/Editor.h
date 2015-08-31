@@ -6,13 +6,21 @@
 
 #include "resource.h"
 
+class CEditorDlg;
+class CGameView;
 class CEditorApp : public CWinApp
 {
-public:
+private:
 	DWORD mLastTime;
+	std::list<IIdleProcesser*> m_processers;
+public:
 	SECore::Scene* scene;
+	CEditorDlg* pSceneView;
+	CGameView* pGameView;
 public:
 	CEditorApp();
+	void AddProcesser(IIdleProcesser* v) { m_processers.push_back(v); }
+	void RemoveProcesser(IIdleProcesser* v) { m_processers.remove(v); }
 public:
 	virtual BOOL InitInstance();
 	DECLARE_MESSAGE_MAP()

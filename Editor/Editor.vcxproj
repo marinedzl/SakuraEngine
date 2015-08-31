@@ -201,6 +201,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CameraCtrl.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorDlg.h" />
     <ClInclude Include="GameView.h" />
@@ -210,6 +211,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CameraCtrl.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorDlg.cpp" />
     <ClCompile Include="GameView.cpp" />
