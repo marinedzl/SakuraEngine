@@ -20,7 +20,8 @@ Collider::~Collider()
 {
 	if (mActor)
 		mActor->release();
-	mOwner.GetScene().RemoveGizmo(mGizmo);
+	if (mGizmo)
+		mOwner.GetScene().RemoveGizmo(mGizmo);
 	SAFE_DELETE(mGizmo);
 	SAFE_DELETE(mRigidBody);
 }
@@ -55,6 +56,11 @@ bool Collider::Init(bool isDynamic)
 	mActor->userData = &mOwner;
 
 	OnInitShape();
+
+	CHECK(mGizmo);
+	mOwner.GetScene().AddGizmo(mGizmo);
+
+	mGizmo->SetColor(Color(0, 1, 0, 1));
 
 	scene->addActor(*mActor);
 

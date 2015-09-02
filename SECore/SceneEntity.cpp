@@ -4,6 +4,8 @@
 #include "BoxCollider.h"
 #include "CharacterController.h"
 #include "Scene.h"
+#include "Gizmo.h"
+#include "ShapeMesh.h"
 #include "SceneEntity.h"
 
 SceneEntity::SceneEntity(Scene& scene)

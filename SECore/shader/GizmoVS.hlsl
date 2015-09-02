@@ -3,6 +3,7 @@
 cbuffer CB : register(b0)
 {
 	matrix MVP;
+	float4 _MainColor;
 };
 
 struct appdata_t
@@ -13,11 +14,13 @@ struct appdata_t
 struct V2P
 {
 	float4 pos : SV_POSITION;
+	float4 color : COLOR;
 };
 
 V2P main(appdata_t IN)
 {
 	V2P o;
 	o.pos = mul(IN.pos, MVP);
+	o.color = _MainColor;
 	return o;
 }

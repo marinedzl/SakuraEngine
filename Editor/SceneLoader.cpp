@@ -239,6 +239,8 @@ bool LoadEntity(SECore::Core* core, SECore::Scene::Entity* entity, const Json::V
 				}
 			}
 		}
+
+		entity->CalcBound();
 	}
 
 	if (entityRoot.isMember("Collider"))
@@ -264,7 +266,6 @@ bool LoadEntity(SECore::Core* core, SECore::Scene::Entity* entity, const Json::V
 			}
 			else
 			{
-				entity->CalcBound();
 				SECore::Bound bound = entity->GetBound();
 				bound.max = bound.max * entity->GetTransform().scaling;
 				bound.min = bound.min * entity->GetTransform().scaling;

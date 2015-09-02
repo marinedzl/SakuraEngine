@@ -25,7 +25,7 @@ void BoxCollider::OnInitShape()
 
 	mGizmo = new Gizmo();
 	mGizmo->SetMesh(ShapeMesh::CreateBox(mSize));
-	mOwner.GetScene().AddGizmo(mGizmo);
+	CHECK(mGizmo);
 
 Exit0:
 	;

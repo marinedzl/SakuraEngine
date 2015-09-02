@@ -42,6 +42,8 @@ bool CharacterController::Init(PxControllerManager* manager, float height, float
 	mGizmo->SetMesh(ShapeMesh::CreateCapsule(height * 0.5f, radius));
 	mOwner.GetScene().AddGizmo(mGizmo);
 
+	mGizmo->SetColor(Color(0, 1, 0, 1));
+
 	ret = true;
 Exit0:
 	return ret;

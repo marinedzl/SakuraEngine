@@ -8,6 +8,7 @@
 struct CBVS
 {
 	Matrix mvp;
+	Color color;
 };
 
 GizmoRenderer gGizmosRenderer;
@@ -143,6 +144,7 @@ void GizmoRenderer::Draw(const Camera& camera, const Gizmo* entity)
 		XMMATRIX m;
 		AffineTransform(m, entity->GetTransform());
 		m *= vp;
+		cb->color = entity->GetColor();
 		XMStoreFloat4x4(cb->mvp, m);
 		context->Unmap(mCBVS, 0);
 	}
