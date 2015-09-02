@@ -158,63 +158,6 @@ bool LoadEntity(SECore::Core* core, SECore::Scene::Entity* entity, const Json::V
 		}
 	}
 
-	if (entityRoot.isMember("Collider"))
-	{
-		const Json::Value& colliderRoot = entityRoot["Collider"];
-
-		bool isDynamic = false;
-
-		if (colliderRoot.isMember("Dynamic"))
-		{
-			isDynamic = colliderRoot["Dynamic"].asBool();
-		}
-
-		SECore::Collider* collider = nullptr;
-
-		if (strcmp(colliderRoot["Shape"].asCString(), "Box") == 0)
-		{
-			Vector3 size(1, 1, 1);
-			if (colliderRoot.isMember("Size"))
-				size = Json2Vec3(colliderRoot["Size"]);
-			collider = entity->CreateBoxCollider(isDynamic, size);
-		}
-
-		if (isDynamic)
-		{
-			SECore::RigidBody* rigidBody = collider->GetRigidBody();
-			CHECK(rigidBody);
-
-			bool enableGravity = false;
-			if (colliderRoot.isMember("Gravity"))
-			{
-				enableGravity = colliderRoot["Gravity"].asBool();
-			}
-
-			rigidBody->EnableGravity(enableGravity);
-
-			if (colliderRoot.isMember("Mass"))
-			{
-				rigidBody->SetMass((float)colliderRoot["Mass"].asDouble());
-			}
-		}
-
-		if (colliderRoot.isMember("Offset"))
-			collider->SetLocalPose(Json2Vec3(colliderRoot["Offset"]), Quat());
-	}
-
-	if (entityRoot.isMember("CharacterController"))
-	{
-		Vector3 offset;
-		const Json::Value& cctRoot = entityRoot["CharacterController"];
-		float height = (float)cctRoot["Height"].asDouble();
-		float radius = (float)cctRoot["Radius"].asDouble();
-		if (cctRoot.isMember("Offset"))
-		{
-			offset = Json2Vec3(cctRoot["Offset"]);
-		}
-		entity->CreateCCT(height, radius, offset);
-	}
-
 	if (entityRoot.isMember("Renderer"))
 	{
 		const Json::Value& rendererRoot = entityRoot["Renderer"];
@@ -296,6 +239,77 @@ bool LoadEntity(SECore::Core* core, SECore::Scene::Entity* entity, const Json::V
 				}
 			}
 		}
+	}
+
+	if (entityRoot.isMember("Collider"))
+	{
+		const Json::Value& colliderRoot = entityRoot["Collider"];
+
+		bool isDynamic = false;
+
+		if (colliderRoot.isMember("Dynamic"))
+		{
+			isDynamic = colliderRoot["Dynamic"].asBool();
+		}
+
+		SECore::Collider* collider = nullptr;
+
+		if (strcmp(colliderRoot["Shape"].asCString(), "Box") == 0)
+		{
+			Vector3 center, size;
+			if (colliderRoot.isMember("Size"))
+			{
+				center = Vector3(0, 0, 0);
+				size = Json2Vec3(colliderRoot["Size"]);
+			}
+			else
+			{
+				entity->CalcBound();
+				SECore::Bound bound = entity->GetBound();
+				bound.max = bound.max * entity->GetTransform().scaling;
+				bound.min = bound.min * entity->GetTransform().scaling;
+
+				size = (bound.max - bound.min) / 2;
+				center = bound.min + size;
+			}
+			collider = entity->CreateBoxCollider(isDynamic, size);
+			collider->SetLocalPose(center, Quat());
+		}
+
+		if (isDynamic)
+		{
+			SECore::RigidBody* rigidBody = collider->GetRigidBody();
+			CHECK(rigidBody);
+
+			bool enableGravity = false;
+			if (colliderRoot.isMember("Gravity"))
+			{
+				enableGravity = colliderRoot["Gravity"].asBool();
+			}
+
+			rigidBody->EnableGravity(enableGravity);
+
+			if (colliderRoot.isMember("Mass"))
+			{
+				rigidBody->SetMass((float)colliderRoot["Mass"].asDouble());
+			}
+		}
+
+		if (colliderRoot.isMember("Offset"))
+			collider->SetLocalPose(Json2Vec3(colliderRoot["Offset"]), Quat());
+	}
+
+	if (entityRoot.isMember("CharacterController"))
+	{
+		Vector3 offset;
+		const Json::Value& cctRoot = entityRoot["CharacterController"];
+		float height = (float)cctRoot["Height"].asDouble();
+		float radius = (float)cctRoot["Radius"].asDouble();
+		if (cctRoot.isMember("Offset"))
+		{
+			offset = Json2Vec3(cctRoot["Offset"]);
+		}
+		entity->CreateCCT(height, radius, offset);
 	}
 
 	ret = true;

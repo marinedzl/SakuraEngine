@@ -26,6 +26,8 @@ Mesh::Mesh()
 	, mVertexBuffer(nullptr)
 	, mIndexBuffer(nullptr)
 {
+	mBound.max = Vector3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	mBound.min = Vector3(FLT_MAX, FLT_MAX, FLT_MAX);
 }
 
 Mesh::~Mesh()
@@ -100,7 +102,15 @@ bool Mesh::LoadFromFile(const char* filename)
 			indices = (USHORT*)data;
 			break;
 		case MeshFile::Block::Position:
-			LoadData(pos, Vector3);
+		{
+			for (size_t _i = 0; _i < head->vertexCount; ++_i)
+			{
+				const Vector3& pos = ((const Vector3*)data)[_i];
+				vertices[_i].pos = pos;
+				_max(mBound.max, mBound.max, pos);
+				_min(mBound.min, mBound.min, pos);
+			}
+		}
 			break;
 		case MeshFile::Block::Normal:
 			LoadData(norm, Vector3);

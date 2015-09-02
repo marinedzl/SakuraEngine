@@ -27,6 +27,9 @@ public:
 
 	virtual void SetName(const char* name) { mName = name; }
 	virtual const char* GetName() const { return mName.c_str(); }
+
+	const Bound& GetBound() const { return mBound; }
+	void CalcBound();
 public:
 	SceneEntity(Scene& scene);
 	bool GetSkinMatrix(Matrix* dst) const;
@@ -36,6 +39,7 @@ public:
 	template<> Animation* GetComponent() { return mAnimation; }
 	template<> Renderer* GetComponent() { return mRenderer; }
 private:
+	Bound mBound;
 	std::string mName;
 	Transform mTransform;
 	Scene& mScene;

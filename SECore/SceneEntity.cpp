@@ -112,3 +112,20 @@ void SceneEntity::Update(float deltaTime)
 	if (mAnimation)
 		mAnimation->Update(deltaTime);
 }
+
+void SceneEntity::CalcBound()
+{
+	if (!mRenderer)
+		return;
+
+	mBound.max = Vector3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	mBound.min = Vector3(FLT_MAX, FLT_MAX, FLT_MAX);
+
+	size_t count = mRenderer->GetEntityCount();
+	for (size_t i = 0; i < count; i++)
+	{
+		const Bound& bound = mRenderer->GetEntity(i)->GetMesh()->GetBound();
+		_max(mBound.max, mBound.max, bound.max);
+		_min(mBound.min, mBound.min, bound.min);
+	}
+}

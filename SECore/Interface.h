@@ -90,6 +90,16 @@ namespace SECore
 		return Vector3(a.x * b, a.y * b, a.z * b);
 	}
 
+	inline Vector3 operator/(const Vector3& a, float b)
+	{
+		return Vector3(a.x / b, a.y / b, a.z / b);
+	}
+
+	inline bool operator>(const Vector3& a, const Vector3& b)
+	{
+		return a.x > b.x && a.y > b.y && a.z > b.z;
+	}
+
 	struct Vector4
 	{
 		float x, y, z, w;
@@ -136,6 +146,12 @@ namespace SECore
 		{}
 	};
 
+	struct Bound
+	{
+		Vector3 min;
+		Vector3 max;
+	};
+
 	struct Core;
 
 	struct Transform 
@@ -169,6 +185,7 @@ namespace SECore
 	struct Mesh : RefObject
 	{
 		virtual ~Mesh() {}
+		virtual const Bound& GetBound() const = 0;
 	};
 
 	struct Texture : RefObject
@@ -388,6 +405,9 @@ namespace SECore
 
 			virtual Transform& GetTransform() = 0;
 			virtual const Transform& GetTransform() const = 0;
+
+			virtual const Bound& GetBound() const = 0;
+			virtual void CalcBound() = 0;
 		};
 
 		virtual ~Scene() {}

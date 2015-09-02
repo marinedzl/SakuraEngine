@@ -35,6 +35,7 @@ typedef SECore::Vector3 Vector3;
 typedef SECore::Vector4 Vector4;
 typedef SECore::Quat Quat;
 typedef SECore::Transform Transform;
+typedef SECore::Bound Bound;
 typedef SECore::Ray Ray;
 typedef SECore::RaycastHit RaycastHit;
 
@@ -241,3 +242,17 @@ enum
 {
 	ShadowMapSize = 1024,
 };
+
+inline void _max(Vector3& dst, const Vector3& a, const Vector3& b)
+{
+	dst.x = max(a.x, b.x);
+	dst.y = max(a.y, b.y);
+	dst.z = max(a.z, b.z);
+}
+
+inline void _min(Vector3& dst, const Vector3& a, const Vector3& b)
+{
+	dst.x = min(a.x, b.x);
+	dst.y = min(a.y, b.y);
+	dst.z = min(a.z, b.z);
+}
