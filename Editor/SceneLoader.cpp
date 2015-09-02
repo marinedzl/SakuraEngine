@@ -259,20 +259,20 @@ bool LoadEntity(SECore::Core* core, SECore::Scene::Entity* entity, const Json::V
 		if (strcmp(colliderRoot["Shape"].asCString(), "Box") == 0)
 		{
 			Vector3 center, size;
-			if (colliderRoot.isMember("Size"))
-			{
-				center = Vector3(0, 0, 0);
-				size = Json2Vec3(colliderRoot["Size"]);
-			}
-			else
-			{
-				SECore::Bound bound = entity->GetBound();
-				bound.max = bound.max * entity->GetTransform().scaling;
-				bound.min = bound.min * entity->GetTransform().scaling;
 
-				size = (bound.max - bound.min) / 2;
-				center = bound.min + size;
-			}
+			SECore::Bound bound = entity->GetBound();
+			bound.max = bound.max * entity->GetTransform().scaling;
+			bound.min = bound.min * entity->GetTransform().scaling;
+
+			size = (bound.max - bound.min) / 2;
+			center = bound.min + size;
+
+			if (colliderRoot.isMember("Size"))
+				size = Json2Vec3(colliderRoot["Size"]);
+
+			if (colliderRoot.isMember("Offset"))
+				size = Json2Vec3(colliderRoot["Offset"]);
+
 			collider = entity->CreateBoxCollider(isDynamic, size);
 			collider->SetLocalPose(center, Quat());
 		}
@@ -295,21 +295,33 @@ bool LoadEntity(SECore::Core* core, SECore::Scene::Entity* entity, const Json::V
 				rigidBody->SetMass((float)colliderRoot["Mass"].asDouble());
 			}
 		}
-
-		if (colliderRoot.isMember("Offset"))
-			collider->SetLocalPose(Json2Vec3(colliderRoot["Offset"]), Quat());
 	}
 
 	if (entityRoot.isMember("CharacterController"))
 	{
-		Vector3 offset;
 		const Json::Value& cctRoot = entityRoot["CharacterController"];
-		float height = (float)cctRoot["Height"].asDouble();
-		float radius = (float)cctRoot["Radius"].asDouble();
+		Vector3 offset, size;
+		float height, radius;
+
+		SECore::Bound bound = entity->GetBound();
+		bound.max = bound.max * entity->GetTransform().scaling;
+		bound.min = bound.min * entity->GetTransform().scaling;
+
+		size = (bound.max - bound.min) / 2;
+		offset = bound.min + size;
+
+		height = size.y;
+		radius = (size.x + size.z) / 2;
+
+		if (cctRoot.isMember("Height"))
+			height = (float)cctRoot["Height"].asDouble();
+
+		if (cctRoot.isMember("Radius"))
+			radius = (float)cctRoot["Radius"].asDouble();
+
 		if (cctRoot.isMember("Offset"))
-		{
 			offset = Json2Vec3(cctRoot["Offset"]);
-		}
+
 		entity->CreateCCT(height, radius, offset);
 	}
 
