@@ -11,15 +11,11 @@ public:
 	bool Init(bool isDynamic);
 	virtual void OnPhysicsUpdateTransform(const Vector3& pos, const Quat& rot);
 	virtual void OnInitShape() = 0;
-private:
-	void UpdateGizmo();
 protected:
+	Transform mTransform;
 	SceneEntity& mOwner;
 	RigidBody* mRigidBody;
 	PxRigidActor* mActor;
 	Gizmo* mGizmo;
 	PxShape* mShape;
-private:
-	Vector3 mPos;
-	Quat mRot;
 };

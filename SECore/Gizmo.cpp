@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "Gizmo.h"
 
-Gizmo::Gizmo()
-	: mMesh(nullptr)
+Gizmo::Gizmo(const Transform& owner)
+	: mOwner(owner)
+	, mMesh(nullptr)
 {
 }
 

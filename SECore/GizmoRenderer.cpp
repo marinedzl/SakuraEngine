@@ -141,8 +141,10 @@ void GizmoRenderer::Draw(const Camera& camera, const Gizmo* entity)
 	{
 		CBVS* cb = (CBVS*)mr.pData;
 		XMMATRIX vp =  camera.GetView() * camera.GetProj();
-		XMMATRIX m;
-		AffineTransform(m, entity->GetTransform());
+		XMMATRIX m, parent;
+		AffineTransform(m, entity->GetLocal());
+		AffineTransform(parent, entity->GetOwner());
+		m *= parent;
 		m *= vp;
 		cb->color = entity->GetColor();
 		XMStoreFloat4x4(cb->mvp, m);

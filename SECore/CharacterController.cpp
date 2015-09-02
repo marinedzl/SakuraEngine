@@ -38,9 +38,10 @@ bool CharacterController::Init(PxControllerManager* manager, float height, float
 
 	mController->getActor()->userData = &mOwner;
 
-	mGizmo = new Gizmo();
+	mGizmo = new Gizmo(mOwner.GetTransform());
 	mGizmo->SetMesh(ShapeMesh::CreateCapsule(height * 0.5f, radius));
 	mOwner.GetScene().AddGizmo(mGizmo);
+	mGizmo->GetLocal().position = mOffset;
 
 	mGizmo->SetColor(Color(0, 1, 0, 1));
 
@@ -55,17 +56,10 @@ void CharacterController::Update(float deltaTime)
 	Vector3 pos((float)pv.x, (float)pv.y, (float)pv.z);
 	pos = pos - mOffset;
 	mOwner.GetTransform().position = pos;
-	UpdateGizmo();
 }
 
 bool CharacterController::Move(const Vector3 & offset, float elapsedTime)
 {
 	PxControllerCollisionFlags collisionFlags = mController->move(ConvertPxVec3(offset), mMinDst, elapsedTime, PxControllerFilters());
 	return collisionFlags;
-}
-
-void CharacterController::UpdateGizmo()
-{
-	mGizmo->GetTransform().position = mOwner.GetTransform().position + mOffset;
-	mGizmo->GetTransform().rotation = mOwner.GetTransform().rotation;
 }

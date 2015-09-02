@@ -41,7 +41,6 @@ public:
 private:
 	Bound mBound;
 	Gizmo* mGizmo;
-	Vector3 mGizmoCenter;
 	std::string mName;
 	Transform mTransform;
 	Scene& mScene;

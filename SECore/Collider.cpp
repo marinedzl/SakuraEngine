@@ -32,6 +32,9 @@ bool Collider::Init(bool isDynamic)
 
 	const Transform& transform = mOwner.GetTransform();
 
+	mTransform.position = transform.position;
+	mTransform.rotation = transform.rotation;
+
 	PxVec3 pos = ConvertPxVec3(transform.position);
 	PxQuat rot = ConvertPxQuat(transform.rotation);
 
@@ -78,21 +81,15 @@ SECore::RigidBody* Collider::GetRigidBody()
 
 void Collider::SetLocalPose(const Vector3& pos, const Quat& rot)
 {
-	mPos = pos;
-	mRot = rot;
 	mShape->setLocalPose(PxTransform(ConvertPxVec3(pos), ConvertPxQuat(rot)));
-	UpdateGizmo();
+	mGizmo->GetLocal().position = pos;
+	mGizmo->GetLocal().rotation = rot;
 }
 
 void Collider::OnPhysicsUpdateTransform(const Vector3& pos, const Quat& rot)
 {
 	mOwner.GetTransform().position = pos;
 	mOwner.GetTransform().rotation = rot;
-	UpdateGizmo();
-}
-
-void Collider::UpdateGizmo()
-{
-	mGizmo->GetTransform().position = mOwner.GetTransform().position + mPos;
-	mGizmo->GetTransform().rotation = mOwner.GetTransform().rotation;
+	mTransform.position = pos;
+	mTransform.rotation = rot;
 }

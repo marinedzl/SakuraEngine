@@ -3,16 +3,18 @@
 class Gizmo
 {
 public:
-	Gizmo();
+	Gizmo(const Transform& owner);
 	virtual ~Gizmo();
-	const Transform& GetTransform() const { return mTransform;  }
-	Transform& GetTransform() { return mTransform; }
+	const Transform& GetLocal() const { return mLocal;  }
+	Transform& GetLocal() { return mLocal; }
+	const Transform& GetOwner() const { return mOwner; }
 	const GizmoMesh* GetMesh() const { return mMesh; }
 	void SetMesh(GizmoMesh* mesh);
 	virtual const Color& GetColor() const { return mColor; }
 	virtual void SetColor(const Color& color) { mColor = color; }
 private:
-	Transform mTransform;
+	const Transform& mOwner;
+	Transform mLocal;
 	GizmoMesh* mMesh;
 	Color mColor;
 };

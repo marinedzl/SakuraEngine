@@ -8,7 +8,6 @@ public:
 public:
 	CharacterController(SceneEntity& owner);
 	void Update(float deltaTime);
-	void UpdateGizmo();
 	bool Init(PxControllerManager* manager, float height, float radius, const Vector3& offset);
 private:
 	Gizmo* mGizmo;

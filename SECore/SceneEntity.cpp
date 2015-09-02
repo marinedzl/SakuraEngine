@@ -117,12 +117,6 @@ void SceneEntity::Update(float deltaTime)
 		mCCT->Update(deltaTime);
 	if (mAnimation)
 		mAnimation->Update(deltaTime);
-
-	if (mGizmo)
-	{
-		mGizmo->GetTransform() = mTransform;
-		mGizmo->GetTransform().position = mGizmo->GetTransform().position +mGizmoCenter;
-	}
 }
 
 void SceneEntity::CalcBound()
@@ -149,12 +143,13 @@ void SceneEntity::CalcBound()
 	}
 
 	Vector3 size = (mBound.max - mBound.min) / 2;
-	mGizmoCenter = mBound.min + size;
-	mGizmo = new Gizmo();
+	Vector3 center = mBound.min + size;
+	mGizmo = new Gizmo(mTransform);
 	CHECK(mGizmo);
 	mGizmo->SetMesh(ShapeMesh::CreateBox(size));
 	mGizmo->SetColor(Color(0.5f, 0.5f, 0.5f, 1));
 	mScene.AddGizmo(mGizmo);
+	mGizmo->GetLocal().position = center;
 Exit0:
 	;
 }

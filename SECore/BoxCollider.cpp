@@ -23,7 +23,7 @@ void BoxCollider::OnInitShape()
 	mShape = mActor->createShape(PxBoxGeometry(mSize.x, mSize.y, mSize.z), *mtl);
 	CHECK(mShape);
 
-	mGizmo = new Gizmo();
+	mGizmo = new Gizmo(mTransform);
 	mGizmo->SetMesh(ShapeMesh::CreateBox(mSize));
 	CHECK(mGizmo);
 
