@@ -40,6 +40,8 @@ public:
 	template<> Renderer* GetComponent() { return mRenderer; }
 private:
 	Bound mBound;
+	Gizmo* mGizmo;
+	Vector3 mGizmoCenter;
 	std::string mName;
 	Transform mTransform;
 	Scene& mScene;

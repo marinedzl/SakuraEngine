@@ -10,6 +10,7 @@
 
 SceneEntity::SceneEntity(Scene& scene)
 	: mScene(scene)
+	, mGizmo(nullptr)
 	, mRenderer(nullptr)
 	, mAnimation(nullptr)
 	, mCollider(nullptr)
@@ -23,6 +24,9 @@ SceneEntity::~SceneEntity()
 	DestroyRenderer();
 	DestroyCollider();
 	DestroyCCT();
+	if (mGizmo)
+		mScene.RemoveGizmo(mGizmo);
+	SAFE_DELETE(mGizmo);
 }
 
 bool SceneEntity::GetSkinMatrix(Matrix* dst) const
@@ -113,6 +117,12 @@ void SceneEntity::Update(float deltaTime)
 		mCCT->Update(deltaTime);
 	if (mAnimation)
 		mAnimation->Update(deltaTime);
+
+	if (mGizmo)
+	{
+		mGizmo->GetTransform() = mTransform;
+		mGizmo->GetTransform().position = mGizmo->GetTransform().position +mGizmoCenter;
+	}
 }
 
 void SceneEntity::CalcBound()
@@ -130,4 +140,21 @@ void SceneEntity::CalcBound()
 		_max(mBound.max, mBound.max, bound.max);
 		_min(mBound.min, mBound.min, bound.min);
 	}
+
+	if (mGizmo)
+	{
+		mScene.RemoveGizmo(mGizmo);
+		delete mGizmo;
+		mGizmo = nullptr;
+	}
+
+	Vector3 size = (mBound.max - mBound.min) / 2;
+	mGizmoCenter = mBound.min + size;
+	mGizmo = new Gizmo();
+	CHECK(mGizmo);
+	mGizmo->SetMesh(ShapeMesh::CreateBox(size));
+	mGizmo->SetColor(Color(0.5f, 0.5f, 0.5f, 1));
+	mScene.AddGizmo(mGizmo);
+Exit0:
+	;
 }
