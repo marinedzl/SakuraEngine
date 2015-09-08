@@ -12,13 +12,14 @@
 CEditorDlg::CEditorDlg(CWnd* pParent)
 	: CDialogEx(IDD_EDITOR_DIALOG, pParent)
 {
-	mCameraCtrl = NULL;
-	m_pRenderTarget = NULL;
+	mCameraCtrl = nullptr;
+	m_pRenderTarget = nullptr;
+	mSelected = nullptr;
 }
 
 CEditorDlg::~CEditorDlg()
 {
-	theApp.pSceneView = NULL;
+	theApp.pSceneView = nullptr;
 	theApp.RemoveProcesser(this);
 	DestroyWindow();
 	SAFE_DELETE(mCameraCtrl);
@@ -40,6 +41,7 @@ BEGIN_MESSAGE_MAP(CEditorDlg, CDialogEx)
 	ON_WM_RBUTTONUP()
 	ON_WM_MBUTTONDOWN()
 	ON_WM_MBUTTONUP()
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 BOOL CEditorDlg::OnInitDialog()
@@ -160,4 +162,28 @@ void CEditorDlg::OnMButtonUp(UINT nFlags, CPoint point)
 		ReleaseCapture();
 	}
 	__super::OnMButtonUp(nFlags, point);
+}
+
+
+void CEditorDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	if (mSelected)
+		mSelected->SetGizmoColor(Color(0.5f, 0.5f, 0.5f, 1));
+
+	if (theApp.scene)
+	{
+		SECore::Ray ray;
+		SECore::RaycastHit hit;
+
+		theApp.scene->GetCamera()->ScreenPointToRay(ray, Vector3((float)point.x, (float)point.y, 0));
+
+		if (theApp.scene->RaycastBound(ray, hit, 10000))
+		{
+			mSelected = hit.entity;
+		}
+
+		if (mSelected)
+			mSelected->SetGizmoColor(Color(0, 0, 0.5f, 1));
+	}
+	__super::OnLButtonDown(nFlags, point);
 }

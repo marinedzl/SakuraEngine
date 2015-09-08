@@ -27,11 +27,13 @@ public:
 	virtual void Update(float deltaTime);
 	virtual SECore::Camera* GetCamera() { return &mCamera; }
 	virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance);
+	virtual bool RaycastBound(const Ray& ray, RaycastHit& hit, float distance);
 	virtual SECore::Scene::Config* GetConfig() { return &mConfig; }
 	virtual SECore::Light* AddPointLight();
 	virtual SECore::Light* AddDirectionalLight();
 	virtual void ClearLights();
 	virtual SECore::Light* FindLight(const char* name);
+public:
 public:
 	Scene();
 	PxScene* GetPxScene() { return mPxScene; }

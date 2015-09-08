@@ -6,6 +6,7 @@ class CEditorDlg : public CDialogEx, public IIdleProcesser
 private:
 	RenderTarget* m_pRenderTarget;
 	CameraCtrl* mCameraCtrl;
+	GameObject* mSelected;
 public:
 	CEditorDlg(CWnd* pParent = NULL);
 	virtual ~CEditorDlg();
@@ -28,4 +29,5 @@ public:
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };

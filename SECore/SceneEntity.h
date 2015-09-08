@@ -28,8 +28,9 @@ public:
 	virtual void SetName(const char* name) { mName = name; }
 	virtual const char* GetName() const { return mName.c_str(); }
 
-	const Bound& GetBound() const { return mBound; }
-	void CalcBound();
+	virtual const Bound& GetBound() const { return mBound; }
+	virtual void CalcBound();
+	virtual void SetGizmoColor(const Color& color);
 public:
 	SceneEntity(Scene& scene);
 	bool GetSkinMatrix(Matrix* dst) const;

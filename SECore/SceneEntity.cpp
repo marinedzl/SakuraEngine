@@ -153,3 +153,9 @@ void SceneEntity::CalcBound()
 Exit0:
 	;
 }
+
+void SceneEntity::SetGizmoColor(const Color & color)
+{
+	if (mGizmo)
+		mGizmo->SetColor(color);
+}

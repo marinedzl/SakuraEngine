@@ -11,6 +11,7 @@ public:
 	virtual SECore::AnimationClip* LoadClip(const char* name);
 	virtual SECore::Skeleton* LoadSkeleton(const char* name);
 	virtual SECore::Shader* CreateShader(const char* name);
+	virtual SECore::Camera* CreateCamera();
 public:
 	Core();
 	~Core();

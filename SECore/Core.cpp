@@ -8,6 +8,7 @@
 #include "DirectionalLight.h"
 #include "Scene.h"
 #include "RenderWindow.h"
+#include "Camera.h"
 #include "Core.h"
 
 Core gCore;
@@ -174,4 +175,9 @@ SECore::Skeleton* Core::LoadSkeleton(const char* name)
 SECore::Shader* Core::CreateShader(const char* name)
 {
 	return gResourceManager.CreateShader(name);
+}
+
+SECore::Camera * Core::CreateCamera()
+{
+	return new Camera();
 }

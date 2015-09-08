@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Util.h"
 #include "Renderer.h"
 #include "MeshRenderer.h"
 #include "GizmoRenderer.h"
@@ -118,6 +119,33 @@ SECore::Light * Scene::FindLight(const char * name)
 		}
 	}
 	return nullptr;
+}
+
+bool Scene::RaycastBound(const Ray & ray, RaycastHit & hit, float distance)
+{
+	Matrix mat;
+	Entities::iterator iter = mEntities.begin();
+	Entities::iterator iterEnd = mEntities.end();
+	float intersection_distance = 0;
+	hit.distance = distance;
+	hit.entity = nullptr;
+	for (; iter != iterEnd; ++iter)
+	{
+		if (SceneEntity* entity = *iter)
+		{
+			const Bound& bound = entity->GetBound();
+			AffineTransform(mat, entity->GetTransform());
+			if (TestRayOBBIntersection(ray.origin, ray.direction, bound.min, bound.max, mat, intersection_distance))
+			{
+				if (intersection_distance < hit.distance)
+				{
+					hit.distance = intersection_distance;
+					hit.entity = entity;
+				}
+			}
+		}
+	}
+	return hit.entity != nullptr;
 }
 
 bool Scene::Init()

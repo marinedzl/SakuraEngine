@@ -131,6 +131,10 @@ namespace SECore
 			};
 			struct
 			{
+				Vector4 v[4];
+			};
+			struct
+			{
 				float m00, m01, m02, m03;
 				float m10, m11, m12, m13;
 				float m20, m21, m22, m23;
@@ -408,6 +412,7 @@ namespace SECore
 
 			virtual const Bound& GetBound() const = 0;
 			virtual void CalcBound() = 0;
+			virtual void SetGizmoColor(const Color& color) = 0;
 		};
 
 		virtual ~Scene() {}
@@ -430,6 +435,7 @@ namespace SECore
 		virtual Light* FindLight(const char* name) = 0;
 
 		virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance) = 0;
+		virtual bool RaycastBound(const Ray& ray, RaycastHit& hit, float distance) = 0;
 
 		virtual Config* GetConfig() = 0;
 	};
@@ -439,7 +445,7 @@ namespace SECore
 		Vector3 point;
 		Vector3 normal;
 		float distance;
-		const Scene::Entity* entity;
+		Scene::Entity* entity;
 	};
 
 	struct Core
