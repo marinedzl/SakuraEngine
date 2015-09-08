@@ -9,7 +9,7 @@ Game::Game()
 	: mCameraCtrl(nullptr)
 	, mCharaCtrl(nullptr)
 	, mCamera(nullptr)
-	, m_pRenderTarget(nullptr)
+	, mRT(nullptr)
 {
 }
 
@@ -22,13 +22,13 @@ void Game::Release()
 	SAFE_DELETE(mCameraCtrl);
 	SAFE_DELETE(mCharaCtrl);
 	SAFE_RELEASE(mCamera);
-	SAFE_RELEASE(m_pRenderTarget);
+	SAFE_RELEASE(mRT);
 }
 
 bool Game::Init(SECore::Core* core, HWND hWnd)
 {
 	mCore = core;
-	m_pRenderTarget = core->CreateRenderTarget(hWnd);
+	mRT = core->CreateRenderTarget(hWnd);
 	return true;
 }
 
@@ -41,6 +41,7 @@ bool Game::EditorPlay(SECore::Scene* scene)
 	Light* light = scene->FindLight("chara light");
 
 	mCamera = mCore->CreateCamera();
+	mCamera->SetView(mRT->GetWidth(), mRT->GetHeight());
 
 	if (mainChara)
 	{
@@ -64,11 +65,11 @@ void Game::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 void Game::Draw()
 {
-	if (mScene && m_pRenderTarget)
+	if (mScene && mRT)
 	{
-		m_pRenderTarget->Begin();
-		mScene->Draw(mCamera, m_pRenderTarget);
-		m_pRenderTarget->End();
+		mRT->Begin();
+		mScene->Draw(mCamera, mRT);
+		mRT->End();
 	}
 }
 

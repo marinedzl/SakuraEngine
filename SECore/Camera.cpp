@@ -27,21 +27,21 @@ void Camera::Release()
 	delete this;
 }
 
-void Camera::ScreenToWorld(const Vector3& src, Vector3& dst)
+void Camera::ScreenToWorld(const Vector3& src, Vector3& dst) const
 {
 	XMVECTOR v = XMVector3Unproject(XMLoadFloat3((XMFLOAT3*)&src),
 		viewportX * rtW, viewportY * rtH, viewportW * rtW, viewportH * rtH, 0, 1, GetProj(), GetView(), XMMatrixIdentity());
 	XMStoreFloat3((XMFLOAT3*)&dst, v);
 }
 
-void Camera::WorldToScreen(const Vector3& src, Vector3& dst)
+void Camera::WorldToScreen(const Vector3& src, Vector3& dst) const
 {
 	XMVECTOR v = XMVector3Project(XMLoadFloat3((XMFLOAT3*)&src),
 		viewportX * rtW, viewportY * rtH, viewportW * rtW, viewportH * rtH, 0, 1, GetProj(), GetView(), XMMatrixIdentity());
 	XMStoreFloat3((XMFLOAT3*)&dst, v);
 }
 
-void Camera::ScreenPointToRay(Ray & ray, const Vector3 & point)
+void Camera::ScreenPointToRay(Ray & ray, const Vector3 & point) const
 {
 	float w = viewportW * rtW;
 	float h = viewportH * rtH;
@@ -70,7 +70,7 @@ void Camera::GetViewProjMatrix(Matrix& dst) const
 	XMStoreFloat4x4((XMFLOAT4X4*)&dst, GetView() * GetProj());
 }
 
-void Camera::GetViewport(D3D11_VIEWPORT& dst)
+void Camera::GetViewport(D3D11_VIEWPORT& dst) const
 {
 	dst.TopLeftX = viewportX * rtW;
 	dst.TopLeftY = viewportY * rtH;

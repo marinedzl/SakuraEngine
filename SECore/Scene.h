@@ -23,7 +23,7 @@ public:
 	virtual Entity* CreateEntity();
 	virtual void RemoveEntity(Entity* entity);
 	virtual Entity* FindEntity(const char* name);
-	virtual void Draw(SECore::Camera* camera, SECore::RenderTarget* rt);
+	virtual void Draw(const SECore::Camera* camera, SECore::RenderTarget* rt);
 	virtual void Update(float deltaTime);
 	virtual bool Raycast(const Ray& ray, RaycastHit& hit, float distance);
 	virtual bool RaycastBound(const Ray& ray, RaycastHit& hit, float distance);
@@ -43,7 +43,7 @@ private:
 	void DrawObjects(RenderPass renderPass);
 	void DrawShadow(SECore::Light* light);
 	void DrawLight();
-	void DrawGizmos(Camera* camera);
+	void DrawGizmos(const Camera* camera);
 	void CommitGlobal();
 private:
 	typedef std::list<SceneEntity*> Entities;

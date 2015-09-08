@@ -14,7 +14,7 @@ CEditorDlg::CEditorDlg(CWnd* pParent)
 {
 	mCamera = nullptr;
 	mCameraCtrl = nullptr;
-	m_pRenderTarget = nullptr;
+	mRT = nullptr;
 	mSelected = nullptr;
 }
 
@@ -25,7 +25,7 @@ CEditorDlg::~CEditorDlg()
 	DestroyWindow();
 	SAFE_DELETE(mCameraCtrl);
 	SAFE_RELEASE(mCamera);
-	SAFE_RELEASE(m_pRenderTarget);
+	SAFE_RELEASE(mRT);
 }
 
 void CEditorDlg::DoDataExchange(CDataExchange* pDX)
@@ -50,10 +50,11 @@ BOOL CEditorDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	m_pRenderTarget = theApp.core->CreateRenderTarget(GetSafeHwnd());
+	mRT = theApp.core->CreateRenderTarget(GetSafeHwnd());
 	theApp.AddProcesser(this);
 
 	mCamera = theApp.core->CreateCamera();
+	mCamera->SetView(mRT->GetWidth(), mRT->GetHeight());
 
 	mCameraCtrl = new CameraCtrl(mCamera);
 
@@ -97,9 +98,9 @@ void CEditorDlg::Update(float deltaTime)
 
 	theApp.scene->GetConfig()->EnableGizmo(true);
 
-	m_pRenderTarget->Begin();
-	theApp.scene->Draw(mCamera, m_pRenderTarget);
-	m_pRenderTarget->End();
+	mRT->Begin();
+	theApp.scene->Draw(mCamera, mRT);
+	mRT->End();
 
 	theApp.scene->GetConfig()->EnableGizmo(false);
 }

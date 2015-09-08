@@ -342,12 +342,9 @@ void Scene::RemoveGizmo(Gizmo* gizmo)
 	mGizmos.remove(gizmo);
 }
 
-void Scene::Draw(SECore::Camera* _camera, SECore::RenderTarget* rt)
+void Scene::Draw(const SECore::Camera* _camera, SECore::RenderTarget* rt)
 {
-	Camera* camera = dynamic_cast<Camera*>(_camera);
-
-	camera->rtW = rt->GetWidth();
-	camera->rtH = rt->GetHeight();
+	const Camera* camera = dynamic_cast<const Camera*>(_camera);
 
 	D3D11_VIEWPORT viewport;
 	ID3D11DeviceContext* context = gCore.GetContext();
@@ -527,7 +524,7 @@ void Scene::DrawShadow(SECore::Light * light)
 	mShadowRT->End();
 }
 
-void Scene::DrawGizmos(Camera* camera)
+void Scene::DrawGizmos(const Camera* camera)
 {
 	if (!mGizmos.empty())
 	{

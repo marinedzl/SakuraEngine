@@ -23,6 +23,6 @@ private:
 	CameraCtrl* mCameraCtrl;
 	GameObject* mMainChara;
 	CharaCtrl* mCharaCtrl;
-	RenderTarget* m_pRenderTarget;
+	RenderTarget* mRT;
 };
 extern Game gGame;

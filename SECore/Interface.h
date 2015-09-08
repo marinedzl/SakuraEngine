@@ -324,21 +324,22 @@ namespace SECore
 
 		virtual ~Camera() {}
 
-		virtual const Vector3& GetEye() = 0;
-		virtual const Vector3& GetLookAt() = 0;
-		virtual const Vector3& GetUp() = 0;
+		virtual const Vector3& GetEye() const = 0;
+		virtual const Vector3& GetLookAt() const = 0;
+		virtual const Vector3& GetUp() const = 0;
 
-		virtual float GetFov() = 0;
+		virtual float GetFov() const = 0;
 		virtual float GetZNear() const = 0;
-		virtual float GetZFar() = 0;
+		virtual float GetZFar() const = 0;
 
 		virtual void SetEye(const Vector3& v) = 0;
 		virtual void SetLookAt(const Vector3& v) = 0;
 		virtual void SetUp(const Vector3& v) = 0;
+		virtual void SetView(float w, float h) = 0;
 
-		virtual void ScreenToWorld(const Vector3& src, Vector3& dst) = 0;
-		virtual void WorldToScreen(const Vector3& src, Vector3& dst) = 0;
-		virtual void ScreenPointToRay(Ray& ray, const Vector3& point) = 0;
+		virtual void ScreenToWorld(const Vector3& src, Vector3& dst) const = 0;
+		virtual void WorldToScreen(const Vector3& src, Vector3& dst) const = 0;
+		virtual void ScreenPointToRay(Ray& ray, const Vector3& point) const = 0;
 	};
 
 	struct Light
@@ -419,7 +420,7 @@ namespace SECore
 
 		virtual Core* GetCore() = 0;
 
-		virtual void Draw(Camera* camera, RenderTarget* rt) = 0;
+		virtual void Draw(const Camera* camera, RenderTarget* rt) = 0;
 		virtual void Update(float deltaTime) = 0;
 
 		virtual void ClearEntities() = 0;
