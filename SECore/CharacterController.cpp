@@ -63,3 +63,9 @@ bool CharacterController::Move(const Vector3 & offset, float elapsedTime)
 	PxControllerCollisionFlags collisionFlags = mController->move(ConvertPxVec3(offset), mMinDst, elapsedTime, PxControllerFilters());
 	return collisionFlags;
 }
+
+bool CharacterController::SetPos(const Vector3 & pos)
+{
+	PxExtendedVec3 pv(pos.x, pos.y, pos.z);
+	return mController->setPosition(pv);
+}

@@ -14,7 +14,9 @@ END_MESSAGE_MAP()
 
 CEditorApp::CEditorApp()
 {
+	core = nullptr;
 	scene = nullptr;
+	camera = nullptr;
 	mLastTime = 0;
 }
 
@@ -62,6 +64,7 @@ int CEditorApp::ExitInstance()
 	SAFE_DELETE(pGameView);
 	SAFE_RELEASE(scene);
 	SAFE_RELEASE(core);
+	SAFE_RELEASE(camera);
 	return CWinApp::ExitInstance();
 }
 

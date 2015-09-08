@@ -3,6 +3,7 @@
 #include "EditorDlg.h"
 #include "afxdialogex.h"
 #include "CameraCtrl.h"
+#include "TransformCtrl.h"
 #include "GameView.h"
 
 #ifdef _DEBUG
@@ -12,10 +13,11 @@
 CEditorDlg::CEditorDlg(CWnd* pParent)
 	: CDialogEx(IDD_EDITOR_DIALOG, pParent)
 {
-	mCamera = nullptr;
+	mState = eNormal;
 	mCameraCtrl = nullptr;
 	mRT = nullptr;
 	mSelected = nullptr;
+	mTransformCtrl = nullptr;
 }
 
 CEditorDlg::~CEditorDlg()
@@ -24,7 +26,7 @@ CEditorDlg::~CEditorDlg()
 	theApp.RemoveProcesser(this);
 	DestroyWindow();
 	SAFE_DELETE(mCameraCtrl);
-	SAFE_RELEASE(mCamera);
+	SAFE_DELETE(mTransformCtrl);
 	SAFE_RELEASE(mRT);
 }
 
@@ -44,6 +46,7 @@ BEGIN_MESSAGE_MAP(CEditorDlg, CDialogEx)
 	ON_WM_MBUTTONDOWN()
 	ON_WM_MBUTTONUP()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 BOOL CEditorDlg::OnInitDialog()
@@ -53,10 +56,11 @@ BOOL CEditorDlg::OnInitDialog()
 	mRT = theApp.core->CreateRenderTarget(GetSafeHwnd());
 	theApp.AddProcesser(this);
 
-	mCamera = theApp.core->CreateCamera();
-	mCamera->SetView(mRT->GetWidth(), mRT->GetHeight());
+	theApp.camera = theApp.core->CreateCamera();
+	theApp.camera->SetView(mRT->GetWidth(), mRT->GetHeight());
 
-	mCameraCtrl = new CameraCtrl(mCamera);
+	mCameraCtrl = new CameraCtrl(theApp.camera);
+	mTransformCtrl = new TransformCtrl();
 
 	theApp.pSceneView = this;
 
@@ -99,7 +103,7 @@ void CEditorDlg::Update(float deltaTime)
 	theApp.scene->GetConfig()->EnableGizmo(true);
 
 	mRT->Begin();
-	theApp.scene->Draw(mCamera, mRT);
+	theApp.scene->Draw(theApp.camera, mRT);
 	mRT->End();
 
 	theApp.scene->GetConfig()->EnableGizmo(false);
@@ -111,6 +115,10 @@ void CEditorDlg::OnMouseMove(UINT nFlags, CPoint point)
 	if (mCameraCtrl)
 	{
 		mCameraCtrl->Move((float)point.x, (float)point.y);
+	}
+	if (mTransformCtrl)
+	{
+		mTransformCtrl->Move((float)point.x, (float)point.y);
 	}
 	__super::OnMouseMove(nFlags, point);
 }
@@ -172,24 +180,79 @@ void CEditorDlg::OnMButtonUp(UINT nFlags, CPoint point)
 
 void CEditorDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	if (mSelected)
-		mSelected->SetGizmoColor(Color(0.5f, 0.5f, 0.5f, 1));
-	mSelected = nullptr;
+	if (!theApp.scene)
+		return;
 
-	if (theApp.scene)
+	switch (mState)
+	{
+	case CEditorDlg::eNormal:
 	{
 		SECore::Ray ray;
 		SECore::RaycastHit hit;
 
-		mCamera->ScreenPointToRay(ray, Vector3((float)point.x, (float)point.y, 0));
+		theApp.camera->ScreenPointToRay(ray, Vector3((float)point.x, (float)point.y, 0));
 
-		if (theApp.scene->RaycastBound(ray, hit, 10000))
+		theApp.scene->RaycastBound(ray, hit, 10000);
+
+		if (hit.entity)
 		{
-			mSelected = hit.entity;
-		}
+			if (mSelected)
+			{
+				if (hit.entity == mSelected)
+				{
+					mState = eTransform;
+					mTransformCtrl->Begin((float)point.x, (float)point.y, TransformCtrl::eOpMove);
+					SetCapture();
+				}
+				else
+				{
+					//unselect
+					mSelected->SetGizmoColor(Color(0.5f, 0.5f, 0.5f, 1));
+					mSelected = nullptr;
+					mTransformCtrl->Attach(nullptr);
 
-		if (mSelected)
-			mSelected->SetGizmoColor(Color(0, 0, 0.5f, 1));
+					//select
+					mSelected = hit.entity;
+					mSelected->SetGizmoColor(Color(0, 0, 0.5f, 1));
+					mTransformCtrl->Attach(mSelected);
+				}
+			}
+			else
+			{
+				//select
+				mSelected = hit.entity;
+				mSelected->SetGizmoColor(Color(0, 0, 0.5f, 1));
+				mTransformCtrl->Attach(mSelected);
+			}
+		}
+		else
+		{
+			//unselect
+			mSelected->SetGizmoColor(Color(0.5f, 0.5f, 0.5f, 1));
+			mSelected = nullptr;
+			mTransformCtrl->Attach(nullptr);
+		}
 	}
+		break;
+	case CEditorDlg::eTransform:
+	{
+	}
+		break;
+	default:
+		break;
+	}
+
 	__super::OnLButtonDown(nFlags, point);
+}
+
+
+void CEditorDlg::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	mState = eNormal;
+	if (mTransformCtrl)
+	{
+		mTransformCtrl->End();
+	}
+	ReleaseCapture();
+	__super::OnLButtonUp(nFlags, point);
 }

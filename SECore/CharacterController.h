@@ -5,6 +5,7 @@ class CharacterController : public SECore::CharacterController
 public:
 	virtual ~CharacterController();
 	virtual bool Move(const Vector3 & offset, float elapsedTime);
+	virtual bool SetPos(const Vector3 & pos);
 public:
 	CharacterController(SceneEntity& owner);
 	void Update(float deltaTime);

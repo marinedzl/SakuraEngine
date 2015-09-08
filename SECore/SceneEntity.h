@@ -31,6 +31,8 @@ public:
 	virtual const Bound& GetBound() const { return mBound; }
 	virtual void CalcBound();
 	virtual void SetGizmoColor(const Color& color);
+
+	virtual void SetPos(const Vector3& pos);
 public:
 	SceneEntity(Scene& scene);
 	bool GetSkinMatrix(Matrix* dst) const;

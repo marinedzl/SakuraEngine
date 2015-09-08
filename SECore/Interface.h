@@ -451,6 +451,8 @@ namespace SECore
 			virtual const Bound& GetBound() const = 0;
 			virtual void CalcBound() = 0;
 			virtual void SetGizmoColor(const Color& color) = 0;
+
+			virtual void SetPos(const Vector3& pos) = 0;
 		};
 
 		virtual ~Scene() {}

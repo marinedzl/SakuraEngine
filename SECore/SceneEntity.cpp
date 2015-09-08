@@ -159,3 +159,19 @@ void SceneEntity::SetGizmoColor(const Color & color)
 	if (mGizmo)
 		mGizmo->SetColor(color);
 }
+
+void SceneEntity::SetPos(const Vector3 & pos)
+{
+	if (mCCT)
+	{
+		mCCT->SetPos(pos);
+	}
+	else if (mCollider)
+	{
+
+	}
+	else
+	{
+		mTransform.position = pos;
+	}
+}

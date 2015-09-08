@@ -1,13 +1,20 @@
 #pragma once
 
+class TransformCtrl;
 class CameraCtrl;
 class CEditorDlg : public CDialogEx, public IIdleProcesser
 {
 private:
 	RenderTarget* mRT;
-	Camera* mCamera;
 	CameraCtrl* mCameraCtrl;
 	GameObject* mSelected;
+	TransformCtrl* mTransformCtrl;
+	enum State
+	{
+		eNormal,
+		eTransform,
+	};
+	State mState;
 public:
 	CEditorDlg(CWnd* pParent = NULL);
 	virtual ~CEditorDlg();
@@ -31,4 +38,5 @@ public:
 	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };
