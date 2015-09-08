@@ -38,7 +38,17 @@ namespace SECore
 
 	struct Vector3
 	{
-		float x, y, z;
+		union
+		{
+			struct
+			{
+				float x, y, z;
+			};
+			struct
+			{
+				float v[3];
+			};
+		};
 		Vector3() : x(0), y(0), z(0) {}
 		Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
 		Vector3 operator+(const Vector3& other)
@@ -48,6 +58,14 @@ namespace SECore
 		Vector3 operator-(const Vector3& other)
 		{
 			return Vector3(this->x - other.x, this->y - other.y, this->z - other.z);
+		}
+		float& operator[](int i)
+		{
+			return v[i];
+		}
+		const float& operator[](int i) const
+		{
+			return v[i];
 		}
 		Vector3& operator*=(float other)
 		{
@@ -148,12 +166,24 @@ namespace SECore
 			, m20(0), m21(0), m22(1), m23(0)
 			, m30(0), m31(0), m32(0), m33(1)
 		{}
+
+		float * const operator[](const int i)
+		{
+			return m[i];
+		}
+
+		const float * const operator[](const int i) const
+		{
+			return m[i];
+		}
 	};
 
 	struct Bound
 	{
 		Vector3 min;
 		Vector3 max;
+		Vector3 size() const { return (max - min) * 0.5f; }
+		Vector3 center() const { return min + (max - min) * 0.5f; }
 	};
 
 	struct Core;

@@ -174,6 +174,7 @@ void CEditorDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	if (mSelected)
 		mSelected->SetGizmoColor(Color(0.5f, 0.5f, 0.5f, 1));
+	mSelected = nullptr;
 
 	if (theApp.scene)
 	{

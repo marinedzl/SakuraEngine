@@ -142,8 +142,8 @@ void SceneEntity::CalcBound()
 		mGizmo = nullptr;
 	}
 
-	Vector3 size = (mBound.max - mBound.min) / 2;
-	Vector3 center = mBound.min + size;
+	Vector3 size = mBound.size();
+	Vector3 center = mBound.center();
 	mGizmo = new Gizmo(mTransform);
 	CHECK(mGizmo);
 	mGizmo->SetMesh(ShapeMesh::CreateBox(size));
