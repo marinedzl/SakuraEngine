@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Game.h"
 #include "CameraCtrl.h"
 #include "CharaCtrl.h"
 
@@ -187,7 +188,7 @@ void CharaCtrl::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			SECore::Ray ray;
 			SECore::RaycastHit hit;
-			scene->GetCamera()->ScreenPointToRay(ray, Vector3(pos.x, pos.y, 0));
+			gGame.GetCamera()->ScreenPointToRay(ray, Vector3(pos.x, pos.y, 0));
 			if (scene->Raycast(ray, hit, 10000))
 			{
 				if (hit.entity != &gameObject)

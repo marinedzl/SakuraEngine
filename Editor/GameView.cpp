@@ -9,7 +9,6 @@ IMPLEMENT_DYNAMIC(CGameView, CDialogEx)
 CGameView::CGameView(CWnd* pParent)
 	: CDialogEx(IDD_GAMEVIEW, pParent)
 {
-	m_pRenderTarget = NULL;
 	m_pGame = NULL;
 }
 
@@ -19,7 +18,6 @@ CGameView::~CGameView()
 	theApp.pGameView = NULL;
 	theApp.RemoveProcesser(this);
 	DestroyWindow();
-	SAFE_RELEASE(m_pRenderTarget);
 }
 
 void CGameView::DoDataExchange(CDataExchange* pDX)
@@ -35,7 +33,6 @@ BOOL CGameView::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	m_pRenderTarget = theApp.core->CreateRenderTarget(GetSafeHwnd());
 	theApp.AddProcesser(this);
 
 	theApp.pGameView = this;
@@ -51,7 +48,7 @@ BOOL CGameView::OnInitDialog()
 
 	m_pGame = func();
 	CHECK(m_pGame);
-	CHECK(m_pGame->Init(theApp.core));
+	CHECK(m_pGame->Init(theApp.core, GetSafeHwnd()));
 	m_pGame->EditorPlay(theApp.scene);
 
 Exit0:
@@ -64,11 +61,10 @@ void CGameView::Update(float deltaTime)
 		return;
 
 	if (m_pGame)
+	{
 		m_pGame->Update(deltaTime);
-
-	m_pRenderTarget->Begin();
-	theApp.scene->Draw(m_pRenderTarget);
-	m_pRenderTarget->End();
+		m_pGame->Draw();
+	}
 }
 
 void CGameView::OnClose()

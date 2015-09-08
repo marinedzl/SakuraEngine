@@ -12,6 +12,7 @@
 CEditorDlg::CEditorDlg(CWnd* pParent)
 	: CDialogEx(IDD_EDITOR_DIALOG, pParent)
 {
+	mCamera = nullptr;
 	mCameraCtrl = nullptr;
 	m_pRenderTarget = nullptr;
 	mSelected = nullptr;
@@ -23,6 +24,7 @@ CEditorDlg::~CEditorDlg()
 	theApp.RemoveProcesser(this);
 	DestroyWindow();
 	SAFE_DELETE(mCameraCtrl);
+	SAFE_RELEASE(mCamera);
 	SAFE_RELEASE(m_pRenderTarget);
 }
 
@@ -51,7 +53,9 @@ BOOL CEditorDlg::OnInitDialog()
 	m_pRenderTarget = theApp.core->CreateRenderTarget(GetSafeHwnd());
 	theApp.AddProcesser(this);
 
-	mCameraCtrl = new CameraCtrl(theApp.scene->GetCamera());
+	mCamera = theApp.core->CreateCamera();
+
+	mCameraCtrl = new CameraCtrl(mCamera);
 
 	theApp.pSceneView = this;
 
@@ -94,7 +98,7 @@ void CEditorDlg::Update(float deltaTime)
 	theApp.scene->GetConfig()->EnableGizmo(true);
 
 	m_pRenderTarget->Begin();
-	theApp.scene->Draw(m_pRenderTarget);
+	theApp.scene->Draw(mCamera, m_pRenderTarget);
 	m_pRenderTarget->End();
 
 	theApp.scene->GetConfig()->EnableGizmo(false);
@@ -175,7 +179,7 @@ void CEditorDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		SECore::Ray ray;
 		SECore::RaycastHit hit;
 
-		theApp.scene->GetCamera()->ScreenPointToRay(ray, Vector3((float)point.x, (float)point.y, 0));
+		mCamera->ScreenPointToRay(ray, Vector3((float)point.x, (float)point.y, 0));
 
 		if (theApp.scene->RaycastBound(ray, hit, 10000))
 		{

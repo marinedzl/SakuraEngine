@@ -8,6 +8,8 @@ public:
 	Camera();
 	virtual ~Camera();
 
+	virtual void Release();
+
 	virtual const Vector3& GetEye() { return eye; }
 	virtual const Vector3& GetLookAt() { return lookat; }
 	virtual const Vector3& GetUp() { return up; }

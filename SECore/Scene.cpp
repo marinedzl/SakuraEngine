@@ -152,20 +152,6 @@ bool Scene::Init()
 {
 	bool ret = false;
 
-	mCamera.projectType = Camera::Perspective;
-	mCamera.eye = Vector3(0, 0, -10);
-	mCamera.lookat = Vector3(0, 0, 0);
-	mCamera.up = Vector3(0, 1, 0);
-	mCamera.fov = XM_PI / 4;
-	mCamera.znear = 0.1f;
-	mCamera.zfar = 1000.0f;
-	mCamera.viewH = 1;
-	mCamera.viewW = 1;
-	mCamera.viewportX = 0;
-	mCamera.viewportY = 0;
-	mCamera.viewportW = 1;
-	mCamera.viewportH = 1;
-
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 
@@ -356,10 +342,12 @@ void Scene::RemoveGizmo(Gizmo* gizmo)
 	mGizmos.remove(gizmo);
 }
 
-void Scene::Draw(SECore::RenderTarget* rt)
+void Scene::Draw(SECore::Camera* _camera, SECore::RenderTarget* rt)
 {
-	mCamera.rtW = rt->GetWidth();
-	mCamera.rtH = rt->GetHeight();
+	Camera* camera = dynamic_cast<Camera*>(_camera);
+
+	camera->rtW = rt->GetWidth();
+	camera->rtH = rt->GetHeight();
 
 	D3D11_VIEWPORT viewport;
 	ID3D11DeviceContext* context = gCore.GetContext();
@@ -396,17 +384,17 @@ void Scene::Draw(SECore::RenderTarget* rt)
 		}
 	}
 
-	mCamera.GetViewport(viewport);
+	camera->GetViewport(viewport);
 	context->RSSetViewports(1, &viewport);
-	mCamera.GetViewProjMatrix(mSBGloal.MATRIX_VP);
+	camera->GetViewProjMatrix(mSBGloal.MATRIX_VP);
 	{
 		XMMATRIX invVP = XMLoadFloat4x4((XMFLOAT4X4*)&mSBGloal.MATRIX_VP);
 		invVP = XMMatrixInverse(nullptr, invVP);
 		XMStoreFloat4x4((XMFLOAT4X4*)&mSBGloal.INV_VP, invVP);
 	}
-	mSBGloal.EYE_POS = mCamera.eye;
-	mSBGloal.SCREEN_SIZE.x = mCamera.rtW;
-	mSBGloal.SCREEN_SIZE.y = mCamera.rtH;
+	mSBGloal.EYE_POS = camera->eye;
+	mSBGloal.SCREEN_SIZE.x = camera->rtW;
+	mSBGloal.SCREEN_SIZE.y = camera->rtH;
 	mSBGloal.AmbientColor = mConfig.ambientColor;
 
 	CommitGlobal();
@@ -429,7 +417,7 @@ void Scene::Draw(SECore::RenderTarget* rt)
 	rt->End();
 
 	if (mConfig.showGizmo)
-		DrawGizmos();
+		DrawGizmos(camera);
 
 	if (mConfig.captureBuffer)
 	{
@@ -539,7 +527,7 @@ void Scene::DrawShadow(SECore::Light * light)
 	mShadowRT->End();
 }
 
-void Scene::DrawGizmos()
+void Scene::DrawGizmos(Camera* camera)
 {
 	if (!mGizmos.empty())
 	{
@@ -549,7 +537,7 @@ void Scene::DrawGizmos()
 		Gizmos::iterator iterEnd = mGizmos.end();
 		for (; iter != iterEnd; ++iter)
 		{
-			gGizmosRenderer.Draw(mCamera, *iter);
+			gGizmosRenderer.Draw(*camera, *iter);
 		}
 
 		gGizmosRenderer.End();

@@ -5,6 +5,7 @@ class CEditorDlg : public CDialogEx, public IIdleProcesser
 {
 private:
 	RenderTarget* m_pRenderTarget;
+	Camera* mCamera;
 	CameraCtrl* mCameraCtrl;
 	GameObject* mSelected;
 public:

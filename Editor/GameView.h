@@ -6,7 +6,6 @@ class CGameView : public CDialogEx, public IIdleProcesser
 {
 	DECLARE_DYNAMIC(CGameView)
 private:
-	RenderTarget* m_pRenderTarget;
 	IGame* m_pGame;
 
 public:

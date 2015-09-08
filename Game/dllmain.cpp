@@ -22,6 +22,6 @@ extern "C"
 {
 	__declspec(dllexport) IGame* CreateGame()
 	{
-		return new Game();
+		return &gGame;
 	}
 }

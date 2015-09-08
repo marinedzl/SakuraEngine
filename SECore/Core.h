@@ -12,6 +12,7 @@ public:
 	virtual SECore::Skeleton* LoadSkeleton(const char* name);
 	virtual SECore::Shader* CreateShader(const char* name);
 	virtual SECore::Camera* CreateCamera();
+	virtual SECore::Scene* GetScene();
 public:
 	Core();
 	~Core();
@@ -25,6 +26,7 @@ private:
 	ID3D11Device* mDevice;
 	ID3D11DeviceContext* mContext;
 	IDXGIFactory1* mDxgiFactory;
+	Scene* mScene;
 };
 
 extern Core gCore;

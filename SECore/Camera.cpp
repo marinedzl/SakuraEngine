@@ -3,10 +3,28 @@
 
 Camera::Camera()
 {
+	projectType = Camera::Perspective;
+	eye = Vector3(0, 0, -10);
+	lookat = Vector3(0, 0, 0);
+	up = Vector3(0, 1, 0);
+	fov = XM_PI / 4;
+	znear = 0.1f;
+	zfar = 1000.0f;
+	viewH = 1;
+	viewW = 1;
+	viewportX = 0;
+	viewportY = 0;
+	viewportW = 1;
+	viewportH = 1;
 }
 
 Camera::~Camera()
 {
+}
+
+void Camera::Release()
+{
+	delete this;
 }
 
 void Camera::ScreenToWorld(const Vector3& src, Vector3& dst)

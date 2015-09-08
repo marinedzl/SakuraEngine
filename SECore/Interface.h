@@ -314,7 +314,7 @@ namespace SECore
 		virtual void ClearDepth() = 0;
 	};
 
-	struct Camera
+	struct Camera : Object
 	{
 		enum ProjectType
 		{
@@ -419,9 +419,7 @@ namespace SECore
 
 		virtual Core* GetCore() = 0;
 
-		virtual Camera* GetCamera() = 0;
-
-		virtual void Draw(RenderTarget* rt) = 0;
+		virtual void Draw(Camera* camera, RenderTarget* rt) = 0;
 		virtual void Update(float deltaTime) = 0;
 
 		virtual void ClearEntities() = 0;
@@ -459,5 +457,7 @@ namespace SECore
 		virtual AnimationClip* LoadClip(const char* name) = 0;
 		virtual Skeleton* LoadSkeleton(const char* name) = 0;
 		virtual Shader* CreateShader(const char* name) = 0;
+		virtual Camera* CreateCamera() = 0;
+		virtual Scene* GetScene() = 0;
 	};
 }

@@ -35,4 +35,6 @@ typedef SECore::Ray Ray;
 typedef SECore::RaycastHit RaycastHit;
 typedef SECore::RigidBody RigidBody;
 typedef SECore::CharacterController CharacterController;
+typedef SECore::Core Core;
 typedef SECore::Scene Scene;
+typedef SECore::RenderTarget RenderTarget;

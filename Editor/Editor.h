@@ -16,6 +16,7 @@ private:
 public:
 	SECore::Core* core;
 	SECore::Scene* scene;
+	SECore::Camera* camera;
 	CEditorDlg* pSceneView;
 	CGameView* pGameView;
 public:

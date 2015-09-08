@@ -14,6 +14,7 @@
 Core gCore;
 
 Core::Core()
+	: mScene(nullptr)
 {
 }
 
@@ -131,6 +132,7 @@ SECore::Scene* Core::CreateScene(void)
 		{
 			return scene;
 		}
+		mScene = scene;
 	}
 	return nullptr;
 }
@@ -180,4 +182,9 @@ SECore::Shader* Core::CreateShader(const char* name)
 SECore::Camera * Core::CreateCamera()
 {
 	return new Camera();
+}
+
+SECore::Scene* Core::GetScene()
+{
+	return mScene;
 }
