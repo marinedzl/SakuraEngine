@@ -67,6 +67,13 @@ namespace SECore
 		{
 			return v[i];
 		}
+		Vector3& operator*=(const Vector3& other)
+		{
+			this->x *= other.x;
+			this->y *= other.y;
+			this->z *= other.z;
+			return *this;
+		}
 		Vector3& operator*=(float other)
 		{
 			this->x *= other;

@@ -124,6 +124,7 @@ SECore::Light * Scene::FindLight(const char * name)
 bool Scene::RaycastBound(const Ray & ray, RaycastHit & hit, float distance)
 {
 	Matrix mat;
+	Transform tm;
 	Entities::iterator iter = mEntities.begin();
 	Entities::iterator iterEnd = mEntities.end();
 	float intersection_distance = 0;
@@ -133,8 +134,12 @@ bool Scene::RaycastBound(const Ray & ray, RaycastHit & hit, float distance)
 	{
 		if (SceneEntity* entity = *iter)
 		{
-			const Bound& bound = entity->GetBound();
-			AffineTransform(mat, entity->GetTransform());
+			Bound bound = entity->GetBound();
+			tm = entity->GetTransform();
+			bound.min *= tm.scaling;
+			bound.max *= tm.scaling;
+			tm.scaling = Vector3(1, 1, 1);
+			AffineTransform(mat, tm);
 			if (TestRayOBBIntersection(ray.origin, ray.direction, bound.min, bound.max, mat, intersection_distance))
 			{
 				if (intersection_distance < hit.distance)
