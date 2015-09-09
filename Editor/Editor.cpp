@@ -81,9 +81,6 @@ BOOL CEditorApp::OnIdle(LONG lCount)
 
 		//deltaTime *= 0.1f;
 
-		if (scene)
-			scene->Update(deltaTime);
-
 		if (!m_processers.empty())
 		{
 			std::list<IIdleProcesser*>::iterator iter = m_processers.begin();

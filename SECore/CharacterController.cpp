@@ -66,6 +66,7 @@ bool CharacterController::Move(const Vector3 & offset, float elapsedTime)
 
 bool CharacterController::SetPos(const Vector3 & pos)
 {
+	mOwner.GetTransform().position = pos;
 	PxExtendedVec3 pv(pos.x, pos.y, pos.z);
 	return mController->setFootPosition(pv);
 }

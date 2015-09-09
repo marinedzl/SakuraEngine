@@ -91,6 +91,8 @@ bool Collider::SetPos(const Vector3 & pos)
 	PxTransform pt = mActor->getGlobalPose();
 	pt.p = ConvertPxVec3(pos);
 	mActor->setGlobalPose(pt);
+	mTransform.position = pos;
+	mOwner.GetTransform().position = pos;
 	return true;
 }
 
