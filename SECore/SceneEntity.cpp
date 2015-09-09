@@ -168,7 +168,7 @@ void SceneEntity::SetPos(const Vector3 & pos)
 	}
 	else if (mCollider)
 	{
-
+		mCollider->SetPos(pos);
 	}
 	else
 	{

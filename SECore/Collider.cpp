@@ -86,6 +86,14 @@ void Collider::SetLocalPose(const Vector3& pos, const Quat& rot)
 	mGizmo->GetLocal().rotation = rot;
 }
 
+bool Collider::SetPos(const Vector3 & pos)
+{
+	PxTransform pt = mActor->getGlobalPose();
+	pt.p = ConvertPxVec3(pos);
+	mActor->setGlobalPose(pt);
+	return true;
+}
+
 void Collider::OnPhysicsUpdateTransform(const Vector3& pos, const Quat& rot)
 {
 	mOwner.GetTransform().position = pos;

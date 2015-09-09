@@ -77,6 +77,9 @@ void Game::Update(float deltaTime)
 {
 	Vector3 offset(0, 2, 0);
 
+	if (mScene)
+		mScene->Update(deltaTime);
+
 	if (mCharaCtrl)
 		mCharaCtrl->Update(deltaTime);
 

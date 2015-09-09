@@ -317,6 +317,7 @@ namespace SECore
 		virtual ~Collider() {}
 		virtual RigidBody* GetRigidBody() = 0;
 		virtual void SetLocalPose(const Vector3& pos, const Quat& rot) = 0;
+		virtual bool SetPos(const Vector3 & pos) = 0;
 	};
 
 	struct Renderer

@@ -6,6 +6,7 @@ public:
 	virtual ~Collider();
 	virtual SECore::RigidBody* GetRigidBody();
 	virtual void SetLocalPose(const Vector3& pos, const Quat& rot);
+	virtual bool SetPos(const Vector3 & pos);
 public:
 	Collider(SceneEntity& owner);
 	bool Init(bool isDynamic);
