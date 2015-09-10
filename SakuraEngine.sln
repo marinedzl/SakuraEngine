@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SEMaxUtil", "SEMaxUtil\SEMa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj", "{BDC0F88B-E745-451D-8DB5-D2F9B3C991E8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor", "Editor\Editor.vcxproj", "{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -64,6 +66,18 @@ Global
 		{BDC0F88B-E745-451D-8DB5-D2F9B3C991E8}.SEExportorD|x64.Build.0 = Release|x64
 		{BDC0F88B-E745-451D-8DB5-D2F9B3C991E8}.SEExportorD|x86.ActiveCfg = Release|Win32
 		{BDC0F88B-E745-451D-8DB5-D2F9B3C991E8}.SEExportorD|x86.Build.0 = Release|Win32
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.Debug|x64.ActiveCfg = Debug|x64
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.Debug|x64.Build.0 = Debug|x64
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.Debug|x86.ActiveCfg = Debug|Win32
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.Debug|x86.Build.0 = Debug|Win32
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.Release|x64.ActiveCfg = Release|x64
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.Release|x64.Build.0 = Release|x64
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.Release|x86.ActiveCfg = Release|Win32
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.Release|x86.Build.0 = Release|Win32
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.SEExportorD|x64.ActiveCfg = Release|x64
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.SEExportorD|x64.Build.0 = Release|x64
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.SEExportorD|x86.ActiveCfg = Release|Win32
+		{CD174AAA-D747-4709-BB53-8D5FFD8BB08B}.SEExportorD|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
