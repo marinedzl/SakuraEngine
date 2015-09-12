@@ -25,10 +25,10 @@ void Game::Release()
 	SAFE_RELEASE(mRT);
 }
 
-bool Game::Init(SECore::Core* core, HWND hWnd)
+bool Game::Init(SECore::Core* core, HWND hWnd, int w, int h)
 {
 	mCore = core;
-	mRT = core->CreateRenderTarget(hWnd);
+	mRT = core->CreateRenderTarget(hWnd, w, h);
 	return true;
 }
 
@@ -67,9 +67,7 @@ void Game::Draw()
 {
 	if (mScene && mRT)
 	{
-		mRT->Begin();
 		mScene->Draw(mCamera, mRT);
-		mRT->End();
 	}
 }
 

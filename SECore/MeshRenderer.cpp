@@ -75,10 +75,10 @@ bool MeshRenderer::Init()
 		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS[eNormalRenderPass])));
 
 		CHECK(LoadBinaryFile(file, "MeshGBuffer.cso"));
-		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS[eGBufferRenderPass])));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS[eDepthRenderPass])));
 
 		CHECK(LoadBinaryFile(file, "SkinnedMeshGBuffer.cso"));
-		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS[eGBufferRenderPass])));
+		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mSkinnedMeshVS[eDepthRenderPass])));
 
 		CHECK(LoadBinaryFile(file, "MeshShadow.cso"));
 		CHECK(SUCCEEDED(device->CreateVertexShader(file.ptr(), file.size(), nullptr, &mMeshVS[eShadowRenderPass])));

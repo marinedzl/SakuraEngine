@@ -1,18 +1,16 @@
 #pragma once
-#include "RenderTarget.h"
+#include "RenderTargetView.h"
 
-class RenderTexture : public RenderTarget
+class RenderTexture : public RenderTargetView
 {
 public:
 	RenderTexture();
 	virtual ~RenderTexture();
-	virtual void Release();
 	bool Create(int w, int h);
 	void SetSlot(int slot, bool close = false);
 	bool CaptureToFile(const char* filename);
 private:
-	int mWidth;
-	int mHeight;
+	D3D11_TEXTURE2D_DESC mDesc;
 	ID3D11Texture2D* mPtr;
 	ID3D11ShaderResourceView* mSRV;
 	ID3D11SamplerState* mSampler;

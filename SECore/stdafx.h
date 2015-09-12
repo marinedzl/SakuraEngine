@@ -60,7 +60,6 @@ class Animation;
 class Animator;
 class AnimationClip;
 class RenderTarget;
-class RenderTexture;
 
 class SceneEntity;
 class RenderEntity;
@@ -233,7 +232,7 @@ struct GizmoMesh
 enum RenderPass
 {
 	eNormalRenderPass,
-	eGBufferRenderPass,
+	eDepthRenderPass,
 	eShadowRenderPass,
 	eRenderPassCount
 };

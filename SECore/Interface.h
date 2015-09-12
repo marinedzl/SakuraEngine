@@ -344,12 +344,9 @@ namespace SECore
 	struct RenderTarget : Object
 	{
 		virtual ~RenderTarget() {}
-		virtual bool Begin() = 0;
-		virtual void End() = 0;
-		virtual void Clear(const Color& color) = 0;
 		virtual float GetWidth() const = 0;
 		virtual float GetHeight() const = 0;
-		virtual void ClearDepth() = 0;
+		virtual bool CaptureToFile(const char* filename) = 0;
 	};
 
 	struct Camera : Object
@@ -419,7 +416,6 @@ namespace SECore
 			virtual ~Config() {}
 			virtual void EnableGizmo(bool enable) = 0;
 			virtual void SetAmbientColor(const Color& color) = 0;
-			virtual void CaptureBuffer(bool value) = 0;
 		};
 		struct Entity
 		{
@@ -492,7 +488,7 @@ namespace SECore
 		virtual ~Core() {}
 		virtual void Release() = 0;
 		virtual Scene* CreateScene(void) = 0;
-		virtual RenderTarget* CreateRenderTarget(HWND hWnd) = 0;
+		virtual RenderTarget* CreateRenderTarget(HWND hWnd, int w, int h) = 0;
 		virtual Texture* LoadTexture(const char* name) = 0;
 		virtual Mesh* LoadMesh(const char* name) = 0;
 		virtual AnimationClip* LoadClip(const char* name) = 0;

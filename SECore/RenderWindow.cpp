@@ -9,19 +9,14 @@ RenderWindow::RenderWindow()
 
 RenderWindow::~RenderWindow()
 {
-}
-
-void RenderWindow::Release()
-{
+	SAFE_RELEASE(mBackBuffer);
 	SAFE_RELEASE(mSwapChain);
-	RenderTarget::Release();
 }
 
 bool RenderWindow::Create(HWND hWnd)
 {
 	bool ret = false;
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
-	ID3D11Texture2D* target = nullptr;
 
 	RECT rect;
 	GetClientRect(hWnd, &rect);
@@ -48,19 +43,16 @@ bool RenderWindow::Create(HWND hWnd)
 	swapChainDesc.OutputWindow = hWnd;
 
 	CHECK(SUCCEEDED(gCore.GetDxgiFactory()->CreateSwapChain(gCore.GetDevice(), &swapChainDesc, &mSwapChain)));
-	CHECK(SUCCEEDED(mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&target)));
+	CHECK(SUCCEEDED(mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&mBackBuffer)));
 
-	RenderTarget::Create(target);
+	CHECK(__super::Create(mBackBuffer));
 
 	ret = true;
 Exit0:
 	return ret;
 }
 
-void RenderWindow::End()
+void RenderWindow::Present()
 {
-	RenderTarget::End();
-
-	if (mSwapChain)
-		mSwapChain->Present(0, 0);
+	mSwapChain->Present(0, 0);
 }

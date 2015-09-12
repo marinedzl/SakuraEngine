@@ -5,7 +5,7 @@ class Core : public SECore::Core
 public:
 	virtual void Release();
 	virtual SECore::Scene* CreateScene(void);
-	virtual SECore::RenderTarget* CreateRenderTarget(HWND hWnd);
+	virtual SECore::RenderTarget* CreateRenderTarget(HWND hWnd, int w, int h);
 	virtual SECore::Texture* LoadTexture(const char* name);
 	virtual SECore::Mesh* LoadMesh(const char* name);
 	virtual SECore::AnimationClip* LoadClip(const char* name);

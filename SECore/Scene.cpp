@@ -8,7 +8,8 @@
 #include "Core.h"
 #include "Physics.h"
 #include "Collider.h"
-#include "RenderTexture.h"
+#include "RenderTarget.h"
+#include "ShadowRenderTarget.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
 #include "RenderStateManager.h"
@@ -19,8 +20,7 @@ Scene::Scene()
 	: mPxScene(nullptr)
 	, mCCTManager(nullptr)
 	, mCpuDispatcher(nullptr)
-	, mGBufferRT(nullptr)
-	, mLightingRT(nullptr)
+	, mShadowRT(nullptr)
 	, mElapsedTime(0)
 {
 }
@@ -43,9 +43,7 @@ void Scene::Release()
 
 	SAFE_RELEASE(mCBGlobal);
 
-	SAFE_RELEASE(mGBufferRT);
-	SAFE_RELEASE(mShadowRT);
-	SAFE_RELEASE(mLightingRT);
+	SAFE_DELETE(mShadowRT);
 	SAFE_RELEASE(mGBufferPS);
 	SAFE_RELEASE(mShadowPS);
 
@@ -260,6 +258,18 @@ bool Scene::Init()
 		CHECK(SUCCEEDED(gCore.GetDevice()->CreateBuffer(&bufferDesc, &dataDesc, &mLightingMesh)));
 	}
 
+	mShadowRT = new ShadowRenderTarget();
+	mShadowRT->Create(ShadowMapSize, ShadowMapSize);
+
+	ret = true;
+Exit0:
+	return ret;
+}
+
+bool Scene::Resize(int w, int h)
+{
+	bool ret = false;
+
 	ret = true;
 Exit0:
 	return ret;
@@ -347,31 +357,14 @@ void Scene::RemoveGizmo(Gizmo* gizmo)
 	mGizmos.remove(gizmo);
 }
 
-void Scene::Draw(const SECore::Camera* _camera, SECore::RenderTarget* rt)
+void Scene::Draw(const SECore::Camera* _camera, SECore::RenderTarget* _rt)
 {
 	const Camera* camera = dynamic_cast<const Camera*>(_camera);
+	RenderTarget* rt = dynamic_cast<RenderTarget*>(_rt);
 
 	D3D11_VIEWPORT viewport;
 	ID3D11DeviceContext* context = gCore.GetContext();
 	CHECK(context);
-
-	if (!mGBufferRT)
-	{
-		mGBufferRT = new RenderTexture();
-		mGBufferRT->Create((int)rt->GetWidth(), (int)rt->GetHeight());
-	}
-
-	if (!mShadowRT)
-	{
-		mShadowRT = new RenderTexture();
-		mShadowRT->Create(ShadowMapSize, ShadowMapSize);
-	}
-
-	if (!mLightingRT)
-	{
-		mLightingRT = new RenderTexture();
-		mLightingRT->Create((int)rt->GetWidth(), (int)rt->GetHeight());
-	}
 
 	context->VSSetConstantBuffers(0, 1, &mCBGlobal);
 	context->PSSetConstantBuffers(0, 1, &mCBGlobal);
@@ -401,40 +394,20 @@ void Scene::Draw(const SECore::Camera* _camera, SECore::RenderTarget* rt)
 
 	CommitGlobal();
 	context->PSSetShader(mGBufferPS, nullptr, 0);
-	mGBufferRT->Begin();
-	mGBufferRT->Clear(Color(0, 0, 0, 0));
-	DrawObjects(eGBufferRenderPass);
-	mGBufferRT->End();
 
-	mLightingRT->Begin();
-	mLightingRT->Clear(Color(0, 0, 0, 1));
+	rt->BeginDepth();
+	DrawObjects(eDepthRenderPass);
+
+	rt->BeginGBuffer();
 	DrawLight();
-	mLightingRT->End();
 
-	rt->Begin();
-	rt->Clear(Color(0.278f, 0.278f, 0.278f, 1));
-	mLightingRT->SetSlot(3);
+	rt->Begin(Color(0.278f, 0.278f, 0.278f, 1));
 	DrawObjects(eNormalRenderPass);
-	mLightingRT->SetSlot(3, true);
-	rt->End();
 
 	if (mConfig.showGizmo)
 		DrawGizmos(camera);
 
-	if (mConfig.captureBuffer)
-	{
-		if (mElapsedTime > 1)
-		{
-			static bool bSaved = false;
-			if (!bSaved)
-			{
-				bSaved = true;
-				mGBufferRT->CaptureToFile("GBuffer.bmp");
-				mLightingRT->CaptureToFile("Lighting.bmp");
-				mShadowRT->CaptureToFile("ShadowMap.bmp");
-			}
-		}
-	}
+	rt->Present();
 
 Exit0:
 	;
@@ -456,7 +429,6 @@ void Scene::DrawLight()
 	context->OMSetDepthStencilState(mDepthStencilState, 1);
 	context->RSSetState(gRenderStateManager.GetRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID));
 
-	mGBufferRT->SetSlot(0);
 	mShadowRT->SetSlot(1);
 
 	for (std::list<SECore::Light*>::iterator iter = mLights.begin(); iter != mLights.end(); ++iter)
@@ -469,7 +441,6 @@ void Scene::DrawLight()
 		}
 	}
 
-	mGBufferRT->SetSlot(0, true);
 	mShadowRT->SetSlot(1, true);
 }
 
@@ -510,8 +481,7 @@ void Scene::DrawObjects(RenderPass renderPass)
 
 void Scene::DrawShadow(SECore::Light * light)
 {
-	mShadowRT->Begin();
-	mShadowRT->Clear(Color(1, 1, 1, 1));
+	mShadowRT->Begin(Color(1, 1, 1, 1));
 
 	D3D11_VIEWPORT viewport;
 	viewport.TopLeftX = 0;

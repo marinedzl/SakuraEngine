@@ -35,6 +35,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_SIZE()
+	ON_COMMAND(ID_BUTTON_CAPTURE, &CChildView::OnButtonCapture)
 END_MESSAGE_MAP()
 
 BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs) 
@@ -52,7 +53,9 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CChildView::OnInitUpdate()
 {
-	mRT = theApp.core->CreateRenderTarget(GetSafeHwnd());
+	RECT rect;
+	GetClientRect(&rect);
+	mRT = theApp.core->CreateRenderTarget(GetSafeHwnd(), rect.right - rect.left, rect.bottom - rect.top);
 	theApp.AddProcesser(this);
 
 	theApp.camera = theApp.core->CreateCamera();
@@ -81,11 +84,7 @@ void CChildView::Update(float deltaTime)
 		mCameraCtrl->Update(deltaTime);
 
 	theApp.scene->GetConfig()->EnableGizmo(true);
-
-	mRT->Begin();
 	theApp.scene->Draw(theApp.camera, mRT);
-	mRT->End();
-
 	theApp.scene->GetConfig()->EnableGizmo(false);
 }
 
@@ -234,4 +233,13 @@ void CChildView::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 
 	// TODO: 在此处添加消息处理程序代码
+}
+
+void CChildView::OnButtonCapture()
+{
+	if (mRT)
+	{
+		Update(0);
+		mRT->CaptureToFile("Editor");
+	}
 }

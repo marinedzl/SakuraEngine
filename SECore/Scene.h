@@ -1,17 +1,16 @@
 #pragma once
 #include "Camera.h"
 
+class ShadowRenderTarget;
 class Scene : public SECore::Scene
 {
 	friend class SceneLoader;
 	struct Config : public SECore::Scene::Config
 	{
-		Config() : showGizmo(false), captureBuffer(false), ambientColor(1, 1, 1, 1) {}
+		Config() : showGizmo(false), ambientColor(1, 1, 1, 1) {}
 		virtual void EnableGizmo(bool enable) { showGizmo = enable; }
 		virtual void SetAmbientColor(const Color& color) { ambientColor = color; }
-		virtual void CaptureBuffer(bool value) { captureBuffer = value; }
 		bool showGizmo;
-		bool captureBuffer;
 		Color ambientColor;
 	};
 public:
@@ -32,6 +31,7 @@ public:
 	virtual SECore::Light* AddDirectionalLight();
 	virtual void ClearLights();
 	virtual SECore::Light* FindLight(const char* name);
+	virtual bool Resize(int w, int h);
 public:
 public:
 	Scene();
@@ -70,9 +70,7 @@ private:
 
 	ID3D11PixelShader* mGBufferPS;
 	ID3D11PixelShader* mShadowPS;
-	RenderTexture* mGBufferRT;
-	RenderTexture* mShadowRT;
-	RenderTexture* mLightingRT;
+	ShadowRenderTarget* mShadowRT;
 	ID3D11BlendState* mBlendState;
 	ID3D11DepthStencilState* mDepthStencilState;
 	ID3D11VertexShader* mLightingVS;

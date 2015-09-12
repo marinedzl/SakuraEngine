@@ -7,7 +7,7 @@
 #include "PointLight.h"
 #include "DirectionalLight.h"
 #include "Scene.h"
-#include "RenderWindow.h"
+#include "RenderTarget.h"
 #include "Camera.h"
 #include "Core.h"
 
@@ -137,18 +137,18 @@ SECore::Scene* Core::CreateScene(void)
 	return nullptr;
 }
 
-SECore::RenderTarget* Core::CreateRenderTarget(HWND hWnd)
+SECore::RenderTarget* Core::CreateRenderTarget(HWND hWnd, int w, int h)
 {
-	if (RenderWindow* wnd = new RenderWindow())
+	if (RenderTarget* rt = new RenderTarget())
 	{
-		if (!wnd->Create(hWnd))
+		if (!rt->Create(hWnd, w, h))
 		{
-			delete wnd;
-			wnd = nullptr;
+			delete rt;
+			rt = nullptr;
 		}
 		else
 		{
-			return wnd;
+			return rt;
 		}
 	}
 	return nullptr;

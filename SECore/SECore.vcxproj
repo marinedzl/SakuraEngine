@@ -206,6 +206,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderStateManager.h" />
     <ClInclude Include="RenderTarget.h" />
+    <ClInclude Include="RenderTargetView.h" />
     <ClInclude Include="RenderTexture.h" />
     <ClInclude Include="RenderWindow.h" />
     <ClInclude Include="resource.h" />
@@ -214,6 +215,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneEntity.h" />
     <ClInclude Include="SECore.h" />
+    <ClInclude Include="ShadowRenderTarget.h" />
     <ClInclude Include="ShapeMesh.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="stdafx.h" />
@@ -259,6 +261,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderStateManager.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="RenderTargetView.cpp" />
     <ClCompile Include="RenderTexture.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -266,6 +269,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneEntity.cpp" />
     <ClCompile Include="SECore.cpp" />
+    <ClCompile Include="ShadowRenderTarget.cpp" />
     <ClCompile Include="ShapeMesh.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="stdafx.cpp">

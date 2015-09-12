@@ -1,14 +1,14 @@
 #pragma once
-#include "RenderTarget.h"
+#include "RenderTargetView.h"
 
-class RenderWindow : public RenderTarget
+class RenderWindow : public RenderTargetView
 {
 public:
 	RenderWindow();
 	virtual ~RenderWindow();
-	virtual void Release();
-	virtual void End();
 	bool Create(HWND hWnd);
+	void Present();
 private:
 	IDXGISwapChain* mSwapChain;
+	ID3D11Texture2D* mBackBuffer;
 };

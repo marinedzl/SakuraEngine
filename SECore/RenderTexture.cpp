@@ -7,49 +7,39 @@ RenderTexture::RenderTexture()
 	: mPtr(nullptr)
 	, mSRV(nullptr)
 	, mSampler(nullptr)
-	, mWidth(0)
-	, mHeight(0)
 {
 }
 
 RenderTexture::~RenderTexture()
 {
-}
-
-void RenderTexture::Release()
-{
+	SAFE_RELEASE(mPtr);
 	SAFE_RELEASE(mSRV);
 	SAFE_RELEASE(mSampler);
-	RenderTarget::Release();
 }
 
 bool RenderTexture::Create(int w, int h)
 {
 	bool ret = false;
 
-	mWidth = w;
-	mHeight = h;
-
 	ID3D11Device* device = gCore.GetDevice();
 	CHECK(device);
 
-	D3D11_TEXTURE2D_DESC textureDesc;
-	ZeroMemory(&textureDesc, sizeof(textureDesc));
-	textureDesc.Width = w;
-	textureDesc.Height = h;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags = 0;
-	textureDesc.MiscFlags = 0;
+	ZeroMemory(&mDesc, sizeof(mDesc));
+	mDesc.Width = w;
+	mDesc.Height = h;
+	mDesc.MipLevels = 1;
+	mDesc.ArraySize = 1;
+	mDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	mDesc.SampleDesc.Count = 1;
+	mDesc.Usage = D3D11_USAGE_DEFAULT;
+	mDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	mDesc.CPUAccessFlags = 0;
+	mDesc.MiscFlags = 0;
 
-	CHECK(SUCCEEDED(device->CreateTexture2D(&textureDesc, nullptr, &mPtr)));
+	CHECK(SUCCEEDED(device->CreateTexture2D(&mDesc, nullptr, &mPtr)));
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.Format = mDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
@@ -67,7 +57,7 @@ bool RenderTexture::Create(int w, int h)
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	CHECK(SUCCEEDED(device->CreateSamplerState(&samplerDesc, &mSampler)));
 
-	RenderTarget::Create(mPtr);
+	CHECK(__super::Create(mPtr));
 
 	ret = true;
 Exit0:
@@ -115,7 +105,7 @@ bool RenderTexture::CaptureToFile(const char * filename)
 	D3D11_MAPPED_SUBRESOURCE md;
 	hr = context->Map(temp, 0, D3D11_MAP_READ, 0, &md);
 	CHECK(SUCCEEDED(hr));
-	SaveTextureToFile(filename, md.pData, mWidth, mHeight);
+	SaveTextureToFile(filename, md.pData, mDesc.Width, mDesc.Height);
 	context->Unmap(temp, 0);
 
 	ret = true;
