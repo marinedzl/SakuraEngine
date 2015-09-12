@@ -85,6 +85,9 @@ bool RenderTarget::Create(HWND hWnd, int w, int h)
 	bool ret = false;
 	CHECK(hWnd);
 
+	mWidth = (float)w;
+	mHeight = (float)h;
+
 	RenderWindow* rw = new RenderWindow();
 	CHECK(rw && rw->Create(hWnd));
 	mDestBuffer = rw;
