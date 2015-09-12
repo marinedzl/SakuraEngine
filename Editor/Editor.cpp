@@ -3,6 +3,7 @@
 #include "afxdialogex.h"
 #include "Editor.h"
 #include "SceneLoader.h"
+#include "CameraCtrl.h"
 #include "MainFrm.h"
 
 #ifdef _DEBUG
@@ -35,6 +36,7 @@ CEditorApp::CEditorApp()
 	scene = nullptr;
 	camera = nullptr;
 	selected = nullptr;
+	cameraCtrl = nullptr;
 	mLastTime = 0;
 }
 
@@ -121,6 +123,9 @@ BOOL CEditorApp::InitCore()
 
 	CHECK(SceneLoader::Load(scene, _T("scene.json")));
 
+	camera = theApp.core->CreateCamera();
+	cameraCtrl = new CameraCtrl(camera);
+
 	ret = TRUE;
 Exit0:
 	return ret;
@@ -131,6 +136,7 @@ int CEditorApp::ExitInstance()
 	SAFE_RELEASE(scene);
 	SAFE_RELEASE(core);
 	SAFE_RELEASE(camera);
+	SAFE_DELETE(cameraCtrl);
 
 	AfxOleTerm(FALSE);
 	return CWinApp::ExitInstance();

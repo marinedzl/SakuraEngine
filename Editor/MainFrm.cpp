@@ -14,7 +14,7 @@
 
 #include "stdafx.h"
 #include "Editor.h"
-
+#include "CameraCtrl.h"
 #include "MainFrm.h"
 
 #ifdef _DEBUG
@@ -38,9 +38,14 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_OUTPUTWND, &CMainFrame::OnUpdateViewOutputWindow)
 	ON_COMMAND(ID_VIEW_PROPERTIESWND, &CMainFrame::OnViewPropertiesWindow)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PROPERTIESWND, &CMainFrame::OnUpdateViewPropertiesWindow)
+	ON_COMMAND(ID_CHECK_CAMERA_OTH, &CMainFrame::OnCheckCameraOth)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_CAMERA_OTH, &CMainFrame::OnUpdateCheckCameraOth)
+	ON_COMMAND(ID_CHECK_CAMERA_PROJ, &CMainFrame::OnCheckCameraProj)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_CAMERA_PROJ, &CMainFrame::OnUpdateCheckCameraProj)
 	ON_WM_SETTINGCHANGE()
 	ON_WM_EXITSIZEMOVE()
 	ON_WM_ENTERSIZEMOVE()
+	ON_COMMAND(ID_BUTTON_TOP_VIEW, &CMainFrame::OnButtonTopView)
 END_MESSAGE_MAP()
 
 // CMainFrame ¹¹Ôì/Îö¹¹
@@ -383,13 +388,31 @@ void CMainFrame::OnUpdateViewPropertiesWindow(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(m_wndProperties.IsVisible());
 }
 
+void CMainFrame::OnCheckCameraOth()
+{
+	theApp.camera->projectType = Camera::Orthographic;
+}
+
+void CMainFrame::OnUpdateCheckCameraOth(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(theApp.camera->projectType == Camera::Orthographic);
+}
+
+void CMainFrame::OnCheckCameraProj()
+{
+	theApp.camera->projectType = Camera::Perspective;
+}
+
+void CMainFrame::OnUpdateCheckCameraProj(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(theApp.camera->projectType == Camera::Perspective);
+}
 
 void CMainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 {
 	CFrameWndEx::OnSettingChange(uFlags, lpszSection);
 	m_wndOutput.UpdateFonts();
 }
-
 
 void CMainFrame::OnExitSizeMove()
 {
@@ -402,4 +425,9 @@ void CMainFrame::OnEnterSizeMove()
 {
 	SendMessageToDescendants(WM_ENTERSIZEMOVE);
 	CFrameWndEx::OnEnterSizeMove();
+}
+
+void CMainFrame::OnButtonTopView()
+{
+	theApp.cameraCtrl->SetPitch(-XM_PIDIV2);
 }

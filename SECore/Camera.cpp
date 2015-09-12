@@ -10,8 +10,6 @@ Camera::Camera()
 	fov = XM_PI / 4;
 	znear = 0.1f;
 	zfar = 1000.0f;
-	viewH = 1;
-	viewW = 1;
 	viewportX = 0;
 	viewportY = 0;
 	viewportW = 1;
@@ -86,7 +84,12 @@ XMMATRIX Camera::GetProj() const
 	if (projectType == Camera::Perspective)
 		proj = XMMatrixPerspectiveFovLH(fov, rtW / rtH, znear, zfar);
 	else
-		proj = XMMatrixOrthographicLH(viewW, viewH, znear, zfar);
+	{
+		float distance = 0;
+		XMVECTOR v = XMVector3Length(XMLoadFloat3(lookat - eye));
+		XMStoreFloat(&distance, v);
+		proj = XMMatrixOrthographicLH(rtW / rtH * distance, 1 * distance, znear, zfar);
+	}
 	return proj;
 }
 

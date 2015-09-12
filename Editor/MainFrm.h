@@ -71,6 +71,10 @@ protected:
 	afx_msg void OnUpdateViewOutputWindow(CCmdUI* pCmdUI);
 	afx_msg void OnViewPropertiesWindow();
 	afx_msg void OnUpdateViewPropertiesWindow(CCmdUI* pCmdUI);
+	afx_msg void OnCheckCameraOth();
+	afx_msg void OnUpdateCheckCameraOth(CCmdUI *pCmdUI);
+	afx_msg void OnCheckCameraProj();
+	afx_msg void OnUpdateCheckCameraProj(CCmdUI *pCmdUI);
 	afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
 	DECLARE_MESSAGE_MAP()
 
@@ -79,6 +83,7 @@ protected:
 public:
 	afx_msg void OnExitSizeMove();
 	afx_msg void OnEnterSizeMove();
+	afx_msg void OnButtonTopView();
 };
 
 

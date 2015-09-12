@@ -24,6 +24,7 @@
 // 有关此类的实现，请参阅 Editor.cpp
 //
 
+class CameraCtrl;
 class CEditorApp : public CWinAppEx
 {
 private:
@@ -33,6 +34,7 @@ public:
 	SECore::Core* core;
 	SECore::Scene* scene;
 	SECore::Camera* camera;
+	CameraCtrl* cameraCtrl;
 	GameObject* selected;
 public:
 	CEditorApp();

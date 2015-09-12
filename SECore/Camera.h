@@ -46,9 +46,6 @@ private:
 	float rtW;
 	float rtH;
 
-	float viewW;
-	float viewH;
-
 	float viewportX;
 	float viewportY;
 	float viewportW;

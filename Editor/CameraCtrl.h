@@ -18,6 +18,8 @@ public:
 	void End();
 	void Scroll(float delta);
 	void FocusOn(Vector3 v);
+	void SetPitch(float angle) { mYawPitch.y = angle; }
+	void SetYaw(float angle) { mYawPitch.x = angle; }
 private:
 	Camera* mCamera;
 

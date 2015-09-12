@@ -11,7 +11,6 @@
 CChildView::CChildView()
 {
 	mRT = nullptr;
-	mCameraCtrl = nullptr;
 	mTransformCtrl = nullptr;
 	mIsInited = false;
 	mChangingSize = false;
@@ -22,7 +21,6 @@ CChildView::~CChildView()
 	theApp.RemoveProcesser(this);
 	SAFE_RELEASE(mRT);
 	SAFE_DELETE(mTransformCtrl);
-	SAFE_DELETE(mCameraCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CChildView, CWnd)
@@ -58,10 +56,7 @@ void CChildView::OnInitUpdate()
 {
 	theApp.AddProcesser(this);
 
-	theApp.camera = theApp.core->CreateCamera();
-
 	mTransformCtrl = new TransformCtrl();
-	mCameraCtrl = new CameraCtrl(theApp.camera);
 
 	mIsInited = true;
 
@@ -101,8 +96,8 @@ void CChildView::Update(float deltaTime)
 	if (!IsWindowVisible() || mChangingSize)
 		return;
 
-	if (mCameraCtrl)
-		mCameraCtrl->Update(deltaTime);
+	if (theApp.cameraCtrl)
+		theApp.cameraCtrl->Update(deltaTime);
 
 	theApp.scene->GetConfig()->EnableGizmo(true);
 	theApp.scene->Draw(theApp.camera, mRT);
@@ -111,9 +106,9 @@ void CChildView::Update(float deltaTime)
 
 void CChildView::OnMouseMove(UINT nFlags, CPoint point)
 {
-	if (mCameraCtrl)
+	if (theApp.cameraCtrl)
 	{
-		mCameraCtrl->Move((float)point.x, (float)point.y);
+		theApp.cameraCtrl->Move((float)point.x, (float)point.y);
 	}
 	if (mTransformCtrl)
 	{
@@ -124,18 +119,18 @@ void CChildView::OnMouseMove(UINT nFlags, CPoint point)
 
 BOOL CChildView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
-	if (mCameraCtrl)
+	if (theApp.cameraCtrl)
 	{
-		mCameraCtrl->Scroll(-(float)zDelta * 0.01f);
+		theApp.cameraCtrl->Scroll(-(float)zDelta * 0.01f);
 	}
 	return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 void CChildView::OnRButtonDown(UINT nFlags, CPoint point)
 {
-	if (mCameraCtrl)
+	if (theApp.cameraCtrl)
 	{
-		mCameraCtrl->Begin((float)point.x, (float)point.y, CameraCtrl::eOpRotate);
+		theApp.cameraCtrl->Begin((float)point.x, (float)point.y, CameraCtrl::eOpRotate);
 		SetCapture();
 	}
 	__super::OnRButtonDown(nFlags, point);
@@ -143,9 +138,9 @@ void CChildView::OnRButtonDown(UINT nFlags, CPoint point)
 
 void CChildView::OnRButtonUp(UINT nFlags, CPoint point)
 {
-	if (mCameraCtrl)
+	if (theApp.cameraCtrl)
 	{
-		mCameraCtrl->End();
+		theApp.cameraCtrl->End();
 		ReleaseCapture();
 	}
 	__super::OnRButtonUp(nFlags, point);
@@ -153,9 +148,9 @@ void CChildView::OnRButtonUp(UINT nFlags, CPoint point)
 
 void CChildView::OnMButtonDown(UINT nFlags, CPoint point)
 {
-	if (mCameraCtrl)
+	if (theApp.cameraCtrl)
 	{
-		mCameraCtrl->Begin((float)point.x, (float)point.y, CameraCtrl::eOpMove);
+		theApp.cameraCtrl->Begin((float)point.x, (float)point.y, CameraCtrl::eOpMove);
 		SetCapture();
 	}
 	__super::OnMButtonDown(nFlags, point);
@@ -163,9 +158,9 @@ void CChildView::OnMButtonDown(UINT nFlags, CPoint point)
 
 void CChildView::OnMButtonUp(UINT nFlags, CPoint point)
 {
-	if (mCameraCtrl)
+	if (theApp.cameraCtrl)
 	{
-		mCameraCtrl->End();
+		theApp.cameraCtrl->End();
 		ReleaseCapture();
 	}
 	__super::OnMButtonUp(nFlags, point);
@@ -221,9 +216,12 @@ void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
 		else
 		{
 			//unselect
-			theApp.selected->SetGizmoColor(Color(0.5f, 0.5f, 0.5f, 1));
-			theApp.selected = nullptr;
-			mTransformCtrl->Attach(nullptr);
+			if (theApp.selected)
+			{
+				theApp.selected->SetGizmoColor(Color(0.5f, 0.5f, 0.5f, 1));
+				theApp.selected = nullptr;
+				mTransformCtrl->Attach(nullptr);
+			}
 		}
 	}
 	break;

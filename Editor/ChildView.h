@@ -7,7 +7,6 @@ class CChildView : public CWnd, public IIdleProcesser
 private:
 	bool mIsInited;
 	RenderTarget* mRT;
-	CameraCtrl* mCameraCtrl;
 	TransformCtrl* mTransformCtrl;
 	enum State
 	{
