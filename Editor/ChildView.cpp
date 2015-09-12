@@ -14,6 +14,7 @@ CChildView::CChildView()
 	mCameraCtrl = nullptr;
 	mTransformCtrl = nullptr;
 	mIsInited = false;
+	mChangingSize = false;
 }
 
 CChildView::~CChildView()
@@ -36,6 +37,8 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_WM_LBUTTONUP()
 	ON_WM_SIZE()
 	ON_COMMAND(ID_BUTTON_CAPTURE, &CChildView::OnButtonCapture)
+	ON_WM_EXITSIZEMOVE()
+	ON_WM_ENTERSIZEMOVE()
 END_MESSAGE_MAP()
 
 BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs) 
@@ -53,18 +56,36 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CChildView::OnInitUpdate()
 {
-	RECT rect;
-	GetClientRect(&rect);
-	mRT = theApp.core->CreateRenderTarget(GetSafeHwnd(), rect.right - rect.left, rect.bottom - rect.top);
 	theApp.AddProcesser(this);
 
 	theApp.camera = theApp.core->CreateCamera();
-	theApp.camera->SetView(mRT->GetWidth(), mRT->GetHeight());
 
 	mTransformCtrl = new TransformCtrl();
 	mCameraCtrl = new CameraCtrl(theApp.camera);
 
 	mIsInited = true;
+
+	Resize();
+}
+
+void CChildView::Resize()
+{
+	if (!mIsInited)
+		return;
+	RECT rect;
+	GetClientRect(&rect);
+	int w = rect.right - rect.left;
+	int h = rect.bottom - rect.top;
+	if (w == 0 || h == 0)
+		return;
+	if (mRT)
+	{
+		if (mRT->GetWidth() == w && mRT->GetHeight() == h)
+			return;
+		SAFE_RELEASE(mRT);
+	}
+	mRT = theApp.core->CreateRenderTarget(GetSafeHwnd(), w, h);
+	theApp.camera->SetView(mRT->GetWidth(), mRT->GetHeight());
 }
 
 void CChildView::OnPaint() 
@@ -77,7 +98,7 @@ void CChildView::OnPaint()
 
 void CChildView::Update(float deltaTime)
 {
-	if (!IsWindowVisible())
+	if (!IsWindowVisible() || mChangingSize)
 		return;
 
 	if (mCameraCtrl)
@@ -233,6 +254,22 @@ void CChildView::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 
 	// TODO: 在此处添加消息处理程序代码
+	if (!mChangingSize)
+		Resize();
+}
+
+void CChildView::OnExitSizeMove()
+{
+	__super::OnExitSizeMove();
+	Resize();
+	mChangingSize = false;
+}
+
+void CChildView::OnEnterSizeMove()
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	mChangingSize = true;
+	__super::OnEnterSizeMove();
 }
 
 void CChildView::OnButtonCapture()

@@ -15,6 +15,7 @@ private:
 		eTransform,
 	};
 	State mState;
+	bool mChangingSize;
 public:
 	CChildView();
 	void Update(float deltaTime);
@@ -22,6 +23,7 @@ public:
 protected:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	virtual void OnInitUpdate();
+	void Resize();
 
 public:
 	virtual ~CChildView();
@@ -40,4 +42,6 @@ protected:
 public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnButtonCapture();
+	afx_msg void OnExitSizeMove();
+	afx_msg void OnEnterSizeMove();
 };

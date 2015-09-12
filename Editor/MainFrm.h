@@ -76,6 +76,9 @@ protected:
 
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
+public:
+	afx_msg void OnExitSizeMove();
+	afx_msg void OnEnterSizeMove();
 };
 
 

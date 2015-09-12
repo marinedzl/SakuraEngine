@@ -39,6 +39,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_COMMAND(ID_VIEW_PROPERTIESWND, &CMainFrame::OnViewPropertiesWindow)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PROPERTIESWND, &CMainFrame::OnUpdateViewPropertiesWindow)
 	ON_WM_SETTINGCHANGE()
+	ON_WM_EXITSIZEMOVE()
+	ON_WM_ENTERSIZEMOVE()
 END_MESSAGE_MAP()
 
 // CMainFrame ¹¹Ôì/Îö¹¹
@@ -386,4 +388,18 @@ void CMainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 {
 	CFrameWndEx::OnSettingChange(uFlags, lpszSection);
 	m_wndOutput.UpdateFonts();
+}
+
+
+void CMainFrame::OnExitSizeMove()
+{
+	CFrameWndEx::OnExitSizeMove();
+	SendMessageToDescendants(WM_EXITSIZEMOVE);
+}
+
+
+void CMainFrame::OnEnterSizeMove()
+{
+	SendMessageToDescendants(WM_ENTERSIZEMOVE);
+	CFrameWndEx::OnEnterSizeMove();
 }
