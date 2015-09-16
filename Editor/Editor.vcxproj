@@ -207,6 +207,7 @@
     <ClInclude Include="Editor.h" />
     <ClInclude Include="FileView.h" />
     <ClInclude Include="GameView.h" />
+    <ClInclude Include="GameWnd.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="PropertiesWnd.h" />
@@ -224,6 +225,7 @@
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="FileView.cpp" />
     <ClCompile Include="GameView.cpp" />
+    <ClCompile Include="GameWnd.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="OutputWnd.cpp" />
     <ClCompile Include="PropertiesWnd.cpp" />

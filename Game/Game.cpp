@@ -27,6 +27,7 @@ void Game::Release()
 
 bool Game::Init(SECore::Core* core, HWND hWnd, int w, int h)
 {
+	this->hWnd = hWnd;
 	mCore = core;
 	mRT = core->CreateRenderTarget(hWnd, w, h);
 	return true;
@@ -34,6 +35,16 @@ bool Game::Init(SECore::Core* core, HWND hWnd, int w, int h)
 
 void Game::Resize(int w, int h)
 {
+	if (w == 0 || h == 0)
+		return;
+	if (mRT)
+	{
+		if (mRT->GetWidth() == w && mRT->GetHeight() == h)
+			return;
+		SAFE_RELEASE(mRT);
+	}
+	mRT = mCore->CreateRenderTarget(hWnd, w, h);
+	mCamera->SetView(mRT->GetWidth(), mRT->GetHeight());
 }
 
 bool Game::EditorPlay(SECore::Scene* scene)

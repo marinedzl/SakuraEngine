@@ -1,23 +1,18 @@
 #pragma once
-#include "IGame.h"
+#include "GameWnd.h"
 
-class CGameView : public CDockablePane, public IIdleProcesser
+class CGameView : public CDockablePane
 {
 	DECLARE_DYNAMIC(CGameView)
 private:
-	IGame* m_pGame;
-	bool mChangingSize;
+	CGameWnd mGameWnd;
 public:
 	CGameView();
 	virtual ~CGameView();
-	void Update(float deltaTime);
-	BOOL OnInitUpdate();
-	void Resize();
 protected:
 	DECLARE_MESSAGE_MAP()
-public:
-	afx_msg void OnExitSizeMove();
-	afx_msg void OnEnterSizeMove();
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	afx_msg void OnPaint();
+	afx_msg void OnSetFocus(CWnd* pOldWnd);
 };

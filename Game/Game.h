@@ -25,5 +25,6 @@ private:
 	GameObject* mMainChara;
 	CharaCtrl* mCharaCtrl;
 	RenderTarget* mRT;
+	HWND hWnd;
 };
 extern Game gGame;

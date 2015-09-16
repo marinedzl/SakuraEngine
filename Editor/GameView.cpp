@@ -1,109 +1,68 @@
 #include "stdafx.h"
-#include "Editor.h"
 #include "GameView.h"
 
 IMPLEMENT_DYNAMIC(CGameView, CDockablePane)
 
 CGameView::CGameView()
 {
-	m_pGame = nullptr;
-	mChangingSize = false;
 }
 
 CGameView::~CGameView()
 {
-	SAFE_RELEASE(m_pGame);
-}
-
-void CGameView::Resize()
-{
-	if (!IsWindowVisible())
-		return;
-
-	RECT rect;
-	GetClientRect(&rect);
-	int w = rect.right - rect.left;
-	int h = rect.bottom - rect.top;
-	if (w == 0 || h == 0)
-		return;
-
-	if (m_pGame)
-		m_pGame->Resize(w, h);
-}
-
-void CGameView::Update(float deltaTime)
-{
-	if (m_pGame)
-		m_pGame->Update(deltaTime);
-
-	if (IsWindow(GetSafeHwnd()) && IsWindowVisible())
-	{
-		if (!m_pGame)
-		{
-			OnInitUpdate();
-		}
-		m_pGame->Draw();
-	}
-}
-
-BOOL CGameView::OnInitUpdate()
-{
-	BOOL ret = FALSE;
-
-	typedef IGame*(*CreateGame)();
-
-	HMODULE hm = LoadLibrary(_T("Game.dll"));
-	CHECK(hm);
-
-	CreateGame func;
-	func = (CreateGame)GetProcAddress(hm, "CreateGame");
-	CHECK(func);
-
-	RECT rect;
-	GetClientRect(&rect);
-	int w = rect.right - rect.left;
-	int h = rect.bottom - rect.top;
-
-	m_pGame = func();
-	CHECK(m_pGame);
-	CHECK(m_pGame->Init(theApp.core, GetSafeHwnd(), w, h));
-	m_pGame->EditorPlay(theApp.scene);
-
-	ret = TRUE;
-Exit0:
-	return ret;
 }
 
 BEGIN_MESSAGE_MAP(CGameView, CDockablePane)
-	ON_WM_EXITSIZEMOVE()
-	ON_WM_ENTERSIZEMOVE()
+	ON_WM_CREATE()
 	ON_WM_SIZE()
+	ON_WM_PAINT()
+	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
+
+
+int CGameView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CDockablePane::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	CRect rect;
+	GetClientRect(rect);
+
+	// 创建视图: 
+	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE;
+
+	if (!mGameWnd.Create(NULL, _T("GameWnd"), dwViewStyle, rect, this, 4))
+	{
+		TRACE0("未能创建GameWnd!\n");
+		return -1;      // 未能创建
+	}
+
+	return 0;
+}
 
 void CGameView::OnSize(UINT nType, int cx, int cy)
 {
-	__super::OnSize(nType, cx, cy);
-	if (!mChangingSize)
-		Resize();
+	CDockablePane::OnSize(nType, cx, cy);
+	if (GetSafeHwnd() == NULL)
+		return;
+	CRect rectClient;
+	GetClientRect(rectClient);
+	mGameWnd.SetWindowPos(NULL, rectClient.left, rectClient.top, rectClient.Width(), rectClient.Height(), SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
-void CGameView::OnExitSizeMove()
+void CGameView::OnPaint()
 {
-	__super::OnExitSizeMove();
-	Resize();
-	mChangingSize = false;
+	CPaintDC dc(this); // 用于绘制的设备上下文
+
+	CRect rect;
+	mGameWnd.GetWindowRect(rect);
+	ScreenToClient(rect);
+
+	rect.InflateRect(1, 1);
+	dc.Draw3dRect(rect, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DSHADOW));
 }
 
-void CGameView::OnEnterSizeMove()
+void CGameView::OnSetFocus(CWnd* pOldWnd)
 {
-	mChangingSize = true;
-	__super::OnEnterSizeMove();
-}
-
-
-LRESULT CGameView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	if (m_pGame)
-		m_pGame->WndProc(GetSafeHwnd(), message, wParam, lParam);
-	return __super::WindowProc(message, wParam, lParam);
+	CDockablePane::OnSetFocus(pOldWnd);
+	mGameWnd.SetFocus();
 }
