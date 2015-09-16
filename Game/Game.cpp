@@ -32,6 +32,10 @@ bool Game::Init(SECore::Core* core, HWND hWnd, int w, int h)
 	return true;
 }
 
+void Game::Resize(int w, int h)
+{
+}
+
 bool Game::EditorPlay(SECore::Scene* scene)
 {
 	mScene = scene;

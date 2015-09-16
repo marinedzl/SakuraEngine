@@ -17,6 +17,7 @@
 #include "FileView.h"
 #include "ClassView.h"
 #include "OutputWnd.h"
+#include "GameView.h"
 #include "PropertiesWnd.h"
 
 class CMainFrame : public CFrameWndEx
@@ -56,6 +57,7 @@ protected:  // 控件条嵌入成员
 	COutputWnd        m_wndOutput;
 	CPropertiesWnd    m_wndProperties;
 	CChildView    m_wndView;
+	CGameView m_wndGameView;
 
 // 生成的消息映射函数
 protected:
@@ -71,6 +73,8 @@ protected:
 	afx_msg void OnUpdateViewOutputWindow(CCmdUI* pCmdUI);
 	afx_msg void OnViewPropertiesWindow();
 	afx_msg void OnUpdateViewPropertiesWindow(CCmdUI* pCmdUI);
+	afx_msg void OnGameView();
+	afx_msg void OnUpdateGameView(CCmdUI *pCmdUI);
 	afx_msg void OnCheckCameraOth();
 	afx_msg void OnUpdateCheckCameraOth(CCmdUI *pCmdUI);
 	afx_msg void OnCheckCameraProj();
@@ -85,5 +89,3 @@ public:
 	afx_msg void OnEnterSizeMove();
 	afx_msg void OnButtonTopView();
 };
-
-

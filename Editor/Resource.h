@@ -15,6 +15,7 @@
 #define ID_STATUSBAR_PANE2              121
 #define IDS_STATUS_PANE1                122
 #define IDS_STATUS_PANE2                123
+#define IDS_GAME_VIEW                   124
 #define IDR_MAINFRAME                   128
 #define IDR_MAINFRAME_256               129
 #define IDR_EditorTYPE                  130
@@ -90,22 +91,21 @@
 #define IDS_EXPLORER                    305
 #define IDS_EDIT_MENU                   306
 #define IDR_RIBBON                      307
+#define ID_GAME_VIEW                    310
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_BUTTON2                      32771
 #define ID_BUTTON_CAPTURE               32771
-#define ID_BUTTON_CAMERA_TOPVIEW        32771
 #define ID_CHECK_CAMERA_OTH             32774
 #define ID_CHECK_CAMERA_PROJ            32775
-#define ID_BUTTON3                      32777
 #define ID_BUTTON_TOP_VIEW              32777
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        310
+#define _APS_NEXT_RESOURCE_VALUE        311
 #define _APS_NEXT_COMMAND_VALUE         32778
 #define _APS_NEXT_CONTROL_VALUE         1000
-#define _APS_NEXT_SYMED_VALUE           310
+#define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif

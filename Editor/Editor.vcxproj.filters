@@ -60,6 +60,9 @@
     <ClInclude Include="SceneLoader.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="GameView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Editor.cpp">
@@ -96,6 +99,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SceneLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GameView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

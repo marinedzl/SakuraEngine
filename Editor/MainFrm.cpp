@@ -46,6 +46,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_EXITSIZEMOVE()
 	ON_WM_ENTERSIZEMOVE()
 	ON_COMMAND(ID_BUTTON_TOP_VIEW, &CMainFrame::OnButtonTopView)
+	ON_COMMAND(ID_GAME_VIEW, &CMainFrame::OnGameView)
+	ON_UPDATE_COMMAND_UI(ID_GAME_VIEW, &CMainFrame::OnUpdateGameView)
 END_MESSAGE_MAP()
 
 // CMainFrame 构造/析构
@@ -58,6 +60,7 @@ CMainFrame::CMainFrame()
 
 CMainFrame::~CMainFrame()
 {
+	theApp.RemoveProcesser(&m_wndGameView);
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -116,9 +119,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockPane(&m_wndOutput);
 	m_wndProperties.EnableDocking(CBRS_ALIGN_ANY);
 	DockPane(&m_wndProperties);
+	m_wndGameView.EnableDocking(CBRS_ALIGN_ANY);
+	DockPane(&m_wndGameView);
 
 	// 基于持久值设置视觉管理器和样式
 	OnApplicationLook(theApp.m_nAppLook);
+
+	theApp.AddProcesser(&m_wndGameView);
 
 	return 0;
 }
@@ -176,6 +183,16 @@ BOOL CMainFrame::CreateDockingWindows()
 	if (!m_wndProperties.Create(strPropertiesWnd, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_PROPERTIESWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT | CBRS_FLOAT_MULTI))
 	{
 		TRACE0("未能创建“属性”窗口\n");
+		return FALSE; // 未能创建
+	}
+
+	// 创建游戏窗口
+	CString strGameView;
+	bNameValid = strGameView.LoadString(IDS_GAME_VIEW);
+	ASSERT(bNameValid);
+	if (!m_wndGameView.Create(strGameView, this, CRect(0, 0, 320, 240), TRUE, ID_GAME_VIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI))
+	{
+		TRACE0("未能创建游戏窗口\n");
 		return FALSE; // 未能创建
 	}
 
@@ -386,6 +403,24 @@ void CMainFrame::OnViewPropertiesWindow()
 void CMainFrame::OnUpdateViewPropertiesWindow(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetCheck(m_wndProperties.IsVisible());
+}
+
+void CMainFrame::OnGameView()
+{
+	if (m_wndGameView.IsVisible())
+	{
+		m_wndGameView.ShowPane(FALSE, FALSE, TRUE);
+	}
+	else
+	{
+		m_wndGameView.ShowPane(TRUE, FALSE, TRUE);
+		m_wndGameView.SetFocus();
+	}
+}
+
+void CMainFrame::OnUpdateGameView(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(m_wndGameView.IsVisible());
 }
 
 void CMainFrame::OnCheckCameraOth()

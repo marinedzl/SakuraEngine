@@ -9,6 +9,7 @@ public:
 	virtual ~Game();
 	virtual void Release();
 	virtual bool Init(SECore::Core* core, HWND hWnd, int w, int h);
+	virtual void Resize(int w, int h);
 	virtual bool EditorPlay(SECore::Scene* scene);
 	virtual void WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	virtual void Draw();

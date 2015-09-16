@@ -471,6 +471,7 @@ STRINGTABLE
 BEGIN
     IDS_STATUS_PANE1        "¥∞∏Ò 1"
     IDS_STATUS_PANE2        "¥∞∏Ò 2"
+    IDS_GAME_VIEW           "”Œœ∑"
 END
 
 STRINGTABLE
