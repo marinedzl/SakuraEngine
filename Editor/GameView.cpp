@@ -16,6 +16,7 @@ BEGIN_MESSAGE_MAP(CGameView, CDockablePane)
 	ON_WM_SIZE()
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
+	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
 
@@ -65,4 +66,9 @@ void CGameView::OnSetFocus(CWnd* pOldWnd)
 {
 	CDockablePane::OnSetFocus(pOldWnd);
 	mGameWnd.SetFocus();
+}
+
+void CGameView::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
+{
+	// do nothing
 }
